@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import {
 	BarChart3Icon,
 	BookOpenIcon,
+	CarIcon,
 	CircleDollarSignIcon,
 	ExternalLinkIcon,
 	LayoutGridIcon,
@@ -42,6 +43,7 @@ export const navGroups: SidebarNavGroup[] = [
 			{ title: "Devoluciones", id: "devoluciones", path: "#devoluciones", icon: <Undo2Icon /> },
 			{ title: "Facturación", id: "facturas", path: "#facturas", icon: <ReceiptIcon /> },
 			{ title: "Recurrentes", id: "recurrentes", path: "#recurrentes", icon: <RepeatIcon /> },
+			{ title: "Estacionamientos", id: "estacionamientos", path: "#estacionamientos", icon: <CarIcon /> },
 		],
 	},
 	{
@@ -66,6 +68,7 @@ export const TITULOS_SECCION: Record<string, string> = {
 	partidas: "Partidas",
 	fondos: "Fondos",
 	paralelo: "Dólar paralelo",
+	estacionamientos: "Estacionamientos",
 	devoluciones: "Devoluciones",
 	facturas: "Facturación",
 	recurrentes: "Recurrentes",

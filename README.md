@@ -16,6 +16,7 @@ Dashboard profesional de gastos comunes y fondo de reserva del **Edificio Socama
 | **Devoluciones** | Reintegros y devoluciones por concepto (incl. el ciclo del agua) |
 | **Facturación** | Soporte documental: facturas citadas, servicios públicos, nómina, terceros por verificar |
 | **Recurrentes** | Cargos presentes los 48 meses (gasto fijo del edificio) |
+| **Estacionamientos** | Cargo de puerta/estacionamiento: tarifa fija $10×5=$50/mes vs lo cobrado en Bs, con diferencia acumulada |
 | **Metodología** | Fuentes, validación y conversión a dólares |
 
 ## Metodología (resumen)

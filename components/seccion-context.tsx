@@ -11,7 +11,8 @@ export type SeccionId =
   | "devoluciones"
   | "facturas"
   | "recurrentes"
-  | "metodologia";
+  | "metodologia"
+  | "estacionamientos";
 
 type SeccionContextValue = {
   seccion: SeccionId;
