@@ -10,12 +10,9 @@ import {
   Cell,
   ComposedChart,
   LabelList,
-  Legend,
   Line,
   Pie,
   PieChart,
-  ResponsiveContainer,
-  Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
@@ -37,12 +34,18 @@ import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -52,7 +55,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { DashboardCard } from "@/components/dashboard-card";
 import { useIsMobile } from "@/lib/use-is-mobile";
 import { useSeccion } from "@/components/seccion-context";
 import datos from "@/data/gastos.json";
@@ -132,39 +135,46 @@ const CAT_FACT: Record<string, string> = {
   terceros_verificar_factura: "Terceros: verificar factura",
 };
 
-/* tooltip unificado de Recharts, con tokens del tema */
-function Tip({ active, payload, label, formato }: {
-  active?: boolean;
-  payload?: { name?: string; value?: number | string; color?: string; dataKey?: string }[];
-  label?: string;
-  formato: (v: number) => string;
-}) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="rounded-lg border bg-popover px-3 py-2 shadow-md">
-      {label !== undefined && <div className="mb-1.5 text-xs font-semibold">{label}</div>}
-      <div className="space-y-1">
-        {payload.map((p, i) => (
-          <div key={p.dataKey ?? i} className="flex items-center justify-between gap-5 text-xs">
-            <span className="flex items-center gap-1.5 text-muted-foreground">
-              <span className="size-2 rounded-full" style={{ background: p.color }} />
-              {p.name}
-            </span>
-            <span className="font-semibold tabular-nums">{formato(Number(p.value))}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+/* configs de charts (patrón shadcn/efferd) */
+const aniosConfig = {
+  usd: { label: "US$ (cierre de mes)", color: "var(--c-primary)" },
+  bs: { label: "Bs", color: "var(--c-warning)" },
+} satisfies ChartConfig;
 
+const mensualConfig = {
+  usd: { label: "US$", color: "var(--c-primary)" },
+} satisfies ChartConfig;
+
+const fondoBsConfig = {
+  acum_bs: { label: "Acumulado Bs", color: "var(--c-positive)" },
+} satisfies ChartConfig;
+
+const fondoUsdConfig = {
+  acum_usd: { label: "Acumulado US$", color: "var(--c-primary)" },
+} satisfies ChartConfig;
+
+const seccionConfig = Object.fromEntries(
+  D.por_seccion.map((s, i) => [
+    s.seccion,
+    { label: NOMBRES_SECCION[s.seccion] ?? s.seccion, color: PALETA[i % PALETA.length] },
+  ])
+) satisfies ChartConfig;
+
+const factConfig = Object.fromEntries(
+  D.facturacion.map((f, i) => [
+    f.cat,
+    { label: CAT_FACT[f.cat] ?? f.cat, color: PALETA[i % PALETA.length] },
+  ])
+) satisfies ChartConfig;
+
+/* leyenda propia (chips HTML FUERA del contenedor del gráfico) */
 function LeyendaChips({ items }: { items: { color: string; label: string; extra?: string }[] }) {
   return (
-    <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1.5">
+    <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1.5">
       {items.map((it) => (
-        <span key={it.label} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+        <span key={it.label} className="inline-flex max-w-full items-center gap-1.5 text-xs text-muted-foreground">
           <span className="size-2.5 shrink-0 rounded-full" style={{ background: it.color }} />
-          {it.label}
+          <span className="truncate">{it.label}</span>
           {it.extra && <span className="font-medium tabular-nums text-foreground">{it.extra}</span>}
         </span>
       ))}
@@ -172,28 +182,28 @@ function LeyendaChips({ items }: { items: { color: string; label: string; extra?
   );
 }
 
-const fmtUsdTip = (v: unknown) => "US$ " + fmt(Number(v));
-const fmtBsTip = (v: unknown) => "Bs " + fmt(Number(v));
-
+/* KPI al estilo efferd (DashboardCard plano) */
 function Kpi({ icono, tinte, titulo, valor, sub }: {
   icono: React.ReactNode; tinte: string; titulo: string; valor: string; sub: string;
 }) {
   return (
-    <Card className="animar-kpi gap-2 py-4 transition-shadow hover:shadow-md">
+    <DashboardCard className="animar-kpi gap-1 py-4">
+      <CardHeader className="flex-row items-center justify-between gap-2 px-4">
+        <CardTitle className="text-[11px] font-medium tracking-wide text-muted-foreground">{titulo}</CardTitle>
+        <span
+          className="flex size-7 shrink-0 items-center justify-center rounded-lg"
+          style={{ background: `color-mix(in oklab, ${tinte} 14%, transparent)`, color: tinte }}
+        >
+          {icono}
+        </span>
+      </CardHeader>
       <CardContent className="px-4">
-        <div className="flex items-center gap-2.5">
-          <span
-            className="flex size-8 shrink-0 items-center justify-center rounded-lg"
-            style={{ background: `color-mix(in oklab, ${tinte} 14%, transparent)`, color: tinte }}
-          >
-            {icono}
-          </span>
-          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{titulo}</span>
-        </div>
-        <div className="mt-2 text-xl font-bold tracking-tight sm:text-2xl">{valor}</div>
-        <div className="mt-1 text-xs text-muted-foreground">{sub}</div>
+        <p className="text-xl font-semibold tracking-tight tabular-nums sm:text-2xl">{valor}</p>
       </CardContent>
-    </Card>
+      <CardFooter className="px-4 pt-0">
+        <span className="text-xs text-muted-foreground">{sub}</span>
+      </CardFooter>
+    </DashboardCard>
   );
 }
 
@@ -231,14 +241,14 @@ export default function Contenido() {
   const oscuro = resolvedTheme === "dark";
   const movil = useIsMobile();
   const H = {
-    anios: movil ? 230 : 300,
+    anios: movil ? 240 : 300,
     pie: movil ? 240 : 280,
     mensual: movil ? 230 : 280,
     conceptos: movil ? 400 : 430,
     fondo: movil ? 230 : 280,
     dev: movil ? 310 : 340,
     rec: movil ? 380 : 420,
-    fact: movil ? 250 : 300,
+    fact: movil ? 240 : 280,
   };
   const W = { ejeY: movil ? 128 : 215 };
   const TRUNC = movil ? 18 : 36;
@@ -299,14 +309,21 @@ export default function Contenido() {
   const topConceptos = D.conceptos.filter((c) => c.usd > 0).slice(0, 15);
   const fac = Object.fromEntries(D.facturacion.map((f) => [f.cat, f]));
 
+  const conceptosConfig = {
+    usd: { label: "US$", color: "var(--c-primary)" },
+  } satisfies ChartConfig;
+
+  const devConfig = {
+    bs: { label: "Bs devueltos", color: "var(--c-negative)" },
+  } satisfies ChartConfig;
+
+  const recConfig = {
+    meses: { label: "Meses", color: "var(--c-primary)" },
+  } satisfies ChartConfig;
+
   return (
     <div className="space-y-4">
       {/* KPIs generales */}
-
-      {/* ---------------- RESUMEN ---------------- */}
-      {seccion === "resumen" && (
-<section id="resumen" className="space-y-4 scroll-mt-20">
-        <EncabezadoSeccion titulo="Resumen general" descripcion="Panorama de los 48 meses: totales, distribución y evolución." />
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         <Kpi icono={<Wallet className="size-4" />} tinte={V.primary} titulo="Total gastado (Bs)"
           valor={"Bs " + fmt0(D.meta.tot_bs)} sub={`${D.meta.meses} meses · sep-2022 a ago-2026`} />
@@ -323,7 +340,11 @@ export default function Contenido() {
           sub={`partidas · Bs ${fmt0(fac.terceros_verificar_factura?.bs ?? 0)}`} />
       </div>
 
-        <Card>
+      {/* ---------------- RESUMEN ---------------- */}
+      {seccion === "resumen" && (
+<section id="resumen" className="space-y-4 scroll-mt-20">
+        <EncabezadoSeccion titulo="Resumen general" descripcion="Panorama de los 48 meses: totales, distribución y evolución." />
+        <DashboardCard>
           <CardHeader>
             <CardTitle>Total por año</CardTitle>
             <CardDescription>
@@ -331,54 +352,64 @@ export default function Contenido() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={H.anios}>
+            <ChartContainer config={aniosConfig} className="aspect-auto w-full" style={{ height: H.anios }}>
               <ComposedChart data={D.por_anio} margin={{ top: 8, right: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
                 <XAxis dataKey="anio" tick={TICK} axisLine={false} tickLine={false} />
                 <YAxis yAxisId="usd" tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
                 <YAxis yAxisId="bs" orientation="right" tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v / 1e6) + " MM"} />
-                <Tooltip content={<Tip formato={(v) => "US$ " + fmt(v)} />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
-                <Legend iconType="circle" iconSize={8} />
-                <Bar yAxisId="usd" dataKey="usd" name="US$ (cierre de mes)" fill={V.primary} radius={[6, 6, 0, 0]} maxBarSize={64} />
-                <Line yAxisId="bs" dataKey="bs" name="Bs" stroke={V.warning} strokeWidth={2} dot={{ r: 4, fill: V.warning, strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                <ChartTooltip
+                  cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }}
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value, name) =>
+                        String(name) === "Bs"
+                          ? ["Bs " + fmt(Number(value)), name]
+                          : ["US$ " + fmt(Number(value)), name]
+                      }
+                    />
+                  }
+                />
+                <Bar yAxisId="usd" dataKey="usd" fill={V.primary} radius={[6, 6, 0, 0]} maxBarSize={64} />
+                <Line yAxisId="bs" dataKey="bs" stroke={V.warning} strokeWidth={2} dot={{ r: 4, fill: V.warning, strokeWidth: 0 }} activeDot={{ r: 5 }} />
               </ComposedChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
-        </Card>
+        </DashboardCard>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card>
+          <DashboardCard>
             <CardHeader>
               <CardTitle>Distribución por sección</CardTitle>
               <CardDescription>Participación en el total (US$)</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={H.pie}>
+              <ChartContainer config={seccionConfig} className="aspect-auto w-full" style={{ height: H.pie }}>
                 <PieChart>
                   <Pie data={D.por_seccion} dataKey="usd" nameKey="seccion"
                     innerRadius={movil ? 54 : 62} outerRadius={movil ? 88 : 100}
                     paddingAngle={movil ? 2 : 3} strokeWidth={0} cornerRadius={4} cy="46%">
-                    {D.por_seccion.map((entry, i) => (
+                    {D.por_seccion.map((_, i) => (
                       <Cell key={i} fill={PALETA[i % PALETA.length]} />
                     ))}
                   </Pie>
-                  <Tooltip content={<Tip formato={fmtUsdTip} />} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
                 </PieChart>
-                <LeyendaChips items={D.por_seccion.map((sec, i) => ({
-                  color: PALETA[i % PALETA.length],
-                  label: NOMBRES_SECCION[sec.seccion] ?? sec.seccion,
-                  extra: `${((sec.usd / D.meta.tot_usd) * 100).toFixed(0)}%`,
-                }))} />
-              </ResponsiveContainer>
+              </ChartContainer>
+              <LeyendaChips items={D.por_seccion.map((sec, i) => ({
+                color: PALETA[i % PALETA.length],
+                label: NOMBRES_SECCION[sec.seccion] ?? sec.seccion,
+                extra: `${((sec.usd / D.meta.tot_usd) * 100).toFixed(0)}%`,
+              }))} />
             </CardContent>
-          </Card>
-          <Card>
+          </DashboardCard>
+          <DashboardCard>
             <CardHeader>
               <CardTitle>Evolución mensual (US$)</CardTitle>
               <CardDescription>Gasto total de cada mes convertido a tasa de cierre</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={H.mensual}>
+              <ChartContainer config={mensualConfig} className="aspect-auto w-full" style={{ height: H.mensual }}>
                 <AreaChart data={D.serie_mes} margin={{ top: 8, right: 8 }}>
                   <defs>
                     <linearGradient id="gradMes" x1="0" y1="0" x2="0" y2="1">
@@ -389,15 +420,15 @@ export default function Contenido() {
                   <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
                   <XAxis dataKey="ym" tick={TICK} interval={movil ? 8 : 5} axisLine={false} tickLine={false} />
                   <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
-                  <Tooltip content={<Tip formato={fmtUsdTip} />} />
-                  <Area type="monotone" dataKey="usd" name="US$" stroke={V.primary} fill="url(#gradMes)" strokeWidth={2} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area type="monotone" dataKey="usd" stroke={V.primary} fill="url(#gradMes)" strokeWidth={2} />
                 </AreaChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             </CardContent>
-          </Card>
+          </DashboardCard>
         </div>
 
-        <Card>
+        <DashboardCard>
           <CardHeader><CardTitle>Resumen por año</CardTitle></CardHeader>
           <CardContent>
             <Table>
@@ -427,7 +458,7 @@ export default function Contenido() {
               </TableBody>
             </Table>
           </CardContent>
-        </Card>
+        </DashboardCard>
       </section>
 )}
 
@@ -446,7 +477,7 @@ export default function Contenido() {
             valor="48 / 48" sub="meses con el mismo cargo" />
         </div>
 
-        <Card>
+        <DashboardCard>
           <CardHeader>
             <CardTitle>Top 15 conceptos por monto (US$)</CardTitle>
             <CardDescription>
@@ -454,23 +485,23 @@ export default function Contenido() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={H.conceptos}>
+            <ChartContainer config={conceptosConfig} className="aspect-auto w-full" style={{ height: H.conceptos }}>
               <BarChart data={topConceptos} layout="vertical" margin={{ left: 8, right: 64 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={GRID} horizontal={false} />
                 <XAxis type="number" tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
                 <YAxis type="category" dataKey="concepto" width={W.ejeY} tick={{ ...TICK, fontSize: 11.5 }}
                   axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, TRUNC)} />
-                <Tooltip content={<Tip formato={fmtUsdTip} />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
-                <Bar dataKey="usd" name="US$" fill={V.primary} radius={[0, 6, 6, 0]} barSize={18}>
+                <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
+                <Bar dataKey="usd" fill={V.primary} radius={[0, 6, 6, 0]} barSize={18}>
                   <LabelList dataKey="usd" position="right" className="fill-foreground" fontSize={11}
                     formatter={(v: React.ReactNode) => fmt0(Number(v))} />
                 </Bar>
               </BarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
-        </Card>
+        </DashboardCard>
 
-        <Card>
+        <DashboardCard>
           <CardHeader className="flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Todos los conceptos ({fmt0(conceptosFiltrados.length)})</CardTitle>
@@ -517,7 +548,7 @@ export default function Contenido() {
               </Table>
             </div>
           </CardContent>
-        </Card>
+        </DashboardCard>
       </section>
 )}
 
@@ -525,7 +556,7 @@ export default function Contenido() {
       {seccion === "partidas" && (
 <section id="partidas" className="space-y-4 scroll-mt-20">
         <EncabezadoSeccion titulo="Explorador de partidas" descripcion="Las 1.227 partidas de los 48 recibos, con la tasa aplicada a cada mes." />
-        <Card>
+        <DashboardCard>
           <CardContent className="space-y-3 pt-6">
             <div className="flex flex-wrap gap-2 items-center">
               <select
@@ -593,7 +624,7 @@ export default function Contenido() {
               </Table>
             </div>
           </CardContent>
-        </Card>
+        </DashboardCard>
       </section>
 )}
 
@@ -601,7 +632,7 @@ export default function Contenido() {
       {seccion === "fondos" && (
 <section id="fondos" className="space-y-4 scroll-mt-20">
         <EncabezadoSeccion titulo="Fondos" descripcion="Cuánto debe haber en el fondo de reserva de la Junta y de la administradora." />
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <Kpi icono={<PiggyBank className="size-4" />} tinte={V.positive} titulo="Aportado (administradora)"
             valor={"Bs " + fmt0(fAdmin?.bs ?? 0)} sub={`US$ ${fmt(fAdmin?.usd ?? 0)} · ${fAdmin?.n ?? 0} aportes`} />
           <Kpi icono={<PiggyBank className="size-4" />} tinte={V.primary} titulo="Enviado a la Junta"
@@ -613,13 +644,13 @@ export default function Contenido() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card>
+          <DashboardCard>
             <CardHeader>
               <CardTitle>Fondo de reserva acumulado (Bs)</CardTitle>
               <CardDescription>Suma de los aportes mensuales desde sep-2022</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={H.fondo}>
+              <ChartContainer config={fondoBsConfig} className="aspect-auto w-full" style={{ height: H.fondo }}>
                 <AreaChart data={D.fondo_acum} margin={{ top: 8, right: 8 }}>
                   <defs>
                     <linearGradient id="gradFondo" x1="0" y1="0" x2="0" y2="1">
@@ -630,19 +661,19 @@ export default function Contenido() {
                   <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
                   <XAxis dataKey="ym" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 8 : 5} axisLine={false} tickLine={false} />
                   <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
-                  <Tooltip content={<Tip formato={fmtBsTip} />} />
-                  <Area type="monotone" dataKey="acum_bs" name="Acumulado Bs" stroke={V.positive} fill="url(#gradFondo)" strokeWidth={2} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area type="monotone" dataKey="acum_bs" stroke={V.positive} fill="url(#gradFondo)" strokeWidth={2} />
                 </AreaChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             </CardContent>
-          </Card>
-          <Card>
+          </DashboardCard>
+          <DashboardCard>
             <CardHeader>
               <CardTitle>Fondo de reserva acumulado (US$)</CardTitle>
               <CardDescription>Aportes convertidos a la tasa de cierre de cada mes</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={H.fondo}>
+              <ChartContainer config={fondoUsdConfig} className="aspect-auto w-full" style={{ height: H.fondo }}>
                 <AreaChart data={D.fondo_acum_usd} margin={{ top: 8, right: 8 }}>
                   <defs>
                     <linearGradient id="gradFondoUsd" x1="0" y1="0" x2="0" y2="1">
@@ -653,15 +684,15 @@ export default function Contenido() {
                   <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
                   <XAxis dataKey="ym" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 8 : 5} axisLine={false} tickLine={false} />
                   <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
-                  <Tooltip content={<Tip formato={fmtUsdTip} />} />
-                  <Area type="monotone" dataKey="acum_usd" name="Acumulado US$" stroke={V.primary} fill="url(#gradFondoUsd)" strokeWidth={2} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area type="monotone" dataKey="acum_usd" stroke={V.primary} fill="url(#gradFondoUsd)" strokeWidth={2} />
                 </AreaChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             </CardContent>
-          </Card>
+          </DashboardCard>
         </div>
 
-        <Card>
+        <DashboardCard>
           <CardHeader>
             <CardTitle>¿Cuánto debe haber en el fondo de reserva?</CardTitle>
             <CardDescription>
@@ -692,7 +723,7 @@ export default function Contenido() {
               </TableBody>
             </Table>
           </CardContent>
-        </Card>
+        </DashboardCard>
       </section>
 )}
 
@@ -700,13 +731,13 @@ export default function Contenido() {
       {seccion === "devoluciones" && (
 <section id="devoluciones" className="space-y-4 scroll-mt-20">
         <EncabezadoSeccion titulo="Devoluciones" descripcion="Cuánto dinero se ha devuelto a los residentes y por qué concepto." />
-        <div className="grid sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <Kpi icono={<ArrowDownRight className="size-4" />} tinte={V.negative} titulo="Total devuelto (Bs)"
             valor={"Bs " + fmt(D.devoluciones.total_bs)} sub="suma de partidas negativas" />
           <Kpi icono={<ArrowDownRight className="size-4" />} tinte={V.negative} titulo="Total devuelto (US$)"
             valor={"US$ " + fmt(D.devoluciones.total_usd)} sub="a tasa de cierre de cada mes" />
         </div>
-        <Card>
+        <DashboardCard>
           <CardHeader>
             <CardTitle>Devoluciones y reintegros por concepto (Bs)</CardTitle>
             <CardDescription>
@@ -715,19 +746,19 @@ export default function Contenido() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={H.dev}>
+            <ChartContainer config={devConfig} className="aspect-auto w-full" style={{ height: H.dev }}>
               <BarChart data={D.devoluciones.por_concepto.slice(0, 10)} layout="vertical" margin={{ left: 8, right: 24 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={GRID} horizontal={false} />
                 <XAxis type="number" tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
                 <YAxis type="category" dataKey="concepto" width={W.ejeY} tick={TICK}
                   axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, TRUNC)} />
-                <Tooltip content={<Tip formato={fmtBsTip} />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
-                <Bar dataKey="bs" name="Bs devueltos" fill={V.negative} radius={[0, 6, 6, 0]} barSize={18} />
+                <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
+                <Bar dataKey="bs" fill={V.negative} radius={[0, 6, 6, 0]} barSize={18} />
               </BarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
-        </Card>
-        <Card>
+        </DashboardCard>
+        <DashboardCard>
           <CardHeader><CardTitle>Detalle</CardTitle></CardHeader>
           <CardContent>
             <div className="max-h-[480px] overflow-auto rounded-lg border">
@@ -755,7 +786,7 @@ export default function Contenido() {
               </Table>
             </div>
           </CardContent>
-        </Card>
+        </DashboardCard>
       </section>
 )}
 
@@ -764,32 +795,32 @@ export default function Contenido() {
 <section id="facturas" className="space-y-4 scroll-mt-20">
         <EncabezadoSeccion titulo="Facturación" descripcion="Cuántos gastos llevan factura y cuáles hay que respaldar." />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-          <Card>
+          <DashboardCard>
             <CardHeader>
               <CardTitle>Soporte documental de las partidas</CardTitle>
               <CardDescription>Cómo se documenta cada gasto según su naturaleza</CardDescription>
             </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={H.fact}>
+            <CardContent className="overflow-hidden">
+              <ChartContainer config={factConfig} className="aspect-auto w-full" style={{ height: H.fact }}>
                 <PieChart>
-                    <Pie data={D.facturacion} dataKey="n" nameKey="cat"
-                      innerRadius={movil ? 54 : 62} outerRadius={movil ? 88 : 100}
-                      paddingAngle={movil ? 2 : 3} strokeWidth={0} cornerRadius={4} cy="46%">
-                      {D.facturacion.map((_, i) => (
-                        <Cell key={i} fill={PALETA[i % PALETA.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<Tip formato={(v) => fmt0(v) + " partidas"} />} />
-                  </PieChart>
-                  <LeyendaChips items={D.facturacion.map((f, i) => ({
-                    color: PALETA[i % PALETA.length],
-                    label: CAT_FACT[f.cat] ?? f.cat,
-                    extra: fmt0(f.n),
-                  }))} />
-              </ResponsiveContainer>
+                  <Pie data={D.facturacion} dataKey="n" nameKey="cat"
+                    innerRadius={movil ? 54 : 62} outerRadius={movil ? 88 : 100}
+                    paddingAngle={movil ? 2 : 3} strokeWidth={0} cornerRadius={4} cy="46%">
+                    {D.facturacion.map((_, i) => (
+                      <Cell key={i} fill={PALETA[i % PALETA.length]} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                </PieChart>
+              </ChartContainer>
+              <LeyendaChips items={D.facturacion.map((f, i) => ({
+                color: PALETA[i % PALETA.length],
+                label: CAT_FACT[f.cat] ?? f.cat,
+                extra: fmt0(f.n),
+              }))} />
             </CardContent>
-          </Card>
-          <Card>
+          </DashboardCard>
+          <DashboardCard>
             <CardHeader>
               <CardTitle>Detalle por categoría</CardTitle>
               <CardDescription>
@@ -818,7 +849,7 @@ export default function Contenido() {
                 </TableBody>
               </Table>
             </CardContent>
-          </Card>
+          </DashboardCard>
         </div>
       </section>
 )}
@@ -827,25 +858,25 @@ export default function Contenido() {
       {seccion === "recurrentes" && (
 <section id="recurrentes" className="space-y-4 scroll-mt-20">
         <EncabezadoSeccion titulo="Gastos recurrentes" descripcion="Los cargos más repetidos: la cuota fija del edificio." />
-        <Card>
+        <DashboardCard>
           <CardHeader>
             <CardTitle>Cargos presentes casi todos los meses (de 48)</CardTitle>
             <CardDescription>Lo que se cobra mes a mes sin excepción</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={H.rec}>
+            <ChartContainer config={recConfig} className="aspect-auto w-full" style={{ height: H.rec }}>
               <BarChart data={D.recurrentes.slice(0, 15)} layout="vertical" margin={{ left: 8, right: 24 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={GRID} horizontal={false} />
                 <XAxis type="number" domain={[0, 48]} tick={TICK} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="concepto" width={W.ejeY} tick={TICK}
                   axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, TRUNC)} />
-                <Tooltip content={<Tip formato={(v) => v + " de 48 meses"} />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
-                <Bar dataKey="meses" name="Meses" fill={V.primary} radius={[0, 6, 6, 0]} barSize={18} />
+                <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
+                <Bar dataKey="meses" fill={V.primary} radius={[0, 6, 6, 0]} barSize={18} />
               </BarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
-        </Card>
-        <Card>
+        </DashboardCard>
+        <DashboardCard>
           <CardHeader><CardTitle>Tabla de recurrencia</CardTitle></CardHeader>
           <CardContent>
             <Table>
@@ -877,7 +908,7 @@ export default function Contenido() {
               </TableBody>
             </Table>
           </CardContent>
-        </Card>
+        </DashboardCard>
       </section>
 )}
 
@@ -885,7 +916,7 @@ export default function Contenido() {
       {seccion === "metodologia" && (
 <section id="metodologia" className="space-y-4 scroll-mt-20">
         <EncabezadoSeccion titulo="Metodología" descripcion="Fuentes, validación y conversión a dólares." />
-        <Card>
+        <DashboardCard>
           <CardContent className="space-y-4 pt-6 text-sm leading-relaxed">
             <div>
               <p className="font-semibold">1. Extracción y validación</p>
@@ -934,7 +965,7 @@ export default function Contenido() {
               <Badge variant="secondary">Vercel</Badge>
             </div>
           </CardContent>
-        </Card>
+        </DashboardCard>
       </section>
 )}
     </div>
