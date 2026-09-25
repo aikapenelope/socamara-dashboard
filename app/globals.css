@@ -92,7 +92,86 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
+  }
+  /* superficies del navegador con el diseño (craft-floor: browser surfaces) */
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 22%, transparent);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--foreground) 18%, transparent) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--foreground) 18%, transparent);
+    border-radius: 8px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/* paleta semántica de gráficos por tema (oklch sobre tokens) */
+:root {
+  --c-primary: #1b2a4a;
+  --c-positive: #1b7d46;
+  --c-warning: #d4820a;
+  --c-negative: #c0392b;
+  --c-neutral: #8c8a84;
+  --c-p1: #1b2a4a;
+  --c-p2: #1b7d46;
+  --c-p3: #d4820a;
+  --c-p4: #c0392b;
+  --c-p5: #8c8a84;
+  --c-p6: #54718f;
+  --c-p7: #3a8f6b;
+  --c-p8: #b3701e;
+  --c-p9: #a33f2f;
+  --c-p10: #6f6d66;
+}
+
+.dark {
+  --c-primary: #93b4ee;
+  --c-positive: #5dd39e;
+  --c-warning: #f0b45c;
+  --c-negative: #f28b82;
+  --c-neutral: #9a988f;
+  --c-p1: #93b4ee;
+  --c-p2: #5dd39e;
+  --c-p3: #f0b45c;
+  --c-p4: #f28b82;
+  --c-p5: #9a988f;
+  --c-p6: #7c93b8;
+  --c-p7: #6fbf9b;
+  --c-p8: #d9a05c;
+  --c-p9: #d97a70;
+  --c-p10: #8f8d85;
+}
+
+/* momento de entrada: las tarjetas KPI suben suavemente una vez */
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animar-kpi {
+  animation: subir 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animar-kpi {
+    animation: none;
   }
 }

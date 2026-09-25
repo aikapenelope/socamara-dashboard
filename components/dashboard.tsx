@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   Cell,
   ComposedChart,
+  LabelList,
   Legend,
   Line,
   Pie,
@@ -19,7 +20,10 @@ import {
   YAxis,
 } from "recharts";
 import {
+  ArrowDown,
   ArrowDownRight,
+  ArrowUp,
+  ArrowUpDown,
   Database,
   PiggyBank,
   Receipt,
@@ -29,6 +33,7 @@ import {
   TrendingUp,
   Wallet,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,6 +54,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ThemeToggle } from "@/components/theme-toggle";
 import datos from "@/data/gastos.json";
 
 /* ---------- tipos ---------- */
@@ -98,20 +104,20 @@ const nf0 = new Intl.NumberFormat("es-VE", { maximumFractionDigits: 0 });
 const fmt = (v: number) => nf2.format(v);
 const fmt0 = (v: number) => nf0.format(v);
 const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
-const fmtUsd = (v: unknown) => "US$ " + fmt(Number(v));
-const fmtBs = (v: unknown) => "Bs " + fmt(Number(v));
 
-const C = {
-  azul: "#1B2A4A",
-  azul2: "#2d4370",
-  verde: "#1B7D46",
-  ambar: "#D4820A",
-  rojo: "#C0392B",
-  gris: "#8C8A84",
+/* colores desde tokens del tema (claro/oscuro) */
+const V = {
+  primary: "var(--c-primary)",
+  positive: "var(--c-positive)",
+  warning: "var(--c-warning)",
+  negative: "var(--c-negative)",
+  neutral: "var(--c-neutral)",
 };
-const PALETA = [C.azul, C.verde, C.ambar, C.rojo, C.gris, "#54718f", "#3a8f6b", "#b3701e", "#a33f2f", "#6f6d66"];
+const PALETA = Array.from({ length: 10 }, (_, i) => `var(--c-p${i + 1})`);
+const GRID = "var(--border)";
+const TICK = { fill: "var(--muted-foreground)", fontSize: 11 } as const;
 
-const CAT_FACT = {
+const CAT_FACT: Record<string, string> = {
   factura_citada: "Con factura citada en el recibo",
   recibo_servicio: "Servicios públicos (recibo oficial)",
   nomina_parafiscales: "Nómina y parafiscales",
@@ -119,36 +125,82 @@ const CAT_FACT = {
   terceros_verificar_factura: "Terceros: verificar factura",
 };
 
-function Kpi({ icono, titulo, valor, sub, tono }: { icono: React.ReactNode; titulo: string; valor: string; sub: string; tono?: string }) {
+/* tooltip unificado de Recharts, con tokens del tema */
+function Tip({ active, payload, label, formato }: {
+  active?: boolean;
+  payload?: { name?: string; value?: number | string; color?: string; dataKey?: string }[];
+  label?: string;
+  formato: (v: number) => string;
+}) {
+  if (!active || !payload?.length) return null;
   return (
-    <Card className="gap-2 py-4">
+    <div className="rounded-lg border bg-popover px-3 py-2 shadow-md">
+      {label !== undefined && <div className="mb-1.5 text-xs font-semibold">{label}</div>}
+      <div className="space-y-1">
+        {payload.map((p, i) => (
+          <div key={p.dataKey ?? i} className="flex items-center justify-between gap-5 text-xs">
+            <span className="flex items-center gap-1.5 text-muted-foreground">
+              <span className="size-2 rounded-full" style={{ background: p.color }} />
+              {p.name}
+            </span>
+            <span className="font-semibold tabular-nums">{formato(Number(p.value))}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const fmtUsdTip = (v: unknown) => "US$ " + fmt(Number(v));
+const fmtBsTip = (v: unknown) => "Bs " + fmt(Number(v));
+
+function Kpi({ icono, tinte, titulo, valor, sub }: {
+  icono: React.ReactNode; tinte: string; titulo: string; valor: string; sub: string;
+}) {
+  return (
+    <Card className="animar-kpi gap-2 py-4 transition-shadow hover:shadow-md">
       <CardContent className="px-4">
-        <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wide">
-          {icono}
-          <span>{titulo}</span>
+        <div className="flex items-center gap-2.5">
+          <span
+            className="flex size-8 shrink-0 items-center justify-center rounded-lg"
+            style={{ background: `color-mix(in oklab, ${tinte} 14%, transparent)`, color: tinte }}
+          >
+            {icono}
+          </span>
+          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{titulo}</span>
         </div>
-        <div className="mt-1.5 text-xl sm:text-2xl font-bold" style={tono ? { color: tono } : undefined}>
-          {valor}
-        </div>
-        <div className="text-xs text-muted-foreground mt-1">{sub}</div>
+        <div className="mt-2 text-xl font-bold tracking-tight sm:text-2xl">{valor}</div>
+        <div className="mt-1 text-xs text-muted-foreground">{sub}</div>
       </CardContent>
     </Card>
   );
 }
 
-function ChartTooltipBsUsd() {
+function ThOrden<T extends string>({ label, clave, orden, onOrden, right }: {
+  label: string; clave: T; orden: { k: T; asc: boolean }; onOrden: (k: T) => void; right?: boolean;
+}) {
+  const activo = orden.k === clave;
   return (
-    <Tooltip
-      formatter={(v: unknown, nombre: unknown) => {
-        const n = String(nombre)
-        return n.startsWith("Bs") ? (["Bs " + fmt(Number(v)), n] as [string, string]) : (["US$ " + fmt(Number(v)), n] as [string, string])
-      }}
-    />
+    <TableHead className={right ? "text-right" : ""}>
+      <button
+        onClick={() => onOrden(clave)}
+        className={"inline-flex items-center gap-1 rounded text-xs font-medium hover:text-foreground " + (activo ? "text-foreground" : "text-muted-foreground")}
+      >
+        {label}
+        {activo ? (orden.asc ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />) : <ArrowUpDown className="size-3 opacity-40" />}
+      </button>
+    </TableHead>
   );
 }
 
+type ClaveOrden = "concepto" | "n" | "meses" | "bs" | "usd";
+
 export default function Dashboard() {
+  const { resolvedTheme } = useTheme();
+  const oscuro = resolvedTheme === "dark";
+
   const [busqueda, setBusqueda] = useState("");
+  const [orden, setOrden] = useState<{ k: ClaveOrden; asc: boolean }>({ k: "usd", asc: false });
   const [fAnio, setFAnio] = useState("todos");
   const [fSeccion, setFSeccion] = useState("todas");
   const [pagina, setPagina] = useState(0);
@@ -156,18 +208,35 @@ export default function Dashboard() {
 
   const fAdmin = D.fondos["FONDO DE RESERVA (administradora)"];
   const fJunta = D.fondos["FONDO DE RESERVA POR ENVIAR A JUNTA CONDOMINIO"];
-  const otrosFondos = Object.entries(D.fondos).filter(
-    ([k]) => !k.startsWith("FONDO DE RESERVA")
-  );
+  const otrosFondos = Object.entries(D.fondos).filter(([k]) => !k.startsWith("FONDO DE RESERVA"));
   const sumaOtrosFondos = otrosFondos.reduce((a, [, v]) => a + v.bs, 0);
 
   const conceptosFiltrados = useMemo(
-    () =>
-      D.conceptos.filter((c) =>
-        c.concepto.toLowerCase().includes(busqueda.toLowerCase())
-      ),
+    () => D.conceptos.filter((c) => c.concepto.toLowerCase().includes(busqueda.toLowerCase())),
     [busqueda]
   );
+
+  const conceptosOrdenados = useMemo(() => {
+    const arr = [...conceptosFiltrados];
+    arr.sort((a, b) => {
+      const v = orden.asc ? 1 : -1;
+      if (orden.k === "concepto") return v * a.concepto.localeCompare(b.concepto, "es");
+      return v * ((a[orden.k] as number) - (b[orden.k] as number));
+    });
+    return arr;
+  }, [conceptosFiltrados, orden]);
+
+  const onOrden = (k: ClaveOrden) =>
+    setOrden((o) => (o.k === k ? { k, asc: !o.asc } : { k, asc: k === "concepto" }));
+
+  const statsConceptos = useMemo(() => {
+    const positivos = D.conceptos.filter((c) => c.usd > 0);
+    const top5 = positivos.slice(0, 5).reduce((a, c) => a + c.usd, 0);
+    return {
+      concentracion: D.meta.tot_usd ? (top5 / D.meta.tot_usd) * 100 : 0,
+      mayor: D.conceptos[0],
+    };
+  }, []);
 
   const itemsFiltrados = useMemo(
     () =>
@@ -189,22 +258,25 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col min-h-screen bg-muted/40">
       {/* encabezado */}
-      <header className="border-b bg-background">
-        <div className="mx-auto max-w-6xl px-4 py-5">
+      <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+        <div className="mx-auto max-w-6xl px-4 py-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
                 Memoria y Cuenta · Edificio Socamara
               </h1>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Gastos comunes y fondo de reserva · {D.meta.desde} → {D.meta.hasta} ·{" "}
                 {D.meta.meses} meses · {fmt0(D.meta.partidas)} partidas
               </p>
             </div>
-            <Badge variant="outline" className="gap-1.5 py-1.5 px-3">
-              <ShieldCheck className="size-4 text-emerald-600" />
-              48/48 recibos validados
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="gap-1.5 py-1.5 px-3">
+                <ShieldCheck className="size-4 text-emerald-600 dark:text-emerald-400" />
+                48/48 recibos validados
+              </Badge>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </header>
@@ -212,19 +284,19 @@ export default function Dashboard() {
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
         {/* KPIs */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-          <Kpi icono={<Wallet className="size-4" />} titulo="Total gastado (Bs)"
+          <Kpi icono={<Wallet className="size-4" />} tinte={V.primary} titulo="Total gastado (Bs)"
             valor={"Bs " + fmt0(D.meta.tot_bs)} sub={`${D.meta.meses} meses · sep-2022 a ago-2026`} />
-          <Kpi icono={<TrendingUp className="size-4" />} titulo="Total gastado (US$)"
+          <Kpi icono={<TrendingUp className="size-4" />} tinte={V.primary} titulo="Total gastado (US$)"
             valor={"US$ " + fmt0(D.meta.tot_usd)} sub="a tasa BCV de cierre de mes" />
-          <Kpi icono={<Database className="size-4" />} titulo="Partidas"
+          <Kpi icono={<Database className="size-4" />} tinte={V.primary} titulo="Partidas"
             valor={fmt0(D.meta.partidas)} sub={`${D.conceptos.length} conceptos distintos`} />
-          <Kpi icono={<PiggyBank className="size-4" />} titulo="Fondo de reserva aportado"
+          <Kpi icono={<PiggyBank className="size-4" />} tinte={V.positive} titulo="Fondo de reserva aportado"
             valor={"Bs " + fmt0(fJunta?.bs ?? 0)} sub={`US$ ${fmt(fJunta?.usd ?? 0)} · administradora = Junta`} />
-          <Kpi icono={<ArrowDownRight className="size-4" />} titulo="Devuelto (reintegros)"
-            valor={"Bs " + fmt0(D.devoluciones.total_bs)} sub={`US$ ${fmt(D.devoluciones.total_usd)}`} tono={C.rojo} />
-          <Kpi icono={<Receipt className="size-4" />} titulo="Por respaldar con factura"
+          <Kpi icono={<ArrowDownRight className="size-4" />} tinte={V.negative} titulo="Devuelto (reintegros)"
+            valor={"Bs " + fmt0(D.devoluciones.total_bs)} sub={`US$ ${fmt(D.devoluciones.total_usd)}`} />
+          <Kpi icono={<Receipt className="size-4" />} tinte={V.warning} titulo="Por respaldar con factura"
             valor={fmt0(fac.terceros_verificar_factura?.n ?? 0)}
-            sub={`partidas · Bs ${fmt0(fac.terceros_verificar_factura?.bs ?? 0)}`} tono={C.ambar} />
+            sub={`partidas · Bs ${fmt0(fac.terceros_verificar_factura?.bs ?? 0)}`} />
         </div>
 
         <Tabs defaultValue="resumen" className="mt-6">
@@ -250,15 +322,15 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <ComposedChart data={D.por_anio}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                    <XAxis dataKey="anio" tick={{ fontSize: 12 }} />
-                    <YAxis yAxisId="usd" tick={{ fontSize: 11 }} tickFormatter={(v) => fmt0(v)} />
-                    <YAxis yAxisId="bs" orientation="right" tick={{ fontSize: 11 }} tickFormatter={(v) => fmt0(v / 1e6) + " MM"} />
-                    <ChartTooltipBsUsd />
-                    <Legend />
-                    <Bar yAxisId="usd" dataKey="usd" name="US$ (cierre de mes)" fill={C.azul} radius={[6, 6, 0, 0]} />
-                    <Line yAxisId="bs" dataKey="bs" name="Bs" stroke={C.ambar} strokeWidth={2} dot={{ r: 4 }} />
+                  <ComposedChart data={D.por_anio} margin={{ top: 8, right: 8 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                    <XAxis dataKey="anio" tick={TICK} axisLine={false} tickLine={false} />
+                    <YAxis yAxisId="usd" tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
+                    <YAxis yAxisId="bs" orientation="right" tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v / 1e6) + " MM"} />
+                    <Tooltip content={<Tip formato={(v) => "US$ " + fmt(v)} />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
+                    <Legend iconType="circle" iconSize={8} />
+                    <Bar yAxisId="usd" dataKey="usd" name="US$ (cierre de mes)" fill={V.primary} radius={[6, 6, 0, 0]} maxBarSize={64} />
+                    <Line yAxisId="bs" dataKey="bs" name="Bs" stroke={V.warning} strokeWidth={2} dot={{ r: 4, fill: V.warning, strokeWidth: 0 }} activeDot={{ r: 5 }} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -273,13 +345,13 @@ export default function Dashboard() {
                 <CardContent>
                   <ResponsiveContainer width="100%" height={280}>
                     <PieChart>
-                      <Pie data={D.por_seccion} dataKey="usd" nameKey="seccion" innerRadius={60} outerRadius={100} paddingAngle={2}>
+                      <Pie data={D.por_seccion} dataKey="usd" nameKey="seccion" innerRadius={62} outerRadius={100} paddingAngle={3} strokeWidth={0} cornerRadius={4}>
                         {D.por_seccion.map((_, i) => (
                           <Cell key={i} fill={PALETA[i % PALETA.length]} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={fmtUsd} />
-                      <Legend />
+                      <Tooltip content={<Tip formato={fmtUsdTip} />} />
+                      <Legend iconType="circle" iconSize={8} />
                     </PieChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -291,18 +363,18 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={280}>
-                    <AreaChart data={D.serie_mes}>
+                    <AreaChart data={D.serie_mes} margin={{ top: 8, right: 8 }}>
                       <defs>
                         <linearGradient id="gradMes" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor={C.azul} stopOpacity={0.35} />
-                          <stop offset="100%" stopColor={C.azul} stopOpacity={0.03} />
+                          <stop offset="0%" stopColor={V.primary} stopOpacity={oscuro ? 0.45 : 0.3} />
+                          <stop offset="100%" stopColor={V.primary} stopOpacity={0.02} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                      <XAxis dataKey="ym" tick={{ fontSize: 10 }} interval={5} />
-                      <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => fmt0(v)} />
-                      <Tooltip formatter={fmtUsd} />
-                      <Area type="monotone" dataKey="usd" name="US$" stroke={C.azul} fill="url(#gradMes)" strokeWidth={2} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                      <XAxis dataKey="ym" tick={TICK} interval={5} axisLine={false} tickLine={false} />
+                      <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
+                      <Tooltip content={<Tip formato={fmtUsdTip} />} />
+                      <Area type="monotone" dataKey="usd" name="US$" stroke={V.primary} fill="url(#gradMes)" strokeWidth={2} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -310,9 +382,7 @@ export default function Dashboard() {
             </div>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Resumen por año</CardTitle>
-              </CardHeader>
+              <CardHeader><CardTitle>Resumen por año</CardTitle></CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
@@ -327,14 +397,14 @@ export default function Dashboard() {
                     {D.por_anio.map((a) => (
                       <TableRow key={a.anio}>
                         <TableCell className="font-medium">{a.anio}</TableCell>
-                        <TableCell className="text-right">{fmt0(a.n)}</TableCell>
+                        <TableCell className="text-right tabular-nums">{fmt0(a.n)}</TableCell>
                         <TableCell className="text-right tabular-nums">{fmt(a.bs)}</TableCell>
                         <TableCell className="text-right tabular-nums">{fmt(a.usd)}</TableCell>
                       </TableRow>
                     ))}
-                    <TableRow className="font-semibold bg-muted/50">
+                    <TableRow className="bg-muted/50 font-semibold">
                       <TableCell>TOTAL</TableCell>
-                      <TableCell className="text-right">{fmt0(D.meta.partidas)}</TableCell>
+                      <TableCell className="text-right tabular-nums">{fmt0(D.meta.partidas)}</TableCell>
                       <TableCell className="text-right tabular-nums">{fmt(D.meta.tot_bs)}</TableCell>
                       <TableCell className="text-right tabular-nums">{fmt(D.meta.tot_usd)}</TableCell>
                     </TableRow>
@@ -346,6 +416,17 @@ export default function Dashboard() {
 
           {/* ---------------- CONCEPTOS ---------------- */}
           <TabsContent value="conceptos" className="mt-4 space-y-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <Kpi icono={<Database className="size-4" />} tinte={V.primary} titulo="Conceptos"
+                valor={fmt0(D.conceptos.length)} sub="agrupación normalizada" />
+              <Kpi icono={<TrendingUp className="size-4" />} tinte={V.primary} titulo="Mayor concepto"
+                valor={"US$ " + fmt0(statsConceptos.mayor.usd)} sub={trunc(statsConceptos.mayor.concepto, 26)} />
+              <Kpi icono={<PiggyBank className="size-4" />} tinte={V.warning} titulo="Concentración top 5"
+                valor={statsConceptos.concentracion.toFixed(0) + "%"} sub="del total facturado (US$)" />
+              <Kpi icono={<Repeat className="size-4" />} tinte={V.positive} titulo="Recurrencia máxima"
+                valor="48 / 48" sub="meses con el mismo cargo" />
+            </div>
+
             <Card>
               <CardHeader>
                 <CardTitle>Top 15 conceptos por monto (US$)</CardTitle>
@@ -354,54 +435,68 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={420}>
-                  <BarChart data={topConceptos} layout="vertical" margin={{ left: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                    <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={(v) => fmt0(v)} />
-                    <YAxis type="category" dataKey="concepto" width={210} tick={{ fontSize: 11 }} tickFormatter={(v: string) => trunc(v, 34)} />
-                    <Tooltip formatter={fmtUsd} />
-                    <Bar dataKey="usd" name="US$" fill={C.azul} radius={[0, 6, 6, 0]} />
+                <ResponsiveContainer width="100%" height={430}>
+                  <BarChart data={topConceptos} layout="vertical" margin={{ left: 8, right: 64 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={GRID} horizontal={false} />
+                    <XAxis type="number" tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
+                    <YAxis type="category" dataKey="concepto" width={215} tick={{ ...TICK, fontSize: 11.5 }}
+                      axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, 36)} />
+                    <Tooltip content={<Tip formato={fmtUsdTip} />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
+                    <Bar dataKey="usd" name="US$" fill={V.primary} radius={[0, 6, 6, 0]} barSize={18}>
+                      <LabelList dataKey="usd" position="right" className="fill-foreground" fontSize={11}
+                        formatter={(v: React.ReactNode) => fmt0(Number(v))} />
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader className="flex-row items-center justify-between">
+              <CardHeader className="flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <CardTitle>Todos los conceptos ({fmt0(conceptosFiltrados.length)})</CardTitle>
-                  <CardDescription>Agrupación de las {fmt0(D.meta.partidas)} partidas normalizando fechas y números de factura</CardDescription>
+                  <CardDescription className="mt-1">
+                    Haz clic en los encabezados para ordenar. Busca cualquier gasto («agua», «puerta», «sueldo»…).
+                  </CardDescription>
                 </div>
-                <div className="relative w-full max-w-xs">
+                <div className="relative w-full sm:max-w-xs">
                   <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                   <Input placeholder="Buscar concepto…" className="pl-8" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
                 </div>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Concepto</TableHead>
-                      <TableHead>Códigos</TableHead>
-                      <TableHead className="text-right">Partidas</TableHead>
-                      <TableHead className="text-right">Meses</TableHead>
-                      <TableHead className="text-right">Total (Bs)</TableHead>
-                      <TableHead className="text-right">Total (US$)</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {conceptosFiltrados.map((c) => (
-                      <TableRow key={c.concepto}>
-                        <TableCell className="max-w-[320px] whitespace-normal">{c.concepto}</TableCell>
-                        <TableCell className="text-muted-foreground">{c.codes.join(", ")}</TableCell>
-                        <TableCell className="text-right">{fmt0(c.n)}</TableCell>
-                        <TableCell className="text-right">{c.meses}</TableCell>
-                        <TableCell className="text-right tabular-nums">{fmt(c.bs)}</TableCell>
-                        <TableCell className="text-right tabular-nums">{fmt(c.usd)}</TableCell>
+                <div className="max-h-[560px] overflow-auto rounded-lg border">
+                  <Table>
+                    <TableHeader className="sticky top-0 z-10 bg-background shadow-[0_1px_0_var(--border)]">
+                      <TableRow className="hover:bg-transparent">
+                        <ThOrden label="Concepto" clave="concepto" orden={orden} onOrden={onOrden} />
+                        <TableHead>Códigos</TableHead>
+                        <ThOrden label="Partidas" clave="n" orden={orden} onOrden={onOrden} right />
+                        <ThOrden label="Meses" clave="meses" orden={orden} onOrden={onOrden} right />
+                        <ThOrden label="Total (Bs)" clave="bs" orden={orden} onOrden={onOrden} right />
+                        <ThOrden label="Total (US$)" clave="usd" orden={orden} onOrden={onOrden} right />
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {conceptosOrdenados.map((c) => (
+                        <TableRow key={c.concepto}>
+                          <TableCell className="max-w-[340px] whitespace-normal">{c.concepto}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {c.codes.map((code) => (
+                                <Badge key={code} variant="outline" className="px-1.5 py-0 font-mono text-[10px]">{code}</Badge>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">{fmt0(c.n)}</TableCell>
+                          <TableCell className="text-right tabular-nums">{c.meses}</TableCell>
+                          <TableCell className="text-right tabular-nums">{fmt(c.bs)}</TableCell>
+                          <TableCell className="text-right font-medium tabular-nums">{fmt(c.usd)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -412,7 +507,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle>Explorador de partidas</CardTitle>
                 <CardDescription>
-                  Las {fmt0(D.meta.partidas)} partidas de los 48 recibos, con la tasa aplicada a cada mes. Filtro + búsqueda + paginación.
+                  Las {fmt0(D.meta.partidas)} partidas de los 48 recibos, con la tasa aplicada a cada mes.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -453,32 +548,34 @@ export default function Dashboard() {
                       onClick={() => setPagina(paginaOk + 1)}>Siguiente →</Button>
                   </div>
                 </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Periodo</TableHead>
-                      <TableHead>Sección</TableHead>
-                      <TableHead>Cód.</TableHead>
-                      <TableHead>Descripción</TableHead>
-                      <TableHead className="text-right">Monto (Bs)</TableHead>
-                      <TableHead className="text-right">Tasa</TableHead>
-                      <TableHead className="text-right">Monto (US$)</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {visibles.map((it, i) => (
-                      <TableRow key={`${it.a}-${it.m}-${it.c}-${i}`}>
-                        <TableCell className="text-muted-foreground">{it.a}-{it.m}</TableCell>
-                        <TableCell className="text-muted-foreground text-xs">{it.s}</TableCell>
-                        <TableCell className="text-muted-foreground">{it.c}</TableCell>
-                        <TableCell className="max-w-[360px] truncate" title={it.d}>{it.d}</TableCell>
-                        <TableCell className={"text-right tabular-nums" + (it.q < 0 ? " text-red-600" : "")}>{fmt(it.q)}</TableCell>
-                        <TableCell className="text-right text-muted-foreground tabular-nums">{fmt(it.t)}</TableCell>
-                        <TableCell className="text-right tabular-nums">{fmt(it.u)}</TableCell>
+                <div className="max-h-[560px] overflow-auto rounded-lg border">
+                  <Table>
+                    <TableHeader className="sticky top-0 z-10 bg-background shadow-[0_1px_0_var(--border)]">
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead>Periodo</TableHead>
+                        <TableHead>Sección</TableHead>
+                        <TableHead>Cód.</TableHead>
+                        <TableHead>Descripción</TableHead>
+                        <TableHead className="text-right">Monto (Bs)</TableHead>
+                        <TableHead className="text-right">Tasa</TableHead>
+                        <TableHead className="text-right">Monto (US$)</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {visibles.map((it, i) => (
+                        <TableRow key={`${it.a}-${it.m}-${it.c}-${i}`}>
+                          <TableCell className="text-muted-foreground tabular-nums">{it.a}-{it.m}</TableCell>
+                          <TableCell className="text-muted-foreground text-xs">{it.s}</TableCell>
+                          <TableCell className="text-muted-foreground font-mono text-xs">{it.c}</TableCell>
+                          <TableCell className="max-w-[360px] truncate" title={it.d}>{it.d}</TableCell>
+                          <TableCell className={"text-right tabular-nums" + (it.q < 0 ? " text-red-600 dark:text-red-400" : "")}>{fmt(it.q)}</TableCell>
+                          <TableCell className="text-right text-muted-foreground tabular-nums">{fmt(it.t)}</TableCell>
+                          <TableCell className="text-right tabular-nums">{fmt(it.u)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -486,13 +583,13 @@ export default function Dashboard() {
           {/* ---------------- FONDOS ---------------- */}
           <TabsContent value="fondos" className="mt-4 space-y-4">
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <Kpi icono={<PiggyBank className="size-4" />} titulo="Aportado (administradora)"
+              <Kpi icono={<PiggyBank className="size-4" />} tinte={V.positive} titulo="Aportado (administradora)"
                 valor={"Bs " + fmt0(fAdmin?.bs ?? 0)} sub={`US$ ${fmt(fAdmin?.usd ?? 0)} · ${fAdmin?.n ?? 0} aportes`} />
-              <Kpi icono={<PiggyBank className="size-4" />} titulo="Enviado a la Junta"
+              <Kpi icono={<PiggyBank className="size-4" />} tinte={V.primary} titulo="Enviado a la Junta"
                 valor={"Bs " + fmt0(fJunta?.bs ?? 0)} sub={`US$ ${fmt(fJunta?.usd ?? 0)} · ${fJunta?.n ?? 0} envíos`} />
-              <Kpi icono={<Database className="size-4" />} titulo="Nivelación del fondo"
+              <Kpi icono={<Database className="size-4" />} tinte={V.neutral} titulo="Nivelación del fondo"
                 valor={"Bs " + fmt0(D.fondos["NIVELACION FONDO DE RESERVA"]?.bs ?? 0)} sub="ajuste mensual" />
-              <Kpi icono={<Wallet className="size-4" />} titulo="Otros fondos"
+              <Kpi icono={<Wallet className="size-4" />} tinte={V.warning} titulo="Otros fondos"
                 valor={"Bs " + fmt0(sumaOtrosFondos)} sub="bonificación, prestaciones, pensiones" />
             </div>
 
@@ -504,18 +601,18 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={280}>
-                    <AreaChart data={D.fondo_acum}>
+                    <AreaChart data={D.fondo_acum} margin={{ top: 8, right: 8 }}>
                       <defs>
                         <linearGradient id="gradFondo" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor={C.verde} stopOpacity={0.35} />
-                          <stop offset="100%" stopColor={C.verde} stopOpacity={0.03} />
+                          <stop offset="0%" stopColor={V.positive} stopOpacity={oscuro ? 0.45 : 0.3} />
+                          <stop offset="100%" stopColor={V.positive} stopOpacity={0.02} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                      <XAxis dataKey="ym" tick={{ fontSize: 10 }} interval={5} />
-                      <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => fmt0(v)} />
-                      <Tooltip formatter={fmtBs} />
-                      <Area type="monotone" dataKey="acum_bs" name="Acumulado Bs" stroke={C.verde} fill="url(#gradFondo)" strokeWidth={2} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                      <XAxis dataKey="ym" tick={{ ...TICK, fontSize: 10 }} interval={5} axisLine={false} tickLine={false} />
+                      <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
+                      <Tooltip content={<Tip formato={fmtBsTip} />} />
+                      <Area type="monotone" dataKey="acum_bs" name="Acumulado Bs" stroke={V.positive} fill="url(#gradFondo)" strokeWidth={2} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -527,18 +624,18 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={280}>
-                    <AreaChart data={D.fondo_acum_usd}>
+                    <AreaChart data={D.fondo_acum_usd} margin={{ top: 8, right: 8 }}>
                       <defs>
                         <linearGradient id="gradFondoUsd" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor={C.azul} stopOpacity={0.35} />
-                          <stop offset="100%" stopColor={C.azul} stopOpacity={0.03} />
+                          <stop offset="0%" stopColor={V.primary} stopOpacity={oscuro ? 0.45 : 0.3} />
+                          <stop offset="100%" stopColor={V.primary} stopOpacity={0.02} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                      <XAxis dataKey="ym" tick={{ fontSize: 10 }} interval={5} />
-                      <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => fmt0(v)} />
-                      <Tooltip formatter={fmtUsd} />
-                      <Area type="monotone" dataKey="acum_usd" name="Acumulado US$" stroke={C.azul} fill="url(#gradFondoUsd)" strokeWidth={2} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                      <XAxis dataKey="ym" tick={{ ...TICK, fontSize: 10 }} interval={5} axisLine={false} tickLine={false} />
+                      <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
+                      <Tooltip content={<Tip formato={fmtUsdTip} />} />
+                      <Area type="monotone" dataKey="acum_usd" name="Acumulado US$" stroke={V.primary} fill="url(#gradFondoUsd)" strokeWidth={2} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -568,7 +665,7 @@ export default function Dashboard() {
                     {Object.entries(D.fondos).map(([k, v]) => (
                       <TableRow key={k}>
                         <TableCell className="whitespace-normal">{k}</TableCell>
-                        <TableCell className="text-right">{fmt0(v.n)}</TableCell>
+                        <TableCell className="text-right tabular-nums">{fmt0(v.n)}</TableCell>
                         <TableCell className="text-right tabular-nums">{fmt(v.bs)}</TableCell>
                         <TableCell className="text-right tabular-nums">{fmt(v.usd)}</TableCell>
                       </TableRow>
@@ -582,10 +679,10 @@ export default function Dashboard() {
           {/* ---------------- DEVOLUCIONES ---------------- */}
           <TabsContent value="devoluciones" className="mt-4 space-y-4">
             <div className="grid sm:grid-cols-2 gap-3">
-              <Kpi icono={<ArrowDownRight className="size-4" />} titulo="Total devuelto (Bs)"
-                valor={"Bs " + fmt(D.devoluciones.total_bs)} sub="suma de partidas negativas" tono={C.rojo} />
-              <Kpi icono={<ArrowDownRight className="size-4" />} titulo="Total devuelto (US$)"
-                valor={"US$ " + fmt(D.devoluciones.total_usd)} sub="a tasa de cierre de cada mes" tono={C.rojo} />
+              <Kpi icono={<ArrowDownRight className="size-4" />} tinte={V.negative} titulo="Total devuelto (Bs)"
+                valor={"Bs " + fmt(D.devoluciones.total_bs)} sub="suma de partidas negativas" />
+              <Kpi icono={<ArrowDownRight className="size-4" />} tinte={V.negative} titulo="Total devuelto (US$)"
+                valor={"US$ " + fmt(D.devoluciones.total_usd)} sub="a tasa de cierre de cada mes" />
             </div>
             <Card>
               <CardHeader>
@@ -597,12 +694,13 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={340}>
-                  <BarChart data={D.devoluciones.por_concepto.slice(0, 10)} layout="vertical" margin={{ left: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                    <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={(v) => fmt0(v)} />
-                    <YAxis type="category" dataKey="concepto" width={210} tick={{ fontSize: 11 }} tickFormatter={(v: string) => trunc(v, 32)} />
-                    <Tooltip formatter={fmtBs} />
-                    <Bar dataKey="bs" name="Bs devueltos" fill={C.rojo} radius={[0, 6, 6, 0]} />
+                  <BarChart data={D.devoluciones.por_concepto.slice(0, 10)} layout="vertical" margin={{ left: 8, right: 24 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={GRID} horizontal={false} />
+                    <XAxis type="number" tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
+                    <YAxis type="category" dataKey="concepto" width={210} tick={TICK}
+                      axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, 32)} />
+                    <Tooltip content={<Tip formato={fmtBsTip} />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
+                    <Bar dataKey="bs" name="Bs devueltos" fill={V.negative} radius={[0, 6, 6, 0]} barSize={18} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -610,28 +708,30 @@ export default function Dashboard() {
             <Card>
               <CardHeader><CardTitle>Detalle</CardTitle></CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Concepto</TableHead>
-                      <TableHead>Ejemplo original</TableHead>
-                      <TableHead className="text-right">Veces</TableHead>
-                      <TableHead className="text-right">Bs</TableHead>
-                      <TableHead className="text-right">US$</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {D.devoluciones.por_concepto.map((d) => (
-                      <TableRow key={d.concepto}>
-                        <TableCell className="whitespace-normal max-w-[280px]">{d.concepto}</TableCell>
-                        <TableCell className="text-muted-foreground text-xs max-w-[280px] truncate" title={d.ejemplo}>{d.ejemplo}</TableCell>
-                        <TableCell className="text-right">{fmt0(d.n)}</TableCell>
-                        <TableCell className="text-right tabular-nums text-red-600">{fmt(d.bs)}</TableCell>
-                        <TableCell className="text-right tabular-nums">{fmt(d.usd)}</TableCell>
+                <div className="max-h-[480px] overflow-auto rounded-lg border">
+                  <Table>
+                    <TableHeader className="sticky top-0 z-10 bg-background shadow-[0_1px_0_var(--border)]">
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead>Concepto</TableHead>
+                        <TableHead>Ejemplo original</TableHead>
+                        <TableHead className="text-right">Veces</TableHead>
+                        <TableHead className="text-right">Bs</TableHead>
+                        <TableHead className="text-right">US$</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {D.devoluciones.por_concepto.map((d) => (
+                        <TableRow key={d.concepto}>
+                          <TableCell className="whitespace-normal max-w-[280px]">{d.concepto}</TableCell>
+                          <TableCell className="text-muted-foreground text-xs max-w-[280px] truncate" title={d.ejemplo}>{d.ejemplo}</TableCell>
+                          <TableCell className="text-right tabular-nums">{fmt0(d.n)}</TableCell>
+                          <TableCell className="text-right tabular-nums text-red-600 dark:text-red-400">{fmt(d.bs)}</TableCell>
+                          <TableCell className="text-right tabular-nums">{fmt(d.usd)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -647,13 +747,13 @@ export default function Dashboard() {
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
-                      <Pie data={D.facturacion} dataKey="n" nameKey="cat" innerRadius={60} outerRadius={100} paddingAngle={2}>
+                      <Pie data={D.facturacion} dataKey="n" nameKey="cat" innerRadius={62} outerRadius={100} paddingAngle={3} strokeWidth={0} cornerRadius={4}>
                         {D.facturacion.map((_, i) => (
                           <Cell key={i} fill={PALETA[i % PALETA.length]} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(v: unknown) => fmt0(Number(v)) + " partidas"} />
-                      <Legend formatter={(v: string) => CAT_FACT[v as keyof typeof CAT_FACT] ?? v} />
+                      <Tooltip content={<Tip formato={(v) => fmt0(v) + " partidas"} />} />
+                      <Legend iconType="circle" iconSize={8} formatter={(v: string) => CAT_FACT[v] ?? v} />
                     </PieChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -678,8 +778,8 @@ export default function Dashboard() {
                     <TableBody>
                       {D.facturacion.map((f) => (
                         <TableRow key={f.cat}>
-                          <TableCell className="whitespace-normal">{CAT_FACT[f.cat as keyof typeof CAT_FACT] ?? f.cat}</TableCell>
-                          <TableCell className="text-right">{fmt0(f.n)}</TableCell>
+                          <TableCell className="whitespace-normal">{CAT_FACT[f.cat] ?? f.cat}</TableCell>
+                          <TableCell className="text-right tabular-nums">{fmt0(f.n)}</TableCell>
                           <TableCell className="text-right tabular-nums">{fmt(f.bs)}</TableCell>
                           <TableCell className="text-right tabular-nums">{fmt(f.usd)}</TableCell>
                         </TableRow>
@@ -696,16 +796,17 @@ export default function Dashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Cargos presentes casi todos los meses (de 48)</CardTitle>
-                <CardDescription>El «altura fija» del edificio: lo que se cobra mes a mes sin excepción</CardDescription>
+                <CardDescription>La cuota fija del edificio: lo que se cobra mes a mes sin excepción</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={420}>
-                  <BarChart data={D.recurrentes.slice(0, 15)} layout="vertical" margin={{ left: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                    <XAxis type="number" domain={[0, 48]} tick={{ fontSize: 11 }} />
-                    <YAxis type="category" dataKey="concepto" width={210} tick={{ fontSize: 11 }} tickFormatter={(v: string) => trunc(v, 34)} />
-                    <Tooltip formatter={(v: unknown) => v + " de 48 meses"} />
-                    <Bar dataKey="meses" name="Meses" fill={C.azul2} radius={[0, 6, 6, 0]} />
+                  <BarChart data={D.recurrentes.slice(0, 15)} layout="vertical" margin={{ left: 8, right: 24 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={GRID} horizontal={false} />
+                    <XAxis type="number" domain={[0, 48]} tick={TICK} axisLine={false} tickLine={false} />
+                    <YAxis type="category" dataKey="concepto" width={215} tick={TICK}
+                      axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, 36)} />
+                    <Tooltip content={<Tip formato={(v) => v + " de 48 meses"} />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
+                    <Bar dataKey="meses" name="Meses" fill={V.primary} radius={[0, 6, 6, 0]} barSize={18} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -727,9 +828,15 @@ export default function Dashboard() {
                     {D.recurrentes.map((r) => (
                       <TableRow key={r.concepto}>
                         <TableCell className="whitespace-normal max-w-[300px]">{r.concepto}</TableCell>
-                        <TableCell className="text-muted-foreground">{r.codes.join(", ")}</TableCell>
-                        <TableCell className="text-right">{r.meses}</TableCell>
-                        <TableCell className="text-right">{fmt0(r.n)}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {r.codes.map((code) => (
+                              <Badge key={code} variant="outline" className="px-1.5 py-0 font-mono text-[10px]">{code}</Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">{r.meses}</TableCell>
+                        <TableCell className="text-right tabular-nums">{fmt0(r.n)}</TableCell>
                         <TableCell className="text-right tabular-nums">{fmt(r.usd)}</TableCell>
                       </TableRow>
                     ))}
@@ -780,8 +887,8 @@ export default function Dashboard() {
                 <div>
                   <p className="font-semibold">5. Cómo actualizar</p>
                   <p className="text-muted-foreground mt-1">
-                    Guardar los recibos nuevos en carpetas «Recibos AAAA», re-ejecutar los scripts del pipeline y redeployar;
-                    los datos viven en <code className="rounded bg-muted px-1">src/data/gastos.json</code>.
+                    Guardar los recibos nuevos en carpetas «Recibos AAAA», re-ejecutar los scripts del pipeline y hacer push;
+                    Vercel redespliega solo. Los datos viven en <code className="rounded bg-muted px-1">data/gastos.json</code>.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 pt-2">
@@ -790,6 +897,7 @@ export default function Dashboard() {
                   <Badge variant="secondary">shadcn/ui</Badge>
                   <Badge variant="secondary">Recharts</Badge>
                   <Badge variant="secondary">Tailwind CSS 4</Badge>
+                  <Badge variant="secondary">Modo claro y oscuro</Badge>
                   <Badge variant="secondary">Vercel</Badge>
                 </div>
               </CardContent>
@@ -801,7 +909,7 @@ export default function Dashboard() {
       <footer className="border-t bg-background">
         <div className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted-foreground">
           Generado a partir de 48 recibos validados · 1.227 partidas · Tasas BCV oficiales de cierre de mes ·
-          Datos: <code className="rounded bg-muted px-1">src/data/gastos.json</code>
+          Datos: <code className="rounded bg-muted px-1">data/gastos.json</code>
         </div>
       </footer>
     </div>
