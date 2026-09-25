@@ -340,44 +340,35 @@ export default function Contenido() {
     bs: { label: "Bs devueltos", color: "var(--c-negative)" },
   } satisfies ChartConfig;
 
-  const est = useMemo(() => {
-    const filas = D.items.filter((it) => it.c === "0006" && it.a >= 2023);
-    const porMes = new Map<string, { bs: number; usd: number; usd_par: number; tasa: number; tasa_par: number }>();
-    for (const it of filas) {
-      const ym = it.a + "-" + it.m;
-      const acc = porMes.get(ym) ?? { bs: 0, usd: 0, usd_par: 0, tasa: it.t, tasa_par: D.paralelo_mes.find((x) => x.ym === ym)?.tasa ?? 0 };
-      acc.bs += it.q; acc.usd += it.u; acc.usd_par += it.p;
-      porMes.set(ym, acc);
-    }
-    const meses: { ym: string; bs: number; usd: number; usd_par: number; tarifa: number; dif: number; acum: number; cobrado: boolean }[] = [];
-    let y = 2023, m = 1, cum = 0;
-    while (y < 2027) {
-      const ym = y + "-" + String(m).padStart(2, "0");
-      const r = porMes.get(ym);
-      const usd = enParalelo ? (r?.usd_par ?? 0) : (r?.usd ?? 0);
-      const diff = usd - 50;
-      cum += diff;
-      meses.push({ ym, bs: r?.bs ?? 0, usd, usd_par: r?.usd_par ?? 0, tarifa: 50, dif: diff, acum: Math.round(cum * 100) / 100, cobrado: !!r });
-      m += 1;
-      if (m > 12) { y += 1; m = 1; }
-      if (y === 2026 && m > 8) break;
-    }
-    const totBs = meses.reduce((a, x) => a + x.bs, 0);
-    const totUsd = meses.reduce((a, x) => a + x.usd, 0);
-    return { meses, totBs, totUsd, deberia: 2200, dif: Math.round((totUsd - 2200) * 100) / 100, cobrados: meses.filter((x) => x.cobrado).length };
-  }, [enParalelo]);
-
-  const estConfig = {
-    usd: { label: enParalelo ? "Cobrado (US$ paralelo)" : "Cobrado (US$ BCV)", color: "var(--c-primary)" },
-    tarifa: { label: "Tarifa $50", color: "var(--c-negative)" },
-  } satisfies ChartConfig;
-
-  const estAcumConfig = {
-    acum: { label: "Diferencia acumulada (US$)", color: "var(--c-negative)" },
-  } satisfies ChartConfig;
-
   const recConfig = {
     meses: { label: "Meses", color: "var(--c-primary)" },
+  } satisfies ChartConfig;
+
+  const serieFondo = useMemo(() => {
+    let est = 0;
+    return D.fondo_acum_usd.map((x, i) => {
+      if (x.ym >= "2023-01") est += 50; // $50/mes de estacionamientos desde ene-2023
+      const fondo_bcv = D.fondo_acum_usd[i].acum_usd;
+      const fondo_par = D.fondo_acum_par[i].acum_usd;
+      return {
+        ym: x.ym,
+        fondo_bcv,
+        fondo_par,
+        est: Math.round(est * 100) / 100,
+        total_bcv: Math.round((fondo_bcv + est) * 100) / 100,
+        total_par: Math.round((fondo_par + est) * 100) / 100,
+      };
+    });
+  }, []);
+
+  const ultimo = serieFondo[serieFondo.length - 1];
+  const totalBcv = ultimo.total_bcv;
+  const totalPar = ultimo.total_par;
+  const mesesEst = serieFondo.filter((x) => x.ym >= "2023-01").length; // ene-2023 → ago-2026
+  const acumConfig = {
+    total_bcv: { label: "Total (BCV)", color: "var(--c-primary)" },
+    total_par: { label: "Total (paralelo)", color: "var(--c-negative)" },
+    est: { label: "Estacionamientos ($50/mes)", color: "var(--c-neutral)" },
   } satisfies ChartConfig;
 
   return (
@@ -1088,137 +1079,97 @@ export default function Contenido() {
       </section>
 )}
 
-      {/* ---------------- ESTACIONAMIENTOS ---------------- */}
+      {/* ---------------- ESTACIONAMIENTOS + FONDO ACUMULADO ---------------- */}
       {seccion === "estacionamientos" && (
-      <section id="estacionamientos" className="space-y-4 scroll-mt-20">
-        <EncabezadoSeccion titulo="Estacionamientos" descripcion="El cargo de mantenimiento de puerta y estacionamiento: tarifa fija en dólares ($10 × 5 puestos = $50/mes) vs lo cobrado en bolívares según los recibos (ene-2023 → ago-2026)." />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <Kpi icono={<CarIcon className="size-4" />} tinte={V.primary} titulo="Cobrado según recibos"
-            valor={"Bs " + fmt0(est.totBs)} sub={`${est.cobrados} de 44 meses con cargo`} />
-          <Kpi icono={<TrendingUp className="size-4" />} tinte={V.primary} titulo={"Equivalente (US$ · " + (enParalelo ? "paralelo" : "BCV") + ")"}
-            valor={"US$ " + fmt(est.totUsd)} sub={enParalelo ? "a tasa paralela de cierre" : "a tasa BCV de cierre"} />
-          <Kpi icono={<PiggyBank className="size-4" />} tinte={V.positive} titulo="Tarifa en dólares"
-            valor="US$ 2.200,00" sub="5 puestos × $10 × 44 meses" />
-          <Kpi icono={<ArrowDownRight className="size-4" />} tinte={est.dif < 0 ? V.negative : V.positive} titulo="Diferencia vs tarifa"
-            valor={(est.dif < 0 ? "-US$ " : "US$ ") + fmt(Math.abs(est.dif))}
-            sub={est.dif < 0 ? "se cobró menos que la tarifa" : "se cobró más que la tarifa"} />
-        </div>
+        <section id="estacionamientos" className="space-y-4 scroll-mt-20">
+          <EncabezadoSeccion titulo="Cuánto debe haber en el fondo" descripcion="Todo en dólares: si se cobraron $50 mensuales de estacionamientos desde ene-2023 y se suman los aportes del fondo de reserva convertidos a dólares a ambas tasas, este es el acumulado que debió formarse cada mes." />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <Kpi icono={<CarIcon className="size-4" />} tinte={V.primary} titulo="Estacionamientos ($50/mes)"
+              valor={"US$ " + fmt0(ultimo.est)} sub={"5 puestos × $10 × " + mesesEst + " meses (ene-2023 → ago-2026)"} />
+            <Kpi icono={<PiggyBank className="size-4" />} tinte={V.positive} titulo="Fondo de reserva (BCV)"
+              valor={"US$ " + fmt0(ultimo.fondo_bcv)} sub="aportes sep-2022 → ago-2026" />
+            <Kpi icono={<PiggyBank className="size-4" />} tinte={V.warning} titulo="Fondo de reserva (paralelo)"
+              valor={"US$ " + fmt0(ultimo.fondo_par)} sub="mismos aportes a tasa paralela" />
+            <Kpi icono={<TrendingUp className="size-4" />} tinte={V.primary} titulo="Total a justificar"
+              valor={"US$ " + fmt0(totalBcv)} sub={"fondo + estacionamientos · a paralelo: US$ " + fmt0(totalPar)} />
+          </div>
 
-        <DashboardCard>
-          <CardHeader>
-            <CardTitle>Cobrado vs tarifa, por mes (US$)</CardTitle>
-            <CardDescription>
-              La tarifa acordada es fija: $50 al mes (5 puestos × $10). La barra muestra el equivalente en dólares de lo cobrado en bolívares
-              {enParalelo ? " a la tasa paralela" : " a la tasa BCV"} de cierre de cada mes. Julio 2023 no tuvo cargo.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={estConfig} className="aspect-auto w-full" style={{ height: movil ? 300 : 340 }}>
-              <ComposedChart data={est.meses} margin={{ top: 8, right: 8 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
-                <XAxis dataKey="ym" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 6 : 3} axisLine={false} tickLine={false} />
-                <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => "$" + fmt0(v)} />
-                <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
-                <Bar dataKey="usd" fill={V.primary} radius={[5, 5, 0, 0]} maxBarSize={26} />
-                <ReferenceLine y={50} stroke={V.negative} strokeDasharray="6 4"
-                  label={{ value: "Tarifa $50", position: "insideTopRight", fill: V.negative, fontSize: 11 }} />
-              </ComposedChart>
-            </ChartContainer>
-          </CardContent>
-        </DashboardCard>
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>Cuánto debe haber acumulado en el fondo, mes a mes (US$)</CardTitle>
+              <CardDescription>
+                La línea punteada es la recaudación de estacionamientos a $50 fijos cada mes; las áreas le suman encima los aportes
+                del fondo de reserva convertidos a dólares (BCV y paralelo). Si el fondo pagó gastos, hay que restarlos de estas
+                líneas: lo desembolsado es lo que la Junta debe justificar con facturas.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={acumConfig} className="aspect-auto w-full" style={{ height: movil ? 300 : 360 }}>
+                <ComposedChart data={serieFondo} margin={{ top: 8, right: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                  <XAxis dataKey="ym" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 7 : 4} axisLine={false} tickLine={false} />
+                  <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => "$" + fmt0(v)} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area type="monotone" dataKey="total_bcv" name="Total (BCV)" stroke={V.primary} fill={V.primary} fillOpacity={oscuro ? 0.10 : 0.06} strokeWidth={2.5} />
+                  <Area type="monotone" dataKey="total_par" name="Total (paralelo)" stroke={V.negative} fill={V.negative} fillOpacity={oscuro ? 0.08 : 0.05} strokeWidth={2} />
+                  <Line type="monotone" dataKey="est" name="Estacionamientos ($50/mes)" stroke={V.neutral} strokeWidth={2} dot={false} strokeDasharray="2 3" />
+                </ComposedChart>
+              </ChartContainer>
+              <LeyendaChips items={[
+                { color: V.primary, label: "Total (BCV)", extra: "US$ " + fmt0(totalBcv) },
+                { color: V.negative, label: "Total (paralelo)", extra: "US$ " + fmt0(totalPar) },
+                { color: V.neutral, label: "Estacionamientos ($50/mes)", extra: "US$ " + fmt0(ultimo.est) },
+              ]} />
+            </CardContent>
+          </DashboardCard>
 
-        <DashboardCard>
-          <CardHeader>
-            <CardTitle>Diferencia acumulada vs tarifa (US$)</CardTitle>
-            <CardDescription>
-              Cuánto se acumuló de diferencia entre lo cobrado en bolívares (convertido a dólares) y la tarifa fija de $50 mensuales.
-              La línea baja porque el bolívar se devaluó más rápido de lo que se ajustó el cargo.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={estAcumConfig} className="aspect-auto w-full" style={{ height: movil ? 240 : 280 }}>
-              <AreaChart data={est.meses} margin={{ top: 8, right: 8 }}>
-                <defs>
-                  <linearGradient id="gradEst" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={V.negative} stopOpacity={oscuro ? 0.4 : 0.28} />
-                    <stop offset="100%" stopColor={V.negative} stopOpacity={0.02} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
-                <XAxis dataKey="ym" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 6 : 3} axisLine={false} tickLine={false} />
-                <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => "$" + fmt0(v)} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Area type="monotone" dataKey="acum" stroke={V.negative} fill="url(#gradEst)" strokeWidth={2} />
-                <ReferenceLine y={0} stroke={GRID} />
-              </AreaChart>
-            </ChartContainer>
-          </CardContent>
-        </DashboardCard>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DashboardCard className="border-t-2 border-t-primary">
+              <CardHeader>
+                <CardTitle>Debe haber en el fondo · tasa BCV</CardTitle>
+                <CardDescription>Aportes del fondo a tasa oficial de cierre de mes</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-1.5 text-sm">
+                <div className="flex justify-between"><span className="text-muted-foreground">Fondo de reserva acumulado</span><span className="font-medium tabular-nums">US$ {fmt(ultimo.fondo_bcv)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">+ Estacionamientos ($50 × {mesesEst} meses)</span><span className="font-medium tabular-nums">US$ {fmt(ultimo.est)}</span></div>
+              </CardContent>
+              <CardFooter className="px-6">
+                <div className="flex w-full justify-between items-baseline">
+                  <span className="text-sm font-semibold">Total que debe haber</span>
+                  <span className="text-2xl font-bold tabular-nums" style={{ color: V.primary }}>US$ {fmt(totalBcv)}</span>
+                </div>
+              </CardFooter>
+            </DashboardCard>
+            <DashboardCard className="border-t-2" style={{ borderTopColor: V.negative }}>
+              <CardHeader>
+                <CardTitle>Debe haber en el fondo · tasa paralela</CardTitle>
+                <CardDescription>Mismos aportes convertidos a la tasa del mercado paralelo</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-1.5 text-sm">
+                <div className="flex justify-between"><span className="text-muted-foreground">Fondo de reserva acumulado</span><span className="font-medium tabular-nums">US$ {fmt(ultimo.fondo_par)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">+ Estacionamientos ($50 × {mesesEst} meses)</span><span className="font-medium tabular-nums">US$ {fmt(ultimo.est)}</span></div>
+              </CardContent>
+              <CardFooter className="px-6">
+                <div className="flex w-full justify-between items-baseline">
+                  <span className="text-sm font-semibold">Total que debe haber</span>
+                  <span className="text-2xl font-bold tabular-nums" style={{ color: V.negative }}>US$ {fmt(totalPar)}</span>
+                </div>
+              </CardFooter>
+            </DashboardCard>
+          </div>
 
-        <DashboardCard>
-          <CardHeader>
-            <CardTitle>Detalle mensual</CardTitle>
-            <CardDescription>
-              La tarifa es fija en dólares; el cobro en bolívares de los recibos pierde valor al devaluarse la moneda.
-              Nov-dic 2025 el cargo vino partido en dos y en mar-2026 hubo un ajuste (DIF).
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="max-h-[520px] overflow-auto rounded-lg border">
-              <Table>
-                <TableHeader className="sticky top-0 z-10 bg-background shadow-[0_1px_0_var(--border)]">
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead>Periodo</TableHead>
-                    <TableHead className="text-right">Cobrado (Bs)</TableHead>
-                    <TableHead className="text-right">Tasa usada</TableHead>
-                    <TableHead className="text-right">Cobrado (US$)</TableHead>
-                    <TableHead className="text-right">Tarifa (US$)</TableHead>
-                    <TableHead className="text-right">Diferencia (US$)</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {est.meses.map((x) => (
-                    <TableRow key={x.ym} className={x.cobrado ? "" : "opacity-60"}>
-                      <TableCell className="tabular-nums">{x.ym}</TableCell>
-                      <TableCell className="text-right tabular-nums">{x.cobrado ? fmt(x.bs) : "—"}</TableCell>
-                      <TableCell className="text-right text-muted-foreground tabular-nums">
-                        {x.cobrado ? fmt(enParalelo ? x.usd_par && (x.bs / (x.usd_par || 1)) : (x.usd ? x.bs / x.usd : 0)) : "—"}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">{x.cobrado ? fmt(x.usd) : "0.00"}</TableCell>
-                      <TableCell className="text-right tabular-nums">{fmt(x.tarifa)}</TableCell>
-                      <TableCell className={"text-right tabular-nums " + (x.dif < 0 ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400")}>
-                        {(x.dif < 0 ? "-" : "+") + fmt(Math.abs(x.dif))}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  <TableRow className="bg-muted/50 font-semibold">
-                    <TableCell>TOTAL</TableCell>
-                    <TableCell className="text-right tabular-nums">{fmt(est.totBs)}</TableCell>
-                    <TableCell />
-                    <TableCell className="text-right tabular-nums">{fmt(est.totUsd)}</TableCell>
-                    <TableCell className="text-right tabular-nums">{fmt(est.deberia)}</TableCell>
-                    <TableCell className={"text-right tabular-nums " + (est.dif < 0 ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400")}>
-                      {(est.dif < 0 ? "-" : "+") + fmt(Math.abs(est.dif))}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </DashboardCard>
-
-        <DashboardCard>
-          <CardHeader>
-            <CardTitle>Aclaración sobre el pago en dólares</CardTitle>
-            <CardDescription>
-              Si los $50 mensuales se pagaron efectivamente <b>en dólares</b>, el total recaudado sería <b>US$ 2.200</b> y el registro en
-              bolívares de los recibos sería solo el asiento contable a la tasa del día — en ese caso la «diferencia» de los gráficos mide
-              cuánto dejó de percibirse al cobrar en bolívares en lugar de dólares. El dato verificado es el bolívar cobrado: los recibos
-              suman Bs {fmt(est.totBs)} en los {est.cobrados} meses con cargo.
-            </CardDescription>
-          </CardHeader>
-        </DashboardCard>
-      </section>
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>Gastos extra a justificar</CardTitle>
+              <CardDescription>
+                Este es el dinero total que entró al fondo: <b>US$ {fmt0(totalBcv)}</b> a tasa BCV o <b>US$ {fmt0(totalPar)}</b> a tasa paralela.
+                Los recibos mensuales no registran desembolsos del fondo, así que todo lo que la Junta haya pagado con este dinero
+                (trabajos, reparaciones, gastos extra) debe restarse de estas cifras y estar respaldado con facturas. El saldo
+                resultante es lo que debe existir hoy en la cuenta del fondo.
+              </CardDescription>
+            </CardHeader>
+          </DashboardCard>
+        </section>
       )}
 
       {/* ---------------- METODOLOGÍA ---------------- */}
