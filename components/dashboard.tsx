@@ -117,6 +117,13 @@ const PALETA = Array.from({ length: 10 }, (_, i) => `var(--c-p${i + 1})`);
 const GRID = "var(--border)";
 const TICK = { fill: "var(--muted-foreground)", fontSize: 11 } as const;
 
+const NOMBRES_SECCION: Record<string, string> = {
+  "GASTOS COMUNES": "Gastos comunes",
+  FONDOS: "Fondos",
+  "GASTOS NO COMUNES": "Gastos no comunes",
+  "FONDOS NO COMUNES": "Fondos no comunes",
+};
+
 const CAT_FACT: Record<string, string> = {
   factura_citada: "Con factura citada en el recibo",
   recibo_servicio: "Servicios públicos (recibo oficial)",
@@ -147,6 +154,20 @@ function Tip({ active, payload, label, formato }: {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function LeyendaChips({ items }: { items: { color: string; label: string; extra?: string }[] }) {
+  return (
+    <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1.5">
+      {items.map((it) => (
+        <span key={it.label} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="size-2.5 shrink-0 rounded-full" style={{ background: it.color }} />
+          {it.label}
+          {it.extra && <span className="font-medium tabular-nums text-foreground">{it.extra}</span>}
+        </span>
+      ))}
     </div>
   );
 }
@@ -325,7 +346,7 @@ export default function Contenido() {
           </CardContent>
         </Card>
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardHeader>
               <CardTitle>Distribución por sección</CardTitle>
@@ -334,14 +355,20 @@ export default function Contenido() {
             <CardContent>
               <ResponsiveContainer width="100%" height={H.pie}>
                 <PieChart>
-                  <Pie data={D.por_seccion} dataKey="usd" nameKey="seccion" innerRadius={62} outerRadius={100} paddingAngle={3} strokeWidth={0} cornerRadius={4}>
-                    {D.por_seccion.map((_, i) => (
+                  <Pie data={D.por_seccion} dataKey="usd" nameKey="seccion"
+                    innerRadius={movil ? 54 : 62} outerRadius={movil ? 88 : 100}
+                    paddingAngle={movil ? 2 : 3} strokeWidth={0} cornerRadius={4} cy="46%">
+                    {D.por_seccion.map((entry, i) => (
                       <Cell key={i} fill={PALETA[i % PALETA.length]} />
                     ))}
                   </Pie>
                   <Tooltip content={<Tip formato={fmtUsdTip} />} />
-                  <Legend iconType="circle" iconSize={8} />
                 </PieChart>
+                <LeyendaChips items={D.por_seccion.map((sec, i) => ({
+                  color: PALETA[i % PALETA.length],
+                  label: NOMBRES_SECCION[sec.seccion] ?? sec.seccion,
+                  extra: `${((sec.usd / D.meta.tot_usd) * 100).toFixed(0)}%`,
+                }))} />
               </ResponsiveContainer>
             </CardContent>
           </Card>
@@ -585,7 +612,7 @@ export default function Contenido() {
             valor={"Bs " + fmt0(sumaOtrosFondos)} sub="bonificación, prestaciones, pensiones" />
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardHeader>
               <CardTitle>Fondo de reserva acumulado (Bs)</CardTitle>
@@ -736,7 +763,7 @@ export default function Contenido() {
       {seccion === "facturas" && (
 <section id="facturas" className="space-y-4 scroll-mt-20">
         <EncabezadoSeccion titulo="Facturación" descripcion="Cuántos gastos llevan factura y cuáles hay que respaldar." />
-        <div className="grid md:grid-cols-2 gap-4 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
           <Card>
             <CardHeader>
               <CardTitle>Soporte documental de las partidas</CardTitle>
@@ -745,14 +772,20 @@ export default function Contenido() {
             <CardContent>
               <ResponsiveContainer width="100%" height={H.fact}>
                 <PieChart>
-                  <Pie data={D.facturacion} dataKey="n" nameKey="cat" innerRadius={62} outerRadius={100} paddingAngle={3} strokeWidth={0} cornerRadius={4}>
-                    {D.facturacion.map((_, i) => (
-                      <Cell key={i} fill={PALETA[i % PALETA.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<Tip formato={(v) => fmt0(v) + " partidas"} />} />
-                  <Legend iconType="circle" iconSize={8} formatter={(v: string) => CAT_FACT[v] ?? v} />
-                </PieChart>
+                    <Pie data={D.facturacion} dataKey="n" nameKey="cat"
+                      innerRadius={movil ? 54 : 62} outerRadius={movil ? 88 : 100}
+                      paddingAngle={movil ? 2 : 3} strokeWidth={0} cornerRadius={4} cy="46%">
+                      {D.facturacion.map((_, i) => (
+                        <Cell key={i} fill={PALETA[i % PALETA.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<Tip formato={(v) => fmt0(v) + " partidas"} />} />
+                  </PieChart>
+                  <LeyendaChips items={D.facturacion.map((f, i) => ({
+                    color: PALETA[i % PALETA.length],
+                    label: CAT_FACT[f.cat] ?? f.cat,
+                    extra: fmt0(f.n),
+                  }))} />
               </ResponsiveContainer>
             </CardContent>
           </Card>
