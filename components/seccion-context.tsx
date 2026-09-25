@@ -4,6 +4,7 @@ import { createContext, useContext, useState } from "react";
 
 export type SeccionId =
   | "resumen"
+  | "paralelo"
   | "conceptos"
   | "partidas"
   | "fondos"

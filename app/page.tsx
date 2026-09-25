@@ -1,13 +1,16 @@
 import { AppShell } from "@/components/app-shell";
 import Contenido from "@/components/dashboard";
 import { SeccionProvider } from "@/components/seccion-context";
+import { TasaProvider } from "@/components/tasa-context";
 
 export default function Home() {
   return (
     <SeccionProvider>
-      <AppShell>
-        <Contenido />
-      </AppShell>
+      <TasaProvider>
+        <AppShell>
+          <Contenido />
+        </AppShell>
+      </TasaProvider>
     </SeccionProvider>
   );
 }

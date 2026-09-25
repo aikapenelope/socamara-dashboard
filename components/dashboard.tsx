@@ -28,6 +28,7 @@ import {
   Search,
   TrendingUp,
   Wallet,
+  ExternalLinkIcon,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -57,6 +58,7 @@ import {
 } from "@/components/ui/table";
 import { DashboardCard } from "@/components/dashboard-card";
 import { useIsMobile } from "@/lib/use-is-mobile";
+import { useTasa } from "@/components/tasa-context";
 import { useSeccion } from "@/components/seccion-context";
 import datos from "@/data/gastos.json";
 
@@ -68,6 +70,7 @@ type Concepto = {
   meses: number;
   bs: number;
   usd: number;
+  usd_par: number;
   ejemplo: string;
 };
 type Item = {
@@ -79,24 +82,28 @@ type Item = {
   q: number;
   t: number;
   u: number;
+  p: number;
 };
-type Fondo = { n: number; bs: number; usd: number };
+type Fondo = { n: number; bs: number; usd: number; usd_par: number };
 
 const D = datos as {
-  meta: { meses: number; desde: string; hasta: string; partidas: number; tot_bs: number; tot_usd: number };
-  por_anio: { anio: string; bs: number; usd: number; n: number }[];
-  por_seccion: { seccion: string; bs: number; usd: number; n: number }[];
+  meta: { meses: number; desde: string; hasta: string; partidas: number; tot_bs: number; tot_usd: number; tot_usd_par: number };
+  por_anio: { anio: string; bs: number; usd: number; usd_par: number; n: number }[];
+  por_seccion: { seccion: string; bs: number; usd: number; usd_par: number; n: number }[];
   conceptos: Concepto[];
-  serie_mes: { ym: string; bs: number; usd: number }[];
+  serie_mes: { ym: string; bs: number; usd: number; usd_par: number }[];
   fondo_acum: { ym: string; acum_bs: number }[];
   fondo_acum_usd: { ym: string; acum_usd: number }[];
+  fondo_acum_par: { ym: string; acum_usd: number }[];
+  paralelo_mes: { ym: string; tasa: number; bcv: number; fuente: string; link: string; brecha: number }[];
   fondos: Record<string, Fondo>;
   devoluciones: {
     total_bs: number;
     total_usd: number;
-    por_concepto: { concepto: string; n: number; bs: number; usd: number; ejemplo: string }[];
+    total_usd_par: number;
+    por_concepto: { concepto: string; n: number; bs: number; usd: number; usd_par: number; ejemplo: string }[];
   };
-  facturacion: { cat: string; n: number; bs: number; usd: number }[];
+  facturacion: { cat: string; n: number; bs: number; usd: number; usd_par: number }[];
   recurrentes: Concepto[];
   items: Item[];
 };
@@ -237,6 +244,9 @@ type ClaveOrden = "concepto" | "n" | "meses" | "bs" | "usd";
 
 export default function Contenido() {
   const { seccion } = useSeccion();
+  const { tasa } = useTasa();
+  const enParalelo = tasa === "paralelo";
+  const sel = (o: { usd: number; usd_par?: number }) => (enParalelo ? (o.usd_par ?? o.usd) : o.usd);
   const { resolvedTheme } = useTheme();
   const oscuro = resolvedTheme === "dark";
   const movil = useIsMobile();
@@ -275,6 +285,11 @@ export default function Contenido() {
     arr.sort((a, b) => {
       const v = orden.asc ? 1 : -1;
       if (orden.k === "concepto") return v * a.concepto.localeCompare(b.concepto, "es");
+      if (orden.k === "usd") {
+        const va = enParalelo ? a.usd_par : a.usd;
+        const vb = enParalelo ? b.usd_par : b.usd;
+        return v * (va - vb);
+      }
       return v * ((a[orden.k] as number) - (b[orden.k] as number));
     });
     return arr;
@@ -306,7 +321,13 @@ export default function Contenido() {
   const paginaOk = Math.min(pagina, paginas - 1);
   const visibles = itemsFiltrados.slice(paginaOk * POR_PAG, paginaOk * POR_PAG + POR_PAG);
 
-  const topConceptos = D.conceptos.filter((c) => c.usd > 0).slice(0, 15);
+  const datosAnios = D.por_anio.map((a) => ({ anio: a.anio, usd: enParalelo ? a.usd_par : a.usd, bs: a.bs }));
+  const datosSerie = D.serie_mes.map((m) => ({ ym: m.ym, usd: enParalelo ? m.usd_par : m.usd }));
+  const topConceptos = [...D.conceptos]
+    .map((c) => ({ concepto: c.concepto, usd: enParalelo ? c.usd_par : c.usd }))
+    .filter((c) => c.usd > 0)
+    .sort((a, b) => b.usd - a.usd)
+    .slice(0, 15);
   const fac = Object.fromEntries(D.facturacion.map((f) => [f.cat, f]));
 
   const conceptosConfig = {
@@ -327,8 +348,9 @@ export default function Contenido() {
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         <Kpi icono={<Wallet className="size-4" />} tinte={V.primary} titulo="Total gastado (Bs)"
           valor={"Bs " + fmt0(D.meta.tot_bs)} sub={`${D.meta.meses} meses · sep-2022 a ago-2026`} />
-        <Kpi icono={<TrendingUp className="size-4" />} tinte={V.primary} titulo="Total gastado (US$)"
-          valor={"US$ " + fmt0(D.meta.tot_usd)} sub="a tasa BCV de cierre de mes" />
+        <Kpi icono={<TrendingUp className="size-4" />} tinte={enParalelo ? V.negative : V.primary} titulo={"Total gastado (US$ · " + (enParalelo ? "paralelo" : "BCV") + ")"}
+          valor={"US$ " + fmt0(enParalelo ? D.meta.tot_usd_par : D.meta.tot_usd)}
+          sub={enParalelo ? "a tasa paralela de cierre de mes" : "a tasa BCV de cierre de mes"} />
         <Kpi icono={<Database className="size-4" />} tinte={V.primary} titulo="Partidas"
           valor={fmt0(D.meta.partidas)} sub={`${D.conceptos.length} conceptos distintos`} />
         <Kpi icono={<PiggyBank className="size-4" />} tinte={V.positive} titulo="Fondo de reserva aportado"
@@ -353,7 +375,7 @@ export default function Contenido() {
           </CardHeader>
           <CardContent>
             <ChartContainer config={aniosConfig} className="aspect-auto w-full" style={{ height: H.anios }}>
-              <ComposedChart data={D.por_anio} margin={{ top: 8, right: 8 }}>
+              <ComposedChart data={datosAnios} margin={{ top: 8, right: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
                 <XAxis dataKey="anio" tick={TICK} axisLine={false} tickLine={false} />
                 <YAxis yAxisId="usd" tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
@@ -410,7 +432,7 @@ export default function Contenido() {
             </CardHeader>
             <CardContent>
               <ChartContainer config={mensualConfig} className="aspect-auto w-full" style={{ height: H.mensual }}>
-                <AreaChart data={D.serie_mes} margin={{ top: 8, right: 8 }}>
+                <AreaChart data={datosSerie} margin={{ top: 8, right: 8 }}>
                   <defs>
                     <linearGradient id="gradMes" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor={V.primary} stopOpacity={oscuro ? 0.45 : 0.3} />
@@ -541,7 +563,7 @@ export default function Contenido() {
                       <TableCell className="text-right tabular-nums">{fmt0(c.n)}</TableCell>
                       <TableCell className="text-right tabular-nums">{c.meses}</TableCell>
                       <TableCell className="text-right tabular-nums">{fmt(c.bs)}</TableCell>
-                      <TableCell className="text-right font-medium tabular-nums">{fmt(c.usd)}</TableCell>
+                      <TableCell className="text-right font-medium tabular-nums">{fmt(enParalelo ? c.usd_par : c.usd)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -604,8 +626,8 @@ export default function Contenido() {
                     <TableHead>Cód.</TableHead>
                     <TableHead>Descripción</TableHead>
                     <TableHead className="text-right">Monto (Bs)</TableHead>
-                    <TableHead className="text-right">Tasa</TableHead>
-                    <TableHead className="text-right">Monto (US$)</TableHead>
+                    <TableHead className="text-right">Tasa usada</TableHead>
+                    <TableHead className="text-right">Monto (US$ · {tasa === "bcv" ? "BCV" : "paralelo"})</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -616,8 +638,8 @@ export default function Contenido() {
                       <TableCell className="text-muted-foreground font-mono text-xs">{it.c}</TableCell>
                       <TableCell className="max-w-[360px] truncate" title={it.d}>{it.d}</TableCell>
                       <TableCell className={"text-right tabular-nums" + (it.q < 0 ? " text-red-600 dark:text-red-400" : "")}>{fmt(it.q)}</TableCell>
-                      <TableCell className="text-right text-muted-foreground tabular-nums">{fmt(it.t)}</TableCell>
-                      <TableCell className="text-right tabular-nums">{fmt(it.u)}</TableCell>
+                      <TableCell className="text-right text-muted-foreground tabular-nums">{fmt(enParalelo ? (D.paralelo_mes.find((x) => x.ym === it.a + "-" + it.m)?.tasa ?? it.t) : it.t)}</TableCell>
+                      <TableCell className="text-right tabular-nums">{fmt(enParalelo ? it.p : it.u)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -634,9 +656,9 @@ export default function Contenido() {
         <EncabezadoSeccion titulo="Fondos" descripcion="Cuánto debe haber en el fondo de reserva de la Junta y de la administradora." />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <Kpi icono={<PiggyBank className="size-4" />} tinte={V.positive} titulo="Aportado (administradora)"
-            valor={"Bs " + fmt0(fAdmin?.bs ?? 0)} sub={`US$ ${fmt(fAdmin?.usd ?? 0)} · ${fAdmin?.n ?? 0} aportes`} />
+            valor={"Bs " + fmt0(fAdmin?.bs ?? 0)} sub={`US$ ${fmt(enParalelo ? fAdmin?.usd_par ?? 0 : fAdmin?.usd ?? 0)} · ${fAdmin?.n ?? 0} aportes`} />
           <Kpi icono={<PiggyBank className="size-4" />} tinte={V.primary} titulo="Enviado a la Junta"
-            valor={"Bs " + fmt0(fJunta?.bs ?? 0)} sub={`US$ ${fmt(fJunta?.usd ?? 0)} · ${fJunta?.n ?? 0} envíos`} />
+            valor={"Bs " + fmt0(fJunta?.bs ?? 0)} sub={`US$ ${fmt(enParalelo ? fJunta?.usd_par ?? 0 : fJunta?.usd ?? 0)} · ${fJunta?.n ?? 0} envíos`} />
           <Kpi icono={<Database className="size-4" />} tinte={V.neutral} titulo="Nivelación del fondo"
             valor={"Bs " + fmt0(D.fondos["NIVELACION FONDO DE RESERVA"]?.bs ?? 0)} sub="ajuste mensual" />
           <Kpi icono={<Wallet className="size-4" />} tinte={V.warning} titulo="Otros fondos"
@@ -674,7 +696,7 @@ export default function Contenido() {
             </CardHeader>
             <CardContent>
               <ChartContainer config={fondoUsdConfig} className="aspect-auto w-full" style={{ height: H.fondo }}>
-                <AreaChart data={D.fondo_acum_usd} margin={{ top: 8, right: 8 }}>
+                <AreaChart data={enParalelo ? D.fondo_acum_par : D.fondo_acum_usd} margin={{ top: 8, right: 8 }}>
                   <defs>
                     <linearGradient id="gradFondoUsd" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor={V.primary} stopOpacity={oscuro ? 0.45 : 0.3} />
@@ -727,6 +749,121 @@ export default function Contenido() {
       </section>
 )}
 
+      {/* ---------------- DÓLAR PARALELO ---------------- */}
+      {seccion === "paralelo" && (
+      <section id="paralelo" className="space-y-4 scroll-mt-20">
+        <EncabezadoSeccion titulo="Dólar paralelo" descripcion="El precio del dólar negro mes a mes, con el link a la página donde cada precio queda evidenciado." />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <Kpi icono={<TrendingUp className="size-4" />} tinte={V.negative} titulo="Paralelo último mes"
+            valor={"Bs " + fmt(D.paralelo_mes[D.paralelo_mes.length - 1].tasa)}
+            sub={D.paralelo_mes[D.paralelo_mes.length - 1].ym} />
+          <Kpi icono={<ArrowDownRight className="size-4" />} tinte={V.negative} titulo="Brecha vs BCV"
+            valor={D.paralelo_mes[D.paralelo_mes.length - 1].brecha.toFixed(1) + "%"}
+            sub="del último mes" />
+          <Kpi icono={<Repeat className="size-4" />} tinte={V.warning} titulo="Brecha promedio"
+            valor={(D.paralelo_mes.reduce((a, m) => a + m.brecha, 0) / D.paralelo_mes.length).toFixed(1) + "%"}
+            sub={`promedio ${D.paralelo_mes.length} meses`} />
+          <Kpi icono={<Receipt className="size-4" />} tinte={V.neutral} titulo="Fuente actual"
+            valor="USDT / Binance" sub="promedio de monitores hasta jun-2026" />
+        </div>
+
+        <DashboardCard>
+          <CardHeader>
+            <CardTitle>BCV vs Paralelo (escala logarítmica)</CardTitle>
+            <CardDescription>
+              Ambas tasas de cierre de mes. La escala logarítmica permite ver el movimiento temprano (2022-2023) sin aplanar el salto de 2025-2026.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{ bcv: { label: "BCV (oficial)", color: "var(--c-primary)" }, paralelo: { label: "Paralelo", color: "var(--c-negative)" } }}
+              className="aspect-auto w-full" style={{ height: movil ? 260 : 320 }}>
+              <ComposedChart data={D.paralelo_mes} margin={{ top: 8, right: 8 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                <XAxis dataKey="ym" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 7 : 4} axisLine={false} tickLine={false} />
+                <YAxis scale="log" domain={[1, "auto"]} allowDataOverflow tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line type="monotone" dataKey="bcv" name="BCV (oficial)" stroke={V.primary} strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="tasa" name="Paralelo" stroke={V.negative} strokeWidth={2} dot={false} />
+              </ComposedChart>
+            </ChartContainer>
+          </CardContent>
+        </DashboardCard>
+
+        <DashboardCard>
+          <CardHeader>
+            <CardTitle>Brecha del paralelo sobre el oficial (%)</CardTitle>
+            <CardDescription>Cuánto más caro estaba el dólar negro que el oficial cada mes</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{ brecha: { label: "Brecha %", color: "var(--c-warning)" } }}
+              className="aspect-auto w-full" style={{ height: movil ? 230 : 260 }}>
+              <BarChart data={D.paralelo_mes} margin={{ top: 8, right: 8 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                <XAxis dataKey="ym" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 7 : 4} axisLine={false} tickLine={false} />
+                <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => v + "%"} />
+                <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
+                <Bar dataKey="brecha" fill={V.warning} radius={[6, 6, 0, 0]} maxBarSize={28} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </DashboardCard>
+
+        <DashboardCard>
+          <CardHeader>
+            <CardTitle>Serie mensual con evidencia</CardTitle>
+            <CardDescription>
+              Cada fila tiene el link al archivo de la página donde ese precio está publicado (Wayback Machine). «Fuente» indica cómo se midió el paralelo ese mes.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="max-h-[560px] overflow-auto rounded-lg border">
+              <Table>
+                <TableHeader className="sticky top-0 z-10 bg-background shadow-[0_1px_0_var(--border)]">
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead>Periodo</TableHead>
+                    <TableHead className="text-right">BCV (Bs)</TableHead>
+                    <TableHead className="text-right">Paralelo (Bs)</TableHead>
+                    <TableHead className="text-right">Brecha</TableHead>
+                    <TableHead className="max-w-[180px]">Fuente</TableHead>
+                    <TableHead className="text-right">Evidencia</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {D.paralelo_mes.map((m) => (
+                    <TableRow key={m.ym}>
+                      <TableCell className="tabular-nums">{m.ym}</TableCell>
+                      <TableCell className="text-right tabular-nums">{fmt(m.bcv)}</TableCell>
+                      <TableCell className="text-right font-medium tabular-nums">{fmt(m.tasa)}</TableCell>
+                      <TableCell className="text-right tabular-nums text-amber-600 dark:text-amber-400">{m.brecha.toFixed(1)}%</TableCell>
+                      <TableCell className="text-muted-foreground text-xs whitespace-normal max-w-[180px]">{m.fuente}</TableCell>
+                      <TableCell className="text-right">
+                        <a href={m.link} target="_blank" rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
+                          Ver precio <ExternalLinkIcon className="size-3" />
+                        </a>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </DashboardCard>
+
+        <DashboardCard>
+          <CardHeader>
+            <CardTitle>Cómo se mide el dólar paralelo aquí</CardTitle>
+            <CardDescription>
+              Desde sep-2022 hasta jun-2026 se usa el <b>promedio de monitores</b> (la referencia estándar del mercado negro, la misma que
+              publican Investing.com y Wikipedia). Desde jul-2026 se usa el <b>USDT del P2P de Binance</b>, que es como se forma hoy el
+              dólar negro y suele correr 1-3% por encima del promedio de monitores. El link de cada mes abre la portada archivada de
+              Banca y Negocios (diario que publica ambas tasas a diario) más cercana al cierre, como evidencia independiente del precio.
+            </CardDescription>
+          </CardHeader>
+        </DashboardCard>
+      </section>
+      )}
+
       {/* ---------------- DEVOLUCIONES ---------------- */}
       {seccion === "devoluciones" && (
 <section id="devoluciones" className="space-y-4 scroll-mt-20">
@@ -735,7 +872,8 @@ export default function Contenido() {
           <Kpi icono={<ArrowDownRight className="size-4" />} tinte={V.negative} titulo="Total devuelto (Bs)"
             valor={"Bs " + fmt(D.devoluciones.total_bs)} sub="suma de partidas negativas" />
           <Kpi icono={<ArrowDownRight className="size-4" />} tinte={V.negative} titulo="Total devuelto (US$)"
-            valor={"US$ " + fmt(D.devoluciones.total_usd)} sub="a tasa de cierre de cada mes" />
+            valor={"US$ " + fmt(enParalelo ? D.devoluciones.total_usd_par : D.devoluciones.total_usd)}
+            sub={enParalelo ? "a tasa paralela de cierre de mes" : "a tasa de cierre de cada mes"} />
         </div>
         <DashboardCard>
           <CardHeader>
@@ -779,7 +917,7 @@ export default function Contenido() {
                       <TableCell className="text-muted-foreground text-xs max-w-[280px] truncate" title={d.ejemplo}>{d.ejemplo}</TableCell>
                       <TableCell className="text-right tabular-nums">{fmt0(d.n)}</TableCell>
                       <TableCell className="text-right tabular-nums text-red-600 dark:text-red-400">{fmt(d.bs)}</TableCell>
-                      <TableCell className="text-right tabular-nums">{fmt(d.usd)}</TableCell>
+                      <TableCell className="text-right tabular-nums">{fmt(enParalelo ? d.usd_par : d.usd)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -843,7 +981,7 @@ export default function Contenido() {
                       <TableCell className="whitespace-normal">{CAT_FACT[f.cat] ?? f.cat}</TableCell>
                       <TableCell className="text-right tabular-nums">{fmt0(f.n)}</TableCell>
                       <TableCell className="text-right tabular-nums">{fmt(f.bs)}</TableCell>
-                      <TableCell className="text-right tabular-nums">{fmt(f.usd)}</TableCell>
+                      <TableCell className="text-right tabular-nums">{fmt(enParalelo ? f.usd_par : f.usd)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -931,7 +1069,7 @@ export default function Contenido() {
               <p className="font-semibold">2. Conversión a dólares</p>
               <p className="text-muted-foreground mt-1">
                 Cada partida se divide entre la tasa oficial BCV del último día hábil de su mes (API rates.dolarvzla.com;
-                sep–dic 2022: cierres BCV documentados). Se usa el dólar oficial —no el paralelo— como tasa contable de referencia.
+                sep–dic 2022: cierres BCV documentados). Se usa el dólar oficial —no el paralelo— como tasa contable de referencia. El selector «BCV / Paralelo» del encabezado cambia todas las cifras en dólares de la app a la tasa paralela de cierre de mes.
               </p>
             </div>
             <div>

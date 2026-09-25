@@ -1,14 +1,15 @@
 import type { ReactNode } from "react";
 import {
-  BarChart3Icon,
-  BookOpenIcon,
-  ExternalLinkIcon,
-  LayoutGridIcon,
-  ListIcon,
-  PiggyBankIcon,
-  ReceiptIcon,
-  RepeatIcon,
-  Undo2Icon,
+	BarChart3Icon,
+	BookOpenIcon,
+	CircleDollarSignIcon,
+	ExternalLinkIcon,
+	LayoutGridIcon,
+	ListIcon,
+	PiggyBankIcon,
+	ReceiptIcon,
+	RepeatIcon,
+	Undo2Icon,
 } from "lucide-react";
 
 export type SidebarNavItem = {
@@ -37,6 +38,7 @@ export const navGroups: SidebarNavGroup[] = [
 		label: "Dinero del edificio",
 		items: [
 			{ title: "Fondos", id: "fondos", path: "#fondos", icon: <PiggyBankIcon /> },
+			{ title: "Dólar paralelo", id: "paralelo", path: "#paralelo", icon: <CircleDollarSignIcon /> },
 			{ title: "Devoluciones", id: "devoluciones", path: "#devoluciones", icon: <Undo2Icon /> },
 			{ title: "Facturación", id: "facturas", path: "#facturas", icon: <ReceiptIcon /> },
 			{ title: "Recurrentes", id: "recurrentes", path: "#recurrentes", icon: <RepeatIcon /> },
@@ -63,6 +65,7 @@ export const TITULOS_SECCION: Record<string, string> = {
 	conceptos: "Conceptos",
 	partidas: "Partidas",
 	fondos: "Fondos",
+	paralelo: "Dólar paralelo",
 	devoluciones: "Devoluciones",
 	facturas: "Facturación",
 	recurrentes: "Recurrentes",

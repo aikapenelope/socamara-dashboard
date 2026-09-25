@@ -12,6 +12,7 @@ Dashboard profesional de gastos comunes y fondo de reserva del **Edificio Socama
 | **Conceptos** | Top 15 conceptos + tabla de los 199 conceptos con buscador |
 | **Partidas** | Las 1.227 partidas con filtros por año/sección, búsqueda y paginación |
 | **Fondos** | Fondo de reserva acumulado (Bs y US$), aportes administradora vs Junta, otros fondos |
+| **Dólar paralelo** | Serie mensual del dólar negro con brecha vs BCV y link de evidencia (Wayback) de cada precio |
 | **Devoluciones** | Reintegros y devoluciones por concepto (incl. el ciclo del agua) |
 | **Facturación** | Soporte documental: facturas citadas, servicios públicos, nómina, terceros por verificar |
 | **Recurrentes** | Cargos presentes los 48 meses (gasto fijo del edificio) |
@@ -20,7 +21,7 @@ Dashboard profesional de gastos comunes y fondo de reserva del **Edificio Socama
 ## Metodología (resumen)
 
 1. **Extracción determinista** — Python + PyMuPDF lee cada PDF (`Recibos AAAA/MM-YYYY.pdf`) y genera una fila por partida (código, descripción, monto). El script valida que la suma de partidas coincida con los totales declarados en cada recibo: **48/48 meses cuadrados al céntimo**, más verificación visual de una muestra.
-2. **Conversión a dólares** — cada partida se divide entre la tasa oficial **BCV del último día hábil de su mes** (API pública de rates.dolarvzla.com; sep–dic 2022: cierres BCV documentados). Se usa la tasa oficial, no la paralela, como referencia contable.
+2. **Conversión a dólares** — cada partida se divide entre la tasa oficial **BCV del último día hábil de su mes** (API pública de rates.dolarvzla.com; sep–dic 2022: cierres BCV documentados). El selector **BCV / Paralelo** del encabezado cambia todas las cifras en dólares de la app a la **tasa paralela de cierre de mes** (promedio de monitores hasta jun-2026; USDT/Binance P2P desde jul-2026), cada una con su link de evidencia en la sección Dólar paralelo.
 3. **Normalización de conceptos** — las descripciones se limpian de fechas, meses y números de factura para agrupar las 1.227 partidas en 199 conceptos comparables.
 4. **Fondo de reserva** — la administradora cobra y envía a la Junta la misma cifra cada mes (códigos 0001/0010). El acumulado refleja aportes; los recibos no registran desembolsos del fondo.
 
