@@ -11,7 +11,6 @@ import {
   ComposedChart,
   LabelList,
   Line,
-  ReferenceLine,
   Pie,
   PieChart,
   XAxis,
@@ -128,6 +127,10 @@ const V = {
 const PALETA = Array.from({ length: 10 }, (_, i) => `var(--c-p${i + 1})`);
 const GRID = "var(--border)";
 const TICK = { fill: "var(--muted-foreground)", fontSize: 11 } as const;
+
+/* estacionamientos: cuota fija en dólares cobrada desde ene-2023 */
+const CUOTA_EST = 50;
+const EST_DESDE = "2023-01";
 
 const NOMBRES_SECCION: Record<string, string> = {
   "GASTOS COMUNES": "Gastos comunes",
@@ -248,7 +251,6 @@ export default function Contenido() {
   const { seccion } = useSeccion();
   const { tasa } = useTasa();
   const enParalelo = tasa === "paralelo";
-  const sel = (o: { usd: number; usd_par?: number }) => (enParalelo ? (o.usd_par ?? o.usd) : o.usd);
   const { resolvedTheme } = useTheme();
   const oscuro = resolvedTheme === "dark";
   const movil = useIsMobile();
@@ -295,7 +297,7 @@ export default function Contenido() {
       return v * ((a[orden.k] as number) - (b[orden.k] as number));
     });
     return arr;
-  }, [conceptosFiltrados, orden]);
+  }, [conceptosFiltrados, orden, enParalelo]);
 
   const onOrden = (k: ClaveOrden) =>
     setOrden((o) => (o.k === k ? { k, asc: !o.asc } : { k, asc: k === "concepto" }));
@@ -345,26 +347,29 @@ export default function Contenido() {
   } satisfies ChartConfig;
 
   const serieFondo = useMemo(() => {
+    const serie: { ym: string; fondo_bcv: number; fondo_par: number; est: number; total_bcv: number; total_par: number }[] = [];
     let est = 0;
-    return D.fondo_acum_usd.map((x, i) => {
-      if (x.ym >= "2023-01") est += 50; // $50/mes de estacionamientos desde ene-2023
-      const fondo_bcv = D.fondo_acum_usd[i].acum_usd;
+    for (let i = 0; i < D.fondo_acum_usd.length; i++) {
+      const mes = D.fondo_acum_usd[i];
+      if (mes.ym >= EST_DESDE) est += CUOTA_EST; // $50/mes de estacionamientos desde ene-2023
+      const fondo_bcv = mes.acum_usd;
       const fondo_par = D.fondo_acum_par[i].acum_usd;
-      return {
-        ym: x.ym,
+      serie.push({
+        ym: mes.ym,
         fondo_bcv,
         fondo_par,
         est: Math.round(est * 100) / 100,
         total_bcv: Math.round((fondo_bcv + est) * 100) / 100,
         total_par: Math.round((fondo_par + est) * 100) / 100,
-      };
-    });
+      });
+    }
+    return serie;
   }, []);
 
   const ultimo = serieFondo[serieFondo.length - 1];
   const totalBcv = ultimo.total_bcv;
   const totalPar = ultimo.total_par;
-  const mesesEst = serieFondo.filter((x) => x.ym >= "2023-01").length; // ene-2023 → ago-2026
+  const mesesEst = serieFondo.filter((x) => x.ym >= EST_DESDE).length; // ene-2023 → ago-2026
   const acumConfig = {
     total_bcv: { label: "Total (BCV)", color: "var(--c-primary)" },
     total_par: { label: "Total (paralelo)", color: "var(--c-negative)" },
@@ -1107,7 +1112,7 @@ export default function Contenido() {
               <ChartContainer config={acumConfig} className="aspect-auto w-full" style={{ height: movil ? 300 : 360 }}>
                 <ComposedChart data={serieFondo} margin={{ top: 8, right: 8 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
-                  <XAxis dataKey="ym" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 7 : 4} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="ym" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 11 : 4} axisLine={false} tickLine={false} />
                   <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => "$" + fmt0(v)} />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Area type="monotone" dataKey="total_bcv" name="Total (BCV)" stroke={V.primary} fill={V.primary} fillOpacity={oscuro ? 0.10 : 0.06} strokeWidth={2.5} />
