@@ -156,6 +156,14 @@
   --c-p10: #8f8d85;
 }
 
+/* sin scrollbar (lista de pestañas en móvil) */
+.sin-scrollbar {
+  scrollbar-width: none;
+}
+.sin-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* momento de entrada: las tarjetas KPI suben suavemente una vez */
 @keyframes subir {
   from {

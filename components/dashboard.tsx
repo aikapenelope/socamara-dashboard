@@ -56,6 +56,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ThemeToggle } from "@/components/theme-toggle";
 import datos from "@/data/gastos.json";
+import { useIsMobile } from "@/lib/use-is-mobile";
 
 /* ---------- tipos ---------- */
 type Concepto = {
@@ -198,6 +199,19 @@ type ClaveOrden = "concepto" | "n" | "meses" | "bs" | "usd";
 export default function Dashboard() {
   const { resolvedTheme } = useTheme();
   const oscuro = resolvedTheme === "dark";
+  const movil = useIsMobile();
+  const H = {
+    anios: movil ? 230 : 300,
+    pie: movil ? 240 : 280,
+    mensual: movil ? 230 : 280,
+    conceptos: movil ? 400 : 430,
+    fondo: movil ? 230 : 280,
+    dev: movil ? 310 : 340,
+    rec: movil ? 380 : 420,
+    fact: movil ? 250 : 300,
+  };
+  const W = { ejeY: movil ? 128 : 215 };
+  const TRUNC = movil ? 18 : 36;
 
   const [busqueda, setBusqueda] = useState("");
   const [orden, setOrden] = useState<{ k: ClaveOrden; asc: boolean }>({ k: "usd", asc: false });
@@ -259,10 +273,10 @@ export default function Dashboard() {
     <div className="flex flex-col min-h-screen bg-muted/40">
       {/* encabezado */}
       <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-        <div className="mx-auto max-w-6xl px-4 py-4">
+        <div className="mx-auto max-w-6xl px-4 py-3 sm:py-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
+              <h1 className="text-lg font-bold tracking-tight sm:text-2xl">
                 Memoria y Cuenta · Edificio Socamara
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -300,15 +314,15 @@ export default function Dashboard() {
         </div>
 
         <Tabs defaultValue="resumen" className="mt-6">
-          <TabsList className="w-full justify-start overflow-x-auto flex-nowrap h-auto py-1">
-            <TabsTrigger value="resumen" className="flex-none">Resumen</TabsTrigger>
-            <TabsTrigger value="conceptos" className="flex-none">Conceptos</TabsTrigger>
-            <TabsTrigger value="partidas" className="flex-none">Partidas</TabsTrigger>
-            <TabsTrigger value="fondos" className="flex-none">Fondos</TabsTrigger>
-            <TabsTrigger value="devoluciones" className="flex-none">Devoluciones</TabsTrigger>
-            <TabsTrigger value="facturas" className="flex-none">Facturación</TabsTrigger>
-            <TabsTrigger value="recurrentes" className="flex-none">Recurrentes</TabsTrigger>
-            <TabsTrigger value="metodologia" className="flex-none">Metodología</TabsTrigger>
+          <TabsList className="sin-scrollbar w-full justify-start overflow-x-auto flex-nowrap h-auto py-1">
+            <TabsTrigger value="resumen" className="flex-none px-3 py-1.5">Resumen</TabsTrigger>
+            <TabsTrigger value="conceptos" className="flex-none px-3 py-1.5">Conceptos</TabsTrigger>
+            <TabsTrigger value="partidas" className="flex-none px-3 py-1.5">Partidas</TabsTrigger>
+            <TabsTrigger value="fondos" className="flex-none px-3 py-1.5">Fondos</TabsTrigger>
+            <TabsTrigger value="devoluciones" className="flex-none px-3 py-1.5">Devoluciones</TabsTrigger>
+            <TabsTrigger value="facturas" className="flex-none px-3 py-1.5">Facturación</TabsTrigger>
+            <TabsTrigger value="recurrentes" className="flex-none px-3 py-1.5">Recurrentes</TabsTrigger>
+            <TabsTrigger value="metodologia" className="flex-none px-3 py-1.5">Metodología</TabsTrigger>
           </TabsList>
 
           {/* ---------------- RESUMEN ---------------- */}
@@ -321,7 +335,7 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={H.anios}>
                   <ComposedChart data={D.por_anio} margin={{ top: 8, right: 8 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
                     <XAxis dataKey="anio" tick={TICK} axisLine={false} tickLine={false} />
@@ -343,7 +357,7 @@ export default function Dashboard() {
                   <CardDescription>Participación en el total (US$)</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={280}>
+                  <ResponsiveContainer width="100%" height={H.pie}>
                     <PieChart>
                       <Pie data={D.por_seccion} dataKey="usd" nameKey="seccion" innerRadius={62} outerRadius={100} paddingAngle={3} strokeWidth={0} cornerRadius={4}>
                         {D.por_seccion.map((_, i) => (
@@ -362,7 +376,7 @@ export default function Dashboard() {
                   <CardDescription>Gasto total de cada mes convertido a tasa de cierre</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={280}>
+                  <ResponsiveContainer width="100%" height={H.mensual}>
                     <AreaChart data={D.serie_mes} margin={{ top: 8, right: 8 }}>
                       <defs>
                         <linearGradient id="gradMes" x1="0" y1="0" x2="0" y2="1">
@@ -371,7 +385,7 @@ export default function Dashboard() {
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
-                      <XAxis dataKey="ym" tick={TICK} interval={5} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="ym" tick={TICK} interval={movil ? 8 : 5} axisLine={false} tickLine={false} />
                       <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
                       <Tooltip content={<Tip formato={fmtUsdTip} />} />
                       <Area type="monotone" dataKey="usd" name="US$" stroke={V.primary} fill="url(#gradMes)" strokeWidth={2} />
@@ -435,12 +449,12 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={430}>
+                <ResponsiveContainer width="100%" height={H.conceptos}>
                   <BarChart data={topConceptos} layout="vertical" margin={{ left: 8, right: 64 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={GRID} horizontal={false} />
                     <XAxis type="number" tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
-                    <YAxis type="category" dataKey="concepto" width={215} tick={{ ...TICK, fontSize: 11.5 }}
-                      axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, 36)} />
+                    <YAxis type="category" dataKey="concepto" width={W.ejeY} tick={{ ...TICK, fontSize: 11.5 }}
+                      axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, TRUNC)} />
                     <Tooltip content={<Tip formato={fmtUsdTip} />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
                     <Bar dataKey="usd" name="US$" fill={V.primary} radius={[0, 6, 6, 0]} barSize={18}>
                       <LabelList dataKey="usd" position="right" className="fill-foreground" fontSize={11}
@@ -600,7 +614,7 @@ export default function Dashboard() {
                   <CardDescription>Suma de los aportes mensuales desde sep-2022</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={280}>
+                  <ResponsiveContainer width="100%" height={H.fondo}>
                     <AreaChart data={D.fondo_acum} margin={{ top: 8, right: 8 }}>
                       <defs>
                         <linearGradient id="gradFondo" x1="0" y1="0" x2="0" y2="1">
@@ -623,7 +637,7 @@ export default function Dashboard() {
                   <CardDescription>Aportes convertidos a la tasa de cierre de cada mes</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={280}>
+                  <ResponsiveContainer width="100%" height={H.fondo}>
                     <AreaChart data={D.fondo_acum_usd} margin={{ top: 8, right: 8 }}>
                       <defs>
                         <linearGradient id="gradFondoUsd" x1="0" y1="0" x2="0" y2="1">
@@ -693,12 +707,12 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={340}>
+                <ResponsiveContainer width="100%" height={H.dev}>
                   <BarChart data={D.devoluciones.por_concepto.slice(0, 10)} layout="vertical" margin={{ left: 8, right: 24 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={GRID} horizontal={false} />
                     <XAxis type="number" tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => fmt0(v)} />
-                    <YAxis type="category" dataKey="concepto" width={210} tick={TICK}
-                      axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, 32)} />
+                    <YAxis type="category" dataKey="concepto" width={W.ejeY} tick={TICK}
+                      axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, TRUNC)} />
                     <Tooltip content={<Tip formato={fmtBsTip} />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
                     <Bar dataKey="bs" name="Bs devueltos" fill={V.negative} radius={[0, 6, 6, 0]} barSize={18} />
                   </BarChart>
@@ -745,7 +759,7 @@ export default function Dashboard() {
                   <CardDescription>Cómo se documenta cada gasto según su naturaleza</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={H.fact}>
                     <PieChart>
                       <Pie data={D.facturacion} dataKey="n" nameKey="cat" innerRadius={62} outerRadius={100} paddingAngle={3} strokeWidth={0} cornerRadius={4}>
                         {D.facturacion.map((_, i) => (
@@ -799,12 +813,12 @@ export default function Dashboard() {
                 <CardDescription>La cuota fija del edificio: lo que se cobra mes a mes sin excepción</CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={420}>
+                <ResponsiveContainer width="100%" height={H.rec}>
                   <BarChart data={D.recurrentes.slice(0, 15)} layout="vertical" margin={{ left: 8, right: 24 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={GRID} horizontal={false} />
                     <XAxis type="number" domain={[0, 48]} tick={TICK} axisLine={false} tickLine={false} />
-                    <YAxis type="category" dataKey="concepto" width={215} tick={TICK}
-                      axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, 36)} />
+                    <YAxis type="category" dataKey="concepto" width={W.ejeY} tick={TICK}
+                      axisLine={false} tickLine={false} tickFormatter={(v: string) => trunc(v, TRUNC)} />
                     <Tooltip content={<Tip formato={(v) => v + " de 48 meses"} />} cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }} />
                     <Bar dataKey="meses" name="Meses" fill={V.primary} radius={[0, 6, 6, 0]} barSize={18} />
                   </BarChart>
