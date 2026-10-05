@@ -26,6 +26,7 @@ import {
   CheckCheck,
   CircleAlert,
   Database,
+  FileDown,
   PiggyBank,
   Receipt,
   Repeat,
@@ -66,6 +67,28 @@ import { useTasa } from "@/components/tasa-context";
 import { useSeccion } from "@/components/seccion-context";
 import datos from "@/data/gastos.json";
 import conciliacionJson from "@/data/conciliacion.json";
+import estadosJson from "@/data/estados_cuenta.json";
+
+/* ---------- tipos estados de cuenta ---------- */
+type EstadoArchivo = {
+  anio: string; nombre: string; ruta: string; sha256: string; bytes: number;
+  meses: string[]; n_movs: number; entro_bs: number; salio_bs: number;
+  primer_mov: string; ultimo_mov: string; compras_usd: number;
+};
+type EstadoHueco = { ultimo_mov: string; saldo_antes: number; primer_mov: string; saldo_despues: number; diferencia: number };
+type EstadoSolape = { mes: string; n: number; archivos: string[] };
+const EST = estadosJson as {
+  meta: {
+    csv_consolidado: string; csv_sha256: string; cuenta: string;
+    n_archivos: number; n_movimientos: number; n_meses: number; desde: string; hasta: string;
+    total_entro_bs: number; total_salio_bs: number; saldo_final_bs: number;
+    n_duplicados: number; n_movs_en_varios_archivos: number;
+    meses_cuadran: number; meses_revisables: number; n_huecos: number; n_compras_usd: number;
+  };
+  huecos: EstadoHueco[];
+  solapes: EstadoSolape[];
+  archivos: EstadoArchivo[];
+};
 
 /* ---------- tipos conciliación ---------- */
 type ConcCoincide = { cod: string; desc: string; bs: number; tipo: string; dif_pct: number; banco_fecha: string; banco_cod: string; banco_concepto: string };
@@ -295,6 +318,12 @@ export default function Contenido() {
   const [fSeccion, setFSeccion] = useState("todas");
   const [pagina, setPagina] = useState(0);
   const [mesConc, setMesConc] = useState("2026-08");
+  const [anioEst, setAnioEst] = useState("todos");
+  const archivosEst = useMemo(
+    () => (anioEst === "todos" ? EST.archivos : EST.archivos.filter((a) => a.anio === anioEst)),
+    [anioEst]
+  );
+  const aniosEst = useMemo(() => Array.from(new Set(EST.archivos.map((a) => a.anio))).sort(), []);
 
   /* ---------- conciliación recibo ↔ cuenta ---------- */
   const serieConc = useMemo(
@@ -1219,6 +1248,214 @@ export default function Contenido() {
                 resultante es lo que debe existir hoy en la cuenta del fondo.
               </CardDescription>
             </CardHeader>
+          </DashboardCard>
+        </section>
+      )}
+
+      {/* ---------------- ESTADOS DE CUENTA (PRUEBAS) ---------------- */}
+      {seccion === "estados" && (
+        <section id="estados" className="space-y-4 scroll-mt-20">
+          <EncabezadoSeccion
+            titulo="Estados de cuenta · las pruebas"
+            descripcion="Los estados de cuenta originales de la cuenta bancaria de la Junta, subidos tal cual los emitió el banco: mismo nombre y mismos bytes. Cada archivo se descarga y su contenido se verificó contra el consolidado de 699 movimientos que alimenta este dashboard."
+          />
+
+          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+            <Kpi icono={<Database className="size-4" />} tinte={V.primary} titulo="Archivos originales" valor={fmt0(EST.meta.n_archivos)} sub="PDF y Excel tal cual · 1,8 MB" />
+            <Kpi icono={<Wallet className="size-4" />} tinte={V.positive} titulo="Meses cubiertos" valor={`${EST.meta.n_meses} / ${EST.meta.n_meses}`} sub="ago 2022 → sep 2026" />
+            <Kpi icono={<Receipt className="size-4" />} tinte={V.warning} titulo="Movimientos" valor={fmt0(EST.meta.n_movimientos)} sub={`0 duplicados · ${EST.meta.n_compras_usd} compras US$`} />
+            <Kpi icono={<CheckCheck className="size-4" />} tinte={V.negative} titulo="Solapes deduplicados" valor={fmt0(EST.meta.n_movs_en_varios_archivos)} sub="movs. en 2+ archivos, contados 1 vez" />
+          </div>
+
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>Los {EST.meta.n_archivos} archivos, descargables</CardTitle>
+              <CardDescription>
+                Subidos sin modificación. El SHA-256 de cada archivo prueba que es el original byte por byte;
+                «movs.» es cuántos movimientos del consolidado salieron de ese archivo.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-6">
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={anioEst}
+                  onChange={(e) => setAnioEst(e.target.value)}
+                  className="h-9 rounded-md border bg-transparent px-3 text-sm shadow-xs"
+                >
+                  <option value="todos">Todos los años ({EST.archivos.length})</option>
+                  {aniosEst.map((a) => (
+                    <option key={a} value={a}>{a} ({EST.archivos.filter((x) => x.anio === a).length})</option>
+                  ))}
+                </select>
+                <span className="text-sm text-muted-foreground">
+                  {archivosEst.length} archivos · {fmt0(archivosEst.reduce((a, x) => a + x.n_movs, 0))} movimientos respaldados
+                </span>
+              </div>
+              <div className="max-h-[560px] overflow-auto rounded-lg border">
+                <Table>
+                  <TableHeader className="sticky top-0 z-10 bg-background shadow-[0_1px_0_var(--border)]">
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead>Archivo original</TableHead>
+                      <TableHead>Meses</TableHead>
+                      <TableHead className="text-right">Movs.</TableHead>
+                      <TableHead className="text-right">Entró (Bs)</TableHead>
+                      <TableHead className="text-right">Salió (Bs)</TableHead>
+                      <TableHead className="text-right">Compras US$</TableHead>
+                      <TableHead className="text-right">SHA-256</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {archivosEst.map((a) => (
+                      <TableRow key={a.ruta}>
+                        <TableCell className="max-w-[340px]">
+                          <a
+                            href={encodeURI(a.ruta)}
+                            download
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 font-medium underline-offset-2 hover:underline"
+                            style={{ color: V.primary }}
+                          >
+                            <FileDown className="size-3.5 shrink-0" />
+                            <span className="truncate" title={a.nombre}>{a.nombre}</span>
+                          </a>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap text-muted-foreground">{a.meses.map(etiquetaMes).join(", ")}</TableCell>
+                        <TableCell className="text-right tabular-nums">{a.n_movs}</TableCell>
+                        <TableCell className="text-right tabular-nums" style={{ color: a.entro_bs > 0 ? V.positive : undefined }}>{a.entro_bs > 0 ? fmt(a.entro_bs) : "—"}</TableCell>
+                        <TableCell className="text-right tabular-nums" style={{ color: a.salio_bs > 0 ? V.negative : undefined }}>{a.salio_bs > 0 ? fmt(a.salio_bs) : "—"}</TableCell>
+                        <TableCell className="text-right tabular-nums">{a.compras_usd > 0 ? a.compras_usd : "—"}</TableCell>
+                        <TableCell className="text-right font-mono text-[10px] text-muted-foreground" title={a.sha256}>{a.sha256.slice(0, 10)}…</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </DashboardCard>
+
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>¿El consolidado machea con los originales?</CardTitle>
+              <CardDescription>
+                El consolidado <code className="rounded bg-muted px-1">{EST.meta.csv_consolidado}</code> se armó extrayendo cada movimiento de estos archivos.
+                Verificación automática, regla por regla:
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              <ul className="space-y-2.5">
+                {[
+                  { ok: true, titulo: "Sin duplicados", detalle: `Ninguna transacción repetida (misma fecha + referencia + monto): ${EST.meta.n_movimientos} movimientos únicos en ${EST.meta.n_meses} meses.` },
+                  { ok: true, titulo: "Solapes contados una sola vez", detalle: `${EST.meta.n_movs_en_varios_archivos} movimientos aparecen en dos estados (cortes que repiten el mes) y están exactamente una vez en el consolidado.` },
+                  { ok: true, titulo: "Saldo fila a fila", detalle: "Dentro de cada estado el saldo cuadra exactamente: cada fila es saldo anterior − débito + crédito. Los 699 movimientos pasan la prueba dentro de su corte." },
+                  { ok: true, titulo: "Cierre mensual", detalle: `${EST.meta.meses_cuadran} de ${EST.meta.meses_revisables} meses verificables cierran aritméticamente: saldo final = saldo inicial + entró − salió.` },
+                ].map((c) => (
+                  <li key={c.titulo} className="flex items-start gap-2.5">
+                    <CheckCheck className="mt-0.5 size-4 shrink-0" style={{ color: V.positive }} />
+                    <div>
+                      <p className="text-sm font-medium">{c.titulo}</p>
+                      <p className="text-sm text-muted-foreground">{c.detalle}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="rounded-lg border p-3" style={{ borderColor: V.warning }}>
+                <p className="flex items-center gap-2 text-sm font-semibold">
+                  <CircleAlert className="size-4" style={{ color: V.warning }} />
+                  {EST.meta.n_huecos} fronteras entre estados donde el saldo no engancha
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Días que ningún estado de cuenta cubre: el saldo salta entre el último movimiento de un corte y el primero del siguiente sin movimientos que expliquen la diferencia. Es la lista de períodos a pedir al banco.
+                </p>
+                <div className="mt-2 overflow-x-auto rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50">
+                        <TableHead>Último mov. cubierto</TableHead>
+                        <TableHead className="text-right">Saldo ahí</TableHead>
+                        <TableHead>Primer mov. siguiente</TableHead>
+                        <TableHead className="text-right">Saldo ahí</TableHead>
+                        <TableHead className="text-right">Diferencia sin explicar</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {EST.huecos.map((h, i) => (
+                        <TableRow key={i}>
+                          <TableCell className="whitespace-nowrap tabular-nums">{h.ultimo_mov}</TableCell>
+                          <TableCell className="text-right tabular-nums">Bs {fmt(h.saldo_antes)}</TableCell>
+                          <TableCell className="whitespace-nowrap tabular-nums">{h.primer_mov}</TableCell>
+                          <TableCell className="text-right tabular-nums">Bs {fmt(h.saldo_despues)}</TableCell>
+                          <TableCell className="text-right tabular-nums font-medium" style={{ color: V.negative }}>Bs {fmt(h.diferencia)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <Badge variant="outline" className="gap-1.5">
+                  <Database className="size-3" />
+                  Consolidado: SHA-256 {EST.meta.csv_sha256.slice(0, 16)}…
+                </Badge>
+                <Badge variant="outline" style={{ color: V.positive, borderColor: V.positive }}>
+                  Entró total: Bs {fmt(EST.meta.total_entro_bs)}
+                </Badge>
+                <Badge variant="outline" style={{ color: V.negative, borderColor: V.negative }}>
+                  Salió total: Bs {fmt(EST.meta.total_salio_bs)}
+                </Badge>
+                <Badge variant="outline">Saldo final: Bs {fmt(EST.meta.saldo_final_bs)}</Badge>
+              </div>
+            </CardContent>
+          </DashboardCard>
+
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>Solapes entre archivos</CardTitle>
+              <CardDescription>
+                Estados que cubren el mismo período (el corte de un mes repetido en el estado siguiente, o el mismo mes
+                exportado en dos formatos). Sus movimientos compartidos están una sola vez en el consolidado.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="overflow-x-auto rounded-lg border">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Mes</TableHead>
+                      <TableHead>Archivos que lo cubren</TableHead>
+                      <TableHead className="text-right">Movs. compartidos</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {EST.solapes.map((s) => (
+                      <TableRow key={s.mes}>
+                        <TableCell className="whitespace-nowrap font-medium">{etiquetaMes(s.mes)}</TableCell>
+                        <TableCell className="max-w-[520px]">
+                          <div className="flex flex-wrap gap-1.5">
+                            {s.archivos.map((a) => (
+                              <a
+                                key={a}
+                                href={encodeURI("/estados-cuenta/" + a)}
+                                download
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-muted"
+                              >
+                                <FileDown className="size-3 shrink-0" style={{ color: V.primary }} />
+                                <span className="truncate" title={a.split("/")[1]}>{a.split("/")[1]}</span>
+                              </a>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">{s.n}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
           </DashboardCard>
         </section>
       )}

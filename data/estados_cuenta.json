@@ -1,0 +1,1175 @@
+{
+ "meta": {
+  "generado_iso": "2026-10-05T02:41:19+00:00",
+  "csv_consolidado": "movimientos_bancarios_2022_2026.csv",
+  "csv_sha256": "958f785ad5e8f4306906972bc2f7434eef8d1a497249787300f1de5834049598",
+  "cuenta": "Cuenta bancaria de la Junta de Condominio (estados emitidos por el banco)",
+  "n_archivos": 43,
+  "n_movimientos": 699,
+  "n_meses": 50,
+  "desde": "2022-08",
+  "hasta": "2026-09",
+  "total_entro_bs": 3033981.65,
+  "total_salio_bs": 2863657.36,
+  "saldo_final_bs": 135301.63,
+  "n_duplicados": 0,
+  "n_movs_en_varios_archivos": 52,
+  "meses_cuadran": 46,
+  "meses_revisables": 49,
+  "n_huecos": 3,
+  "n_compras_usd": 126
+ },
+ "huecos": [
+  {
+   "ultimo_mov": "2022-09-08",
+   "saldo_antes": 916.79,
+   "primer_mov": "2022-10-04",
+   "saldo_despues": 101.85,
+   "diferencia": -898.94
+  },
+  {
+   "ultimo_mov": "2025-04-15",
+   "saldo_antes": 7602.7,
+   "primer_mov": "2025-05-03",
+   "saldo_despues": 4986.87,
+   "diferencia": -971.37
+  },
+  {
+   "ultimo_mov": "2025-07-18",
+   "saldo_antes": 62475.55,
+   "primer_mov": "2025-08-04",
+   "saldo_despues": 53625.3,
+   "diferencia": -34648.17
+  }
+ ],
+ "solapes": [
+  {
+   "mes": "2022-08",
+   "n": 14,
+   "archivos": [
+    "2022/Agosto 2022 Socamara.pdf",
+    "2022/Agosto y corte de Septiembre 2022 socamara.pdf"
+   ]
+  },
+  {
+   "mes": "2026-08",
+   "n": 22,
+   "archivos": [
+    "2026/Agosto 2026 Socamara.xls",
+    "2026/Agosto 2026 Socamara.xlsx",
+    "2026/Agosto y Corte de Sep 2026 Socamara.xlsx"
+   ]
+  },
+  {
+   "mes": "2026-09",
+   "n": 16,
+   "archivos": [
+    "2026/Agosto y Corte de Sep 2026 Socamara.xlsx",
+    "2026/Septiembre 2026 Socamara.xls"
+   ]
+  }
+ ],
+ "archivos": [
+  {
+   "anio": "2022",
+   "nombre": "Agosto 2022 Socamara.pdf",
+   "ruta": "/estados-cuenta/2022/Agosto 2022 Socamara.pdf",
+   "sha256": "a3c4ac3513071a6168c50b5e2fcd8fe5b0731117596411a01bb4a3b4c8d4e5e6",
+   "bytes": 218072,
+   "meses": [
+    "2022-08"
+   ],
+   "n_movs": 14,
+   "entro_bs": 2650.21,
+   "salio_bs": 2848.65,
+   "primer_mov": "2022-08-01",
+   "ultimo_mov": "2022-08-31",
+   "compras_usd": 3
+  },
+  {
+   "anio": "2022",
+   "nombre": "Agosto y corte de Septiembre 2022 socamara.pdf",
+   "ruta": "/estados-cuenta/2022/Agosto y corte de Septiembre 2022 socamara.pdf",
+   "sha256": "931ca4e4ef52e43e6c081d223ccb58d0ca3820aa8631ca9bc2bd3e6c61e1bf84",
+   "bytes": 224107,
+   "meses": [
+    "2022-08",
+    "2022-09"
+   ],
+   "n_movs": 25,
+   "entro_bs": 3512.36,
+   "salio_bs": 4091.39,
+   "primer_mov": "2022-08-01",
+   "ultimo_mov": "2022-09-08",
+   "compras_usd": 4
+  },
+  {
+   "anio": "2022",
+   "nombre": "Socamara Octubre 2022.xls",
+   "ruta": "/estados-cuenta/2022/Socamara Octubre 2022.xls",
+   "sha256": "e77e3fa1ae3fcba294011d90ac45a54d929159157654dc98a2b69b7d3ef4a3d1",
+   "bytes": 43520,
+   "meses": [
+    "2022-10"
+   ],
+   "n_movs": 19,
+   "entro_bs": 1864.35,
+   "salio_bs": 992.17,
+   "primer_mov": "2022-10-04",
+   "ultimo_mov": "2022-10-31",
+   "compras_usd": 3
+  },
+  {
+   "anio": "2022",
+   "nombre": "Socamara Noviembre 2022.xls",
+   "ruta": "/estados-cuenta/2022/Socamara Noviembre 2022.xls",
+   "sha256": "118d400c723de2e53bd105ca33ff5cadab044be435386b4b1f5652be4c6323f9",
+   "bytes": 41472,
+   "meses": [
+    "2022-11"
+   ],
+   "n_movs": 13,
+   "entro_bs": 2384.43,
+   "salio_bs": 3258.19,
+   "primer_mov": "2022-11-08",
+   "ultimo_mov": "2022-11-30",
+   "compras_usd": 3
+  },
+  {
+   "anio": "2022",
+   "nombre": "Socamara Diciembre 2022.xls",
+   "ruta": "/estados-cuenta/2022/Socamara Diciembre 2022.xls",
+   "sha256": "fa00f1e9451822eb26fd8f6bb9f3077b05fa01b0a8e7f9287b1ebd6cc043bae4",
+   "bytes": 39936,
+   "meses": [
+    "2022-12"
+   ],
+   "n_movs": 7,
+   "entro_bs": 2805.86,
+   "salio_bs": 0.05,
+   "primer_mov": "2022-12-07",
+   "ultimo_mov": "2022-12-31",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2023",
+   "nombre": "Enero a Mayo 2023 Socamara.xls",
+   "ruta": "/estados-cuenta/2023/Enero a Mayo 2023 Socamara.xls",
+   "sha256": "9008eeef50caa0ffe9403794f35f753e42ac6c571238048bcc8ea69bb1200a49",
+   "bytes": 58368,
+   "meses": [
+    "2023-01",
+    "2023-02",
+    "2023-03",
+    "2023-04",
+    "2023-05"
+   ],
+   "n_movs": 77,
+   "entro_bs": 27486.21,
+   "salio_bs": 30268.69,
+   "primer_mov": "2023-01-06",
+   "ultimo_mov": "2023-05-31",
+   "compras_usd": 22
+  },
+  {
+   "anio": "2023",
+   "nombre": "junio 2023 socamara.xls",
+   "ruta": "/estados-cuenta/2023/junio 2023 socamara.xls",
+   "sha256": "78904cbc7be2e178dff6c8992cfdd694a8cbda525c9cdb1f737d78761b81a0cd",
+   "bytes": 24512,
+   "meses": [
+    "2023-06"
+   ],
+   "n_movs": 15,
+   "entro_bs": 3321.86,
+   "salio_bs": 3240.94,
+   "primer_mov": "2023-06-06",
+   "ultimo_mov": "2023-06-30",
+   "compras_usd": 3
+  },
+  {
+   "anio": "2023",
+   "nombre": "Julio  2023Socamara.xls",
+   "ruta": "/estados-cuenta/2023/Julio  2023Socamara.xls",
+   "sha256": "b6d0126563d1678823410d91a6305df491aadf82c909090192e7f87941e9c5ac",
+   "bytes": 24512,
+   "meses": [
+    "2023-07"
+   ],
+   "n_movs": 16,
+   "entro_bs": 15546.66,
+   "salio_bs": 11797.86,
+   "primer_mov": "2023-07-03",
+   "ultimo_mov": "2023-07-31",
+   "compras_usd": 5
+  },
+  {
+   "anio": "2023",
+   "nombre": "Agosto 2023 Socamara.xls",
+   "ruta": "/estados-cuenta/2023/Agosto 2023 Socamara.xls",
+   "sha256": "7da30d55340f7620e4043588fbe768b25d976f82a41ddc65029acfaabf7bf799",
+   "bytes": 24512,
+   "meses": [
+    "2023-08"
+   ],
+   "n_movs": 19,
+   "entro_bs": 11031.77,
+   "salio_bs": 14900.53,
+   "primer_mov": "2023-08-01",
+   "ultimo_mov": "2023-08-31",
+   "compras_usd": 5
+  },
+  {
+   "anio": "2023",
+   "nombre": "Septiembre 2023 Socamara.xls",
+   "ruta": "/estados-cuenta/2023/Septiembre 2023 Socamara.xls",
+   "sha256": "3bcb3118e867826ada9685b332123b0585483917f91c86a69199373ea6b850b9",
+   "bytes": 24512,
+   "meses": [
+    "2023-09"
+   ],
+   "n_movs": 9,
+   "entro_bs": 3373.74,
+   "salio_bs": 3172.32,
+   "primer_mov": "2023-09-05",
+   "ultimo_mov": "2023-09-30",
+   "compras_usd": 3
+  },
+  {
+   "anio": "2023",
+   "nombre": "Socamara Octubre 2023.xls",
+   "ruta": "/estados-cuenta/2023/Socamara Octubre 2023.xls",
+   "sha256": "34276aa8313ef653a83538e856bb3f5db474ad0d8f2f277c5047a094ea7670a8",
+   "bytes": 24512,
+   "meses": [
+    "2023-10"
+   ],
+   "n_movs": 13,
+   "entro_bs": 4274.64,
+   "salio_bs": 4217.88,
+   "primer_mov": "2023-10-04",
+   "ultimo_mov": "2023-10-31",
+   "compras_usd": 1
+  },
+  {
+   "anio": "2023",
+   "nombre": "Socamara Noviembre y Diciembre 2023.xls",
+   "ruta": "/estados-cuenta/2023/Socamara Noviembre y Diciembre 2023.xls",
+   "sha256": "c122326e8950b41133e215bcd2b96a117677ad83ff712047dcd82c955d9b530a",
+   "bytes": 40896,
+   "meses": [
+    "2023-11",
+    "2023-12"
+   ],
+   "n_movs": 59,
+   "entro_bs": 47981.57,
+   "salio_bs": 48128.45,
+   "primer_mov": "2023-11-07",
+   "ultimo_mov": "2023-12-31",
+   "compras_usd": 21
+  },
+  {
+   "anio": "2024",
+   "nombre": "ENERO 2024 SOCAMARA.xls",
+   "ruta": "/estados-cuenta/2024/ENERO 2024 SOCAMARA.xls",
+   "sha256": "c0179c88f1e9a12a33e5065248831a2cd15b4431d4173fc5b318ee76da870ea0",
+   "bytes": 24512,
+   "meses": [
+    "2024-01"
+   ],
+   "n_movs": 16,
+   "entro_bs": 20533.31,
+   "salio_bs": 19639.7,
+   "primer_mov": "2024-01-08",
+   "ultimo_mov": "2024-01-31",
+   "compras_usd": 6
+  },
+  {
+   "anio": "2023",
+   "nombre": "FEBRERO 2024 SOCAMARA.xls",
+   "ruta": "/estados-cuenta/2023/FEBRERO 2024 SOCAMARA.xls",
+   "sha256": "3bef1d2469183715d08b6051570bf4c6b089414607d773853495ce12881370a6",
+   "bytes": 24512,
+   "meses": [
+    "2024-02"
+   ],
+   "n_movs": 12,
+   "entro_bs": 15376.0,
+   "salio_bs": 5482.45,
+   "primer_mov": "2024-02-05",
+   "ultimo_mov": "2024-02-29",
+   "compras_usd": 3
+  },
+  {
+   "anio": "2024",
+   "nombre": "Estado de Cuenta Marzo 2024.xls",
+   "ruta": "/estados-cuenta/2024/Estado de Cuenta Marzo 2024.xls",
+   "sha256": "fb222dd35a6288e0a53cc8a60e52eb152e75b19da544bc59a0642cb63bddf844",
+   "bytes": 24512,
+   "meses": [
+    "2024-03"
+   ],
+   "n_movs": 11,
+   "entro_bs": 4197.17,
+   "salio_bs": 15026.03,
+   "primer_mov": "2024-03-14",
+   "ultimo_mov": "2024-03-31",
+   "compras_usd": 4
+  },
+  {
+   "anio": "2024",
+   "nombre": "Estado de Cuenta Abril 2024.xls",
+   "ruta": "/estados-cuenta/2024/Estado de Cuenta Abril 2024.xls",
+   "sha256": "0b78bcc3819eab863cea4d481495386e3767c3d0749a5d632a35295f93997ca3",
+   "bytes": 32704,
+   "meses": [
+    "2024-04"
+   ],
+   "n_movs": 34,
+   "entro_bs": 77938.5,
+   "salio_bs": 54049.29,
+   "primer_mov": "2024-04-04",
+   "ultimo_mov": "2024-04-30",
+   "compras_usd": 11
+  },
+  {
+   "anio": "2024",
+   "nombre": "Estado de Cuenta Mayo 2024.xls",
+   "ruta": "/estados-cuenta/2024/Estado de Cuenta Mayo 2024.xls",
+   "sha256": "b6a199154128350feef09349b9eee96043d2f95f8460d0bd58e795e8ecfb06e3",
+   "bytes": 24512,
+   "meses": [
+    "2024-05"
+   ],
+   "n_movs": 13,
+   "entro_bs": 13263.52,
+   "salio_bs": 27742.32,
+   "primer_mov": "2024-05-13",
+   "ultimo_mov": "2024-05-31",
+   "compras_usd": 4
+  },
+  {
+   "anio": "2024",
+   "nombre": "Estado de Cuenta Junio 2024.xls",
+   "ruta": "/estados-cuenta/2024/Estado de Cuenta Junio 2024.xls",
+   "sha256": "4a0f73a0df3148ea5311a02302e372d5de56a6b4905b49e8fa2a2bf3971660d3",
+   "bytes": 24512,
+   "meses": [
+    "2024-06"
+   ],
+   "n_movs": 12,
+   "entro_bs": 5360.33,
+   "salio_bs": 13081.43,
+   "primer_mov": "2024-06-07",
+   "ultimo_mov": "2024-06-30",
+   "compras_usd": 4
+  },
+  {
+   "anio": "2024",
+   "nombre": "Estado de Cuenta Julio 2024.xls",
+   "ruta": "/estados-cuenta/2024/Estado de Cuenta Julio 2024.xls",
+   "sha256": "39a9219931b5df28e47c8bdd217fd8e99e98f2723dfb5711562b6d8160bdc4ea",
+   "bytes": 24512,
+   "meses": [
+    "2024-07"
+   ],
+   "n_movs": 3,
+   "entro_bs": 2591.18,
+   "salio_bs": 0.5,
+   "primer_mov": "2024-07-17",
+   "ultimo_mov": "2024-07-31",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2024",
+   "nombre": "Estado de Cuenta Agosto 2024.xls",
+   "ruta": "/estados-cuenta/2024/Estado de Cuenta Agosto 2024.xls",
+   "sha256": "df642beb098f47f1fdac28ac1d6e37da09ad3954681fb7ad4242f43516657426",
+   "bytes": 24512,
+   "meses": [
+    "2024-08"
+   ],
+   "n_movs": 14,
+   "entro_bs": 15742.36,
+   "salio_bs": 19669.58,
+   "primer_mov": "2024-08-03",
+   "ultimo_mov": "2024-08-31",
+   "compras_usd": 4
+  },
+  {
+   "anio": "2024",
+   "nombre": "Estado de Cuenta Septiembre 2024.xls",
+   "ruta": "/estados-cuenta/2024/Estado de Cuenta Septiembre 2024.xls",
+   "sha256": "31b4a077c63d57d17af20cc1eb54bf7b1f0117d45d9dc185958da0768bc84ab3",
+   "bytes": 24512,
+   "meses": [
+    "2024-09"
+   ],
+   "n_movs": 12,
+   "entro_bs": 14151.9,
+   "salio_bs": 13292.93,
+   "primer_mov": "2024-09-12",
+   "ultimo_mov": "2024-09-30",
+   "compras_usd": 3
+  },
+  {
+   "anio": "2024",
+   "nombre": "Etado de Cuenta Octubre 2024.xls",
+   "ruta": "/estados-cuenta/2024/Etado de Cuenta Octubre 2024.xls",
+   "sha256": "341eee52c7c5f17af877af1a534d6bb0ccbd7250a3a48be2d1eb1c31bf75d62b",
+   "bytes": 24512,
+   "meses": [
+    "2024-10"
+   ],
+   "n_movs": 7,
+   "entro_bs": 42052.34,
+   "salio_bs": 3242.2,
+   "primer_mov": "2024-10-01",
+   "ultimo_mov": "2024-10-31",
+   "compras_usd": 1
+  },
+  {
+   "anio": "2024",
+   "nombre": "Estado de cuenta Noviembre 2024.xls",
+   "ruta": "/estados-cuenta/2024/Estado de cuenta Noviembre 2024.xls",
+   "sha256": "85563d6bd54be18e9c2cf5df813ee809c38ee41939051ab87aa55933882b1b05",
+   "bytes": 24512,
+   "meses": [
+    "2024-11"
+   ],
+   "n_movs": 12,
+   "entro_bs": 33668.97,
+   "salio_bs": 49552.63,
+   "primer_mov": "2024-11-19",
+   "ultimo_mov": "2024-11-30",
+   "compras_usd": 3
+  },
+  {
+   "anio": "2024",
+   "nombre": "Diciembre 2024 Socamara.xls",
+   "ruta": "/estados-cuenta/2024/Diciembre 2024 Socamara.xls",
+   "sha256": "fce3760ef7cbdfd6d9b1220c9c0697b3ca8fb43a5792f91fc9ef866149465a4b",
+   "bytes": 24512,
+   "meses": [
+    "2024-12"
+   ],
+   "n_movs": 15,
+   "entro_bs": 41692.78,
+   "salio_bs": 44633.24,
+   "primer_mov": "2024-12-06",
+   "ultimo_mov": "2024-12-31",
+   "compras_usd": 5
+  },
+  {
+   "anio": "2025",
+   "nombre": "Estado de Cuenta Enero 2025.xls",
+   "ruta": "/estados-cuenta/2025/Estado de Cuenta Enero 2025.xls",
+   "sha256": "4cf1d2318aed78de87c40bc59e59c7c45ea2c2ebf6889fdd7d962f87f2088d8d",
+   "bytes": 24512,
+   "meses": [
+    "2025-01"
+   ],
+   "n_movs": 11,
+   "entro_bs": 11943.35,
+   "salio_bs": 22971.33,
+   "primer_mov": "2025-01-04",
+   "ultimo_mov": "2025-01-31",
+   "compras_usd": 2
+  },
+  {
+   "anio": "2025",
+   "nombre": "Estado de Cuenta Febrero 2025.xls",
+   "ruta": "/estados-cuenta/2025/Estado de Cuenta Febrero 2025.xls",
+   "sha256": "7320d2b5e69e53cb1b02acd54d056c98021c01662f5b803cb1b6a80d42d2f23d",
+   "bytes": 24512,
+   "meses": [
+    "2025-02"
+   ],
+   "n_movs": 7,
+   "entro_bs": 3622.07,
+   "salio_bs": 12903.39,
+   "primer_mov": "2025-02-02",
+   "ultimo_mov": "2025-02-28",
+   "compras_usd": 1
+  },
+  {
+   "anio": "2025",
+   "nombre": "Estado de Cuenta Marzo 2025.xls",
+   "ruta": "/estados-cuenta/2025/Estado de Cuenta Marzo 2025.xls",
+   "sha256": "c687c2ccad021f56bebf98a266d36bb94c8da120351f70b2ebbbfb4accc5924a",
+   "bytes": 24512,
+   "meses": [
+    "2025-03"
+   ],
+   "n_movs": 11,
+   "entro_bs": 29396.42,
+   "salio_bs": 18889.44,
+   "primer_mov": "2025-03-10",
+   "ultimo_mov": "2025-03-31",
+   "compras_usd": 1
+  },
+  {
+   "anio": "2025",
+   "nombre": "Corte de la Cuenta Abril 2025.xls",
+   "ruta": "/estados-cuenta/2025/Corte de la Cuenta Abril 2025.xls",
+   "sha256": "5b092f704dc7bb99683ac94faf5b6a3d0f9e8c3a9727e5836080bbb34c8dfc12",
+   "bytes": 24512,
+   "meses": [
+    "2025-04"
+   ],
+   "n_movs": 5,
+   "entro_bs": 4508.47,
+   "salio_bs": 8371.37,
+   "primer_mov": "2025-04-01",
+   "ultimo_mov": "2025-04-15",
+   "compras_usd": 1
+  },
+  {
+   "anio": "2025",
+   "nombre": "Estado de cuenta Mayo 2025.xls",
+   "ruta": "/estados-cuenta/2025/Estado de cuenta Mayo 2025.xls",
+   "sha256": "80ba1c08f0db3a331287b27cccbbee6d003b93112363e8cef809817d04a7f190",
+   "bytes": 109056,
+   "meses": [
+    "2025-05"
+   ],
+   "n_movs": 12,
+   "entro_bs": 16097.63,
+   "salio_bs": 17247.65,
+   "primer_mov": "2025-05-03",
+   "ultimo_mov": "2025-05-31",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2025",
+   "nombre": "Estado Cuenta Junio 2025.xls",
+   "ruta": "/estados-cuenta/2025/Estado Cuenta Junio 2025.xls",
+   "sha256": "6dd1fdda730dbe206b24e52ed13cd6cb48c18915bbaf3534746293979f717413",
+   "bytes": 107520,
+   "meses": [
+    "2025-06"
+   ],
+   "n_movs": 7,
+   "entro_bs": 58900.98,
+   "salio_bs": 1977.54,
+   "primer_mov": "2025-06-07",
+   "ultimo_mov": "2025-06-30",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2025",
+   "nombre": "Corte de Cuenta Julio 2025.xls",
+   "ruta": "/estados-cuenta/2025/Corte de Cuenta Julio 2025.xls",
+   "sha256": "5942b299e7ff493c63a27e0386287bc11844a1834c59116e7ccdc868238156e7",
+   "bytes": 108032,
+   "meses": [
+    "2025-07"
+   ],
+   "n_movs": 8,
+   "entro_bs": 12387.14,
+   "salio_bs": 12316.34,
+   "primer_mov": "2025-07-07",
+   "ultimo_mov": "2025-07-18",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2025",
+   "nombre": "Agosto a Diciembre 2025 Socamara.xls",
+   "ruta": "/estados-cuenta/2025/Agosto a Diciembre 2025 Socamara.xls",
+   "sha256": "706840164cc6ebbb74d38254f3899d518e22af1a1fd6fa3fe9cebb041e6aea45",
+   "bytes": 40896,
+   "meses": [
+    "2025-08",
+    "2025-09",
+    "2025-10",
+    "2025-11",
+    "2025-12"
+   ],
+   "n_movs": 62,
+   "entro_bs": 362992.83,
+   "salio_bs": 376014.91,
+   "primer_mov": "2025-08-04",
+   "ultimo_mov": "2025-12-31",
+   "compras_usd": 1
+  },
+  {
+   "anio": "2026",
+   "nombre": "Enero 2026 Socamara.xls",
+   "ruta": "/estados-cuenta/2026/Enero 2026 Socamara.xls",
+   "sha256": "ccf9da8f220d5bdbc11b141bad6a23369cedae0104a7673bb714543e370135f5",
+   "bytes": 24512,
+   "meses": [
+    "2026-01"
+   ],
+   "n_movs": 9,
+   "entro_bs": 35906.25,
+   "salio_bs": 49682.03,
+   "primer_mov": "2026-01-03",
+   "ultimo_mov": "2026-01-31",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2026",
+   "nombre": "Febrero 2026 Socamara.xls",
+   "ruta": "/estados-cuenta/2026/Febrero 2026 Socamara.xls",
+   "sha256": "7034de3dbe15d593fa31833575708fc50f5dbcc53d9e0f30a8935b72e12f6532",
+   "bytes": 24512,
+   "meses": [
+    "2026-02"
+   ],
+   "n_movs": 9,
+   "entro_bs": 226357.79,
+   "salio_bs": 108636.51,
+   "primer_mov": "2026-02-03",
+   "ultimo_mov": "2026-02-28",
+   "compras_usd": 1
+  },
+  {
+   "anio": "2026",
+   "nombre": "Marzo 2026 Socamara.xls",
+   "ruta": "/estados-cuenta/2026/Marzo 2026 Socamara.xls",
+   "sha256": "f8b4c0d06f65b29e27769c623bc2ec8d761ca3ab2ee6ac71e67fa666a0bfbae1",
+   "bytes": 24512,
+   "meses": [
+    "2026-03"
+   ],
+   "n_movs": 24,
+   "entro_bs": 140324.26,
+   "salio_bs": 163824.16,
+   "primer_mov": "2026-03-04",
+   "ultimo_mov": "2026-03-31",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2026",
+   "nombre": "Abril 2026 Socamara.xls",
+   "ruta": "/estados-cuenta/2026/Abril 2026 Socamara.xls",
+   "sha256": "e00ae182efdd1437c4e506cb8b58e2c00196ddf40d62bddcb7e8e7580056e880",
+   "bytes": 24512,
+   "meses": [
+    "2026-04"
+   ],
+   "n_movs": 17,
+   "entro_bs": 173813.73,
+   "salio_bs": 192853.75,
+   "primer_mov": "2026-04-01",
+   "ultimo_mov": "2026-04-30",
+   "compras_usd": 1
+  },
+  {
+   "anio": "2026",
+   "nombre": "Mayo 2026 Socamara.xls",
+   "ruta": "/estados-cuenta/2026/Mayo 2026 Socamara.xls",
+   "sha256": "5525177981af6cc7d5ac25a8f7ef9e92d7d51c99ff533da94111d2228b72e9f7",
+   "bytes": 24512,
+   "meses": [
+    "2026-05"
+   ],
+   "n_movs": 10,
+   "entro_bs": 60681.43,
+   "salio_bs": 81641.03,
+   "primer_mov": "2026-05-04",
+   "ultimo_mov": "2026-05-31",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2026",
+   "nombre": "Junio 2026 Socamara.xls",
+   "ruta": "/estados-cuenta/2026/Junio 2026 Socamara.xls",
+   "sha256": "451b3d95e284f7e06518885bfd9c93e1da9beebb50c547070c582c288f70de6d",
+   "bytes": 24512,
+   "meses": [
+    "2026-06"
+   ],
+   "n_movs": 12,
+   "entro_bs": 121108.21,
+   "salio_bs": 56214.28,
+   "primer_mov": "2026-06-09",
+   "ultimo_mov": "2026-06-30",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2026",
+   "nombre": "Julio 2026 Socamara.xls",
+   "ruta": "/estados-cuenta/2026/Julio 2026 Socamara.xls",
+   "sha256": "479e1bd09e3c2cb46994461c318637eee9a364e38cc280541cb014d301c300be",
+   "bytes": 24512,
+   "meses": [
+    "2026-07"
+   ],
+   "n_movs": 18,
+   "entro_bs": 689232.53,
+   "salio_bs": 247272.32,
+   "primer_mov": "2026-07-03",
+   "ultimo_mov": "2026-07-31",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2026",
+   "nombre": "Agosto 2026 Socamara.xls",
+   "ruta": "/estados-cuenta/2026/Agosto 2026 Socamara.xls",
+   "sha256": "1b8ebbada9e4581cb76eb13c2878257af9c8c6924d8b118506a162a0ea236c5e",
+   "bytes": 24512,
+   "meses": [
+    "2026-08"
+   ],
+   "n_movs": 22,
+   "entro_bs": 492391.66,
+   "salio_bs": 700990.89,
+   "primer_mov": "2026-08-01",
+   "ultimo_mov": "2026-08-31",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2026",
+   "nombre": "Agosto 2026 Socamara.xlsx",
+   "ruta": "/estados-cuenta/2026/Agosto 2026 Socamara.xlsx",
+   "sha256": "5d86bfc6089be51403f517b8cddcd16f4362d170355b154971c6e2cc58bb15c7",
+   "bytes": 24512,
+   "meses": [
+    "2026-08"
+   ],
+   "n_movs": 22,
+   "entro_bs": 492391.66,
+   "salio_bs": 700990.89,
+   "primer_mov": "2026-08-01",
+   "ultimo_mov": "2026-08-31",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2026",
+   "nombre": "Agosto y Corte de Sep 2026 Socamara.xlsx",
+   "ruta": "/estados-cuenta/2026/Agosto y Corte de Sep 2026 Socamara.xlsx",
+   "sha256": "e986628a0e1f5469ca0c527aee96e75f754ef8a5245bf678108f3d9d346555e8",
+   "bytes": 24512,
+   "meses": [
+    "2026-08",
+    "2026-09"
+   ],
+   "n_movs": 25,
+   "entro_bs": 676143.14,
+   "salio_bs": 536555.89,
+   "primer_mov": "2026-08-13",
+   "ultimo_mov": "2026-09-25",
+   "compras_usd": 0
+  },
+  {
+   "anio": "2026",
+   "nombre": "Septiembre 2026 Socamara.xls",
+   "ruta": "/estados-cuenta/2026/Septiembre 2026 Socamara.xls",
+   "sha256": "bf71b45ee274fef9f754429b881433a37bc23e881fd661fc0e4f9b5b8a9e276e",
+   "bytes": 24512,
+   "meses": [
+    "2026-09"
+   ],
+   "n_movs": 22,
+   "entro_bs": 184165.09,
+   "salio_bs": 402369.65,
+   "primer_mov": "2026-09-05",
+   "ultimo_mov": "2026-09-30",
+   "compras_usd": 0
+  }
+ ],
+ "meses": [
+  {
+   "ym": "2022-08",
+   "n_movs": 14,
+   "entro_bs": 2650.21,
+   "salio_bs": 2848.65,
+   "saldo_fin_bs": 1297.38,
+   "cuadra": null
+  },
+  {
+   "ym": "2022-09",
+   "n_movs": 11,
+   "entro_bs": 862.15,
+   "salio_bs": 1242.74,
+   "saldo_fin_bs": 916.79,
+   "cuadra": true
+  },
+  {
+   "ym": "2022-10",
+   "n_movs": 19,
+   "entro_bs": 1864.35,
+   "salio_bs": 992.17,
+   "saldo_fin_bs": 890.03,
+   "cuadra": false
+  },
+  {
+   "ym": "2022-11",
+   "n_movs": 13,
+   "entro_bs": 2384.43,
+   "salio_bs": 3258.19,
+   "saldo_fin_bs": 16.27,
+   "cuadra": true
+  },
+  {
+   "ym": "2022-12",
+   "n_movs": 7,
+   "entro_bs": 2805.86,
+   "salio_bs": 0.05,
+   "saldo_fin_bs": 2822.08,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-01",
+   "n_movs": 16,
+   "entro_bs": 4364.68,
+   "salio_bs": 4695.92,
+   "saldo_fin_bs": 2490.84,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-02",
+   "n_movs": 6,
+   "entro_bs": 7486.6,
+   "salio_bs": 0.05,
+   "saldo_fin_bs": 9977.39,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-03",
+   "n_movs": 18,
+   "entro_bs": 6671.13,
+   "salio_bs": 16300.49,
+   "saldo_fin_bs": 348.03,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-04",
+   "n_movs": 19,
+   "entro_bs": 6827.77,
+   "salio_bs": 6781.25,
+   "saldo_fin_bs": 394.55,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-05",
+   "n_movs": 18,
+   "entro_bs": 2136.03,
+   "salio_bs": 2490.98,
+   "saldo_fin_bs": 39.6,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-06",
+   "n_movs": 15,
+   "entro_bs": 3321.86,
+   "salio_bs": 3240.94,
+   "saldo_fin_bs": 120.52,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-07",
+   "n_movs": 16,
+   "entro_bs": 15546.66,
+   "salio_bs": 11797.86,
+   "saldo_fin_bs": 3869.32,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-08",
+   "n_movs": 19,
+   "entro_bs": 11031.77,
+   "salio_bs": 14900.53,
+   "saldo_fin_bs": 0.56,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-09",
+   "n_movs": 9,
+   "entro_bs": 3373.74,
+   "salio_bs": 3172.32,
+   "saldo_fin_bs": 201.98,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-10",
+   "n_movs": 13,
+   "entro_bs": 4274.64,
+   "salio_bs": 4217.88,
+   "saldo_fin_bs": 258.74,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-11",
+   "n_movs": 30,
+   "entro_bs": 26152.96,
+   "salio_bs": 23421.88,
+   "saldo_fin_bs": 2989.82,
+   "cuadra": true
+  },
+  {
+   "ym": "2023-12",
+   "n_movs": 29,
+   "entro_bs": 21828.61,
+   "salio_bs": 24706.57,
+   "saldo_fin_bs": 111.86,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-01",
+   "n_movs": 16,
+   "entro_bs": 20533.31,
+   "salio_bs": 19639.7,
+   "saldo_fin_bs": 1005.47,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-02",
+   "n_movs": 12,
+   "entro_bs": 15376.0,
+   "salio_bs": 5482.45,
+   "saldo_fin_bs": 10899.02,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-03",
+   "n_movs": 11,
+   "entro_bs": 4197.17,
+   "salio_bs": 15026.03,
+   "saldo_fin_bs": 70.16,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-04",
+   "n_movs": 34,
+   "entro_bs": 77938.5,
+   "salio_bs": 54049.29,
+   "saldo_fin_bs": 23959.37,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-05",
+   "n_movs": 13,
+   "entro_bs": 13263.52,
+   "salio_bs": 27742.32,
+   "saldo_fin_bs": 9480.57,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-06",
+   "n_movs": 12,
+   "entro_bs": 5360.33,
+   "salio_bs": 13081.43,
+   "saldo_fin_bs": 1759.47,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-07",
+   "n_movs": 3,
+   "entro_bs": 2591.18,
+   "salio_bs": 0.5,
+   "saldo_fin_bs": 4350.15,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-08",
+   "n_movs": 14,
+   "entro_bs": 15742.36,
+   "salio_bs": 19669.58,
+   "saldo_fin_bs": 422.93,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-09",
+   "n_movs": 12,
+   "entro_bs": 14151.9,
+   "salio_bs": 13292.93,
+   "saldo_fin_bs": 1281.9,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-10",
+   "n_movs": 7,
+   "entro_bs": 42052.34,
+   "salio_bs": 3242.2,
+   "saldo_fin_bs": 40092.04,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-11",
+   "n_movs": 12,
+   "entro_bs": 33668.97,
+   "salio_bs": 49552.63,
+   "saldo_fin_bs": 24208.38,
+   "cuadra": true
+  },
+  {
+   "ym": "2024-12",
+   "n_movs": 15,
+   "entro_bs": 41692.78,
+   "salio_bs": 44633.24,
+   "saldo_fin_bs": 21267.92,
+   "cuadra": true
+  },
+  {
+   "ym": "2025-01",
+   "n_movs": 11,
+   "entro_bs": 11943.35,
+   "salio_bs": 22971.33,
+   "saldo_fin_bs": 10239.94,
+   "cuadra": true
+  },
+  {
+   "ym": "2025-02",
+   "n_movs": 7,
+   "entro_bs": 3622.07,
+   "salio_bs": 12903.39,
+   "saldo_fin_bs": 958.62,
+   "cuadra": true
+  },
+  {
+   "ym": "2025-03",
+   "n_movs": 11,
+   "entro_bs": 29396.42,
+   "salio_bs": 18889.44,
+   "saldo_fin_bs": 11465.6,
+   "cuadra": true
+  },
+  {
+   "ym": "2025-04",
+   "n_movs": 5,
+   "entro_bs": 4508.47,
+   "salio_bs": 8371.37,
+   "saldo_fin_bs": 7602.7,
+   "cuadra": true
+  },
+  {
+   "ym": "2025-05",
+   "n_movs": 12,
+   "entro_bs": 16097.63,
+   "salio_bs": 17247.65,
+   "saldo_fin_bs": 5481.31,
+   "cuadra": false
+  },
+  {
+   "ym": "2025-06",
+   "n_movs": 7,
+   "entro_bs": 58900.98,
+   "salio_bs": 1977.54,
+   "saldo_fin_bs": 62404.75,
+   "cuadra": true
+  },
+  {
+   "ym": "2025-07",
+   "n_movs": 8,
+   "entro_bs": 12387.14,
+   "salio_bs": 12316.34,
+   "saldo_fin_bs": 62475.55,
+   "cuadra": true
+  },
+  {
+   "ym": "2025-08",
+   "n_movs": 10,
+   "entro_bs": 38933.64,
+   "salio_bs": 41538.41,
+   "saldo_fin_bs": 25222.61,
+   "cuadra": false
+  },
+  {
+   "ym": "2025-09",
+   "n_movs": 8,
+   "entro_bs": 42194.22,
+   "salio_bs": 55587.76,
+   "saldo_fin_bs": 11829.07,
+   "cuadra": true
+  },
+  {
+   "ym": "2025-10",
+   "n_movs": 15,
+   "entro_bs": 14984.58,
+   "salio_bs": 17003.58,
+   "saldo_fin_bs": 9810.07,
+   "cuadra": true
+  },
+  {
+   "ym": "2025-11",
+   "n_movs": 11,
+   "entro_bs": 92232.72,
+   "salio_bs": 75450.64,
+   "saldo_fin_bs": 26592.15,
+   "cuadra": true
+  },
+  {
+   "ym": "2025-12",
+   "n_movs": 18,
+   "entro_bs": 174647.67,
+   "salio_bs": 186434.52,
+   "saldo_fin_bs": 14805.3,
+   "cuadra": true
+  },
+  {
+   "ym": "2026-01",
+   "n_movs": 9,
+   "entro_bs": 35906.25,
+   "salio_bs": 49682.03,
+   "saldo_fin_bs": 1029.52,
+   "cuadra": true
+  },
+  {
+   "ym": "2026-02",
+   "n_movs": 9,
+   "entro_bs": 226357.79,
+   "salio_bs": 108636.51,
+   "saldo_fin_bs": 118750.8,
+   "cuadra": true
+  },
+  {
+   "ym": "2026-03",
+   "n_movs": 24,
+   "entro_bs": 140324.26,
+   "salio_bs": 163824.16,
+   "saldo_fin_bs": 95250.9,
+   "cuadra": true
+  },
+  {
+   "ym": "2026-04",
+   "n_movs": 17,
+   "entro_bs": 173813.73,
+   "salio_bs": 192853.75,
+   "saldo_fin_bs": 76210.88,
+   "cuadra": true
+  },
+  {
+   "ym": "2026-05",
+   "n_movs": 10,
+   "entro_bs": 60681.43,
+   "salio_bs": 81641.03,
+   "saldo_fin_bs": 55251.28,
+   "cuadra": true
+  },
+  {
+   "ym": "2026-06",
+   "n_movs": 12,
+   "entro_bs": 121108.21,
+   "salio_bs": 56214.28,
+   "saldo_fin_bs": 120145.21,
+   "cuadra": true
+  },
+  {
+   "ym": "2026-07",
+   "n_movs": 18,
+   "entro_bs": 689232.53,
+   "salio_bs": 247272.32,
+   "saldo_fin_bs": 562105.42,
+   "cuadra": true
+  },
+  {
+   "ym": "2026-08",
+   "n_movs": 22,
+   "entro_bs": 492391.66,
+   "salio_bs": 700990.89,
+   "saldo_fin_bs": 353506.19,
+   "cuadra": true
+  },
+  {
+   "ym": "2026-09",
+   "n_movs": 22,
+   "entro_bs": 184165.09,
+   "salio_bs": 402369.65,
+   "saldo_fin_bs": 135301.63,
+   "cuadra": true
+  }
+ ]
+}
