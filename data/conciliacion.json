@@ -22,13 +22,420 @@
  },
  "totales": {
   "recibo_total": 4014133.36,
-  "banco_salio": 2452142.91,
-  "banco_entro": 2847165.82,
+  "banco_salio": 2848628.55,
+  "banco_entro": 3033567.51,
   "bs_coinciden": 321935.28,
   "bs_sin_pago": 3692198.08,
-  "bs_sin_respaldo": 2130970.59
+  "bs_sin_respaldo": 2527456.23,
+  "usd_comprado": 9950.0,
+  "usd_pagado": 60.0,
+  "gladys_bs": 267748.7,
+  "gladys_usd": 1430.0,
+  "taurus_entro": 3017723.22,
+  "otros_entro": 16258.43
  },
+ "tasas_mes": [
+  {
+   "ym": "2022-09",
+   "bcv": 8.2,
+   "paralela": 8.32,
+   "impl_media": 8.26,
+   "n_compras": 1
+  },
+  {
+   "ym": "2022-10",
+   "bcv": 8.59,
+   "paralela": 9.03,
+   "impl_media": 9.01,
+   "n_compras": 2
+  },
+  {
+   "ym": "2022-11",
+   "bcv": 11.07,
+   "paralela": 13.25,
+   "impl_media": 10.83,
+   "n_compras": 3
+  },
+  {
+   "ym": "2022-12",
+   "bcv": 17.48,
+   "paralela": 18.6,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2023-01",
+   "bcv": 21.9512,
+   "paralela": 23.11,
+   "impl_media": 22.4,
+   "n_compras": 4
+  },
+  {
+   "ym": "2023-02",
+   "bcv": 24.3635,
+   "paralela": 24.75,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2023-03",
+   "bcv": 24.4968,
+   "paralela": 24.72,
+   "impl_media": 25.39,
+   "n_compras": 7
+  },
+  {
+   "ym": "2023-04",
+   "bcv": 24.7304,
+   "paralela": 25.63,
+   "impl_media": 25.06,
+   "n_compras": 6
+  },
+  {
+   "ym": "2023-05",
+   "bcv": 26.1639,
+   "paralela": 27.67,
+   "impl_media": 27.5,
+   "n_compras": 3
+  },
+  {
+   "ym": "2023-06",
+   "bcv": 27.8546,
+   "paralela": 29.04,
+   "impl_media": 28.6,
+   "n_compras": 3
+  },
+  {
+   "ym": "2023-07",
+   "bcv": 29.512,
+   "paralela": 31.58,
+   "impl_media": 30.87,
+   "n_compras": 3
+  },
+  {
+   "ym": "2023-08",
+   "bcv": 32.5079,
+   "paralela": 34.17,
+   "impl_media": 32.88,
+   "n_compras": 5
+  },
+  {
+   "ym": "2023-09",
+   "bcv": 34.3009,
+   "paralela": 36.39,
+   "impl_media": 34.6,
+   "n_compras": 1
+  },
+  {
+   "ym": "2023-10",
+   "bcv": 35.1276,
+   "paralela": 36.92,
+   "impl_media": 37.24,
+   "n_compras": 1
+  },
+  {
+   "ym": "2023-11",
+   "bcv": 35.4939,
+   "paralela": 37.07,
+   "impl_media": 33.94,
+   "n_compras": 13
+  },
+  {
+   "ym": "2023-12",
+   "bcv": 35.9305,
+   "paralela": 39.57,
+   "impl_media": 37.96,
+   "n_compras": 8
+  },
+  {
+   "ym": "2024-01",
+   "bcv": 36.2032,
+   "paralela": 38.39,
+   "impl_media": 38.1,
+   "n_compras": 6
+  },
+  {
+   "ym": "2024-02",
+   "bcv": 36.1304,
+   "paralela": 38.33,
+   "impl_media": 38.21,
+   "n_compras": 3
+  },
+  {
+   "ym": "2024-03",
+   "bcv": 36.334,
+   "paralela": 38.47,
+   "impl_media": 38.06,
+   "n_compras": 3
+  },
+  {
+   "ym": "2024-04",
+   "bcv": 36.4262,
+   "paralela": 39.4,
+   "impl_media": 39.14,
+   "n_compras": 10
+  },
+  {
+   "ym": "2024-05",
+   "bcv": 36.5372,
+   "paralela": 40.36,
+   "impl_media": 39.48,
+   "n_compras": 4
+  },
+  {
+   "ym": "2024-06",
+   "bcv": 36.4085,
+   "paralela": 40.23,
+   "impl_media": 40.38,
+   "n_compras": 4
+  },
+  {
+   "ym": "2024-07",
+   "bcv": 36.6128,
+   "paralela": 42.24,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2024-08",
+   "bcv": 36.6259,
+   "paralela": 42.5,
+   "impl_media": 42.4,
+   "n_compras": 4
+  },
+  {
+   "ym": "2024-09",
+   "bcv": 36.9086,
+   "paralela": 43.09,
+   "impl_media": 44.19,
+   "n_compras": 3
+  },
+  {
+   "ym": "2024-10",
+   "bcv": 42.5622,
+   "paralela": 52.43,
+   "impl_media": 47.53,
+   "n_compras": 1
+  },
+  {
+   "ym": "2024-11",
+   "bcv": 47.3138,
+   "paralela": 56.2,
+   "impl_media": 56.97,
+   "n_compras": 3
+  },
+  {
+   "ym": "2024-12",
+   "bcv": 51.9345,
+   "paralela": 66.25,
+   "impl_media": 59.25,
+   "n_compras": 5
+  },
+  {
+   "ym": "2025-01",
+   "bcv": 57.9666,
+   "paralela": 68.43,
+   "impl_media": 69.54,
+   "n_compras": 2
+  },
+  {
+   "ym": "2025-02",
+   "bcv": 64.2464,
+   "paralela": 79.35,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2025-03",
+   "bcv": 69.5664,
+   "paralela": 99.0,
+   "impl_media": 87.09,
+   "n_compras": 1
+  },
+  {
+   "ym": "2025-04",
+   "bcv": 86.8465,
+   "paralela": 108.9,
+   "impl_media": 97.4,
+   "n_compras": 1
+  },
+  {
+   "ym": "2025-05",
+   "bcv": 96.8577,
+   "paralela": 135.25,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2025-06",
+   "bcv": 107.6245,
+   "paralela": 140.23,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2025-07",
+   "bcv": 124.5102,
+   "paralela": 164.83,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2025-08",
+   "bcv": 147.0825,
+   "paralela": 207.33,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2025-09",
+   "bcv": 177.6143,
+   "paralela": 288.5,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2025-10",
+   "bcv": 223.6459,
+   "paralela": 308.1,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2025-11",
+   "bcv": 245.6697,
+   "paralela": 382.5,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2025-12",
+   "bcv": 298.1431,
+   "paralela": 587.0,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2026-01",
+   "bcv": 367.3069,
+   "paralela": 520.0,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2026-02",
+   "bcv": 417.3579,
+   "paralela": 609.9,
+   "impl_media": 612.4,
+   "n_compras": 1
+  },
+  {
+   "ym": "2026-03",
+   "bcv": 473.8702,
+   "paralela": 657.99,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2026-04",
+   "bcv": 487.1192,
+   "paralela": 634.57,
+   "impl_media": 637.58,
+   "n_compras": 1
+  },
+  {
+   "ym": "2026-05",
+   "bcv": 549.3716,
+   "paralela": 742.58,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2026-06",
+   "bcv": 623.0223,
+   "paralela": 745.31,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2026-07",
+   "bcv": 746.6297,
+   "paralela": 852.07,
+   "impl_media": 0,
+   "n_compras": 0
+  },
+  {
+   "ym": "2026-08",
+   "bcv": 794.9917,
+   "paralela": 933.06,
+   "impl_media": 0,
+   "n_compras": 0
+  }
+ ],
  "meses": [
+  {
+   "ym": "2022-08",
+   "recibo_total": 0.0,
+   "banco_salio": 2840.59,
+   "banco_entro": 2650.21,
+   "comisiones": 8.06,
+   "fondo_0010": 0.0,
+   "n_coinciden": 0,
+   "n_sin_pago": 0,
+   "n_sin_respaldo": 4,
+   "bs_coinciden": 0.0,
+   "bs_sin_pago": 0.0,
+   "bs_sin_respaldo": 2840.59,
+   "coinciden": [],
+   "sin_pago": [],
+   "sin_respaldo": [
+    {
+     "fecha": "2022-08-01",
+     "cod": "487",
+     "bs": 602.0,
+     "compra_usd": 1,
+     "usd": "100.0",
+     "concepto": "TELF.:000000000000 CED.:V003665503 CTA.:01050011721011527685 compra 100"
+    },
+    {
+     "fecha": "2022-08-02",
+     "cod": "262",
+     "bs": 480.8,
+     "compra_usd": 1,
+     "usd": "80.0",
+     "concepto": "Tranf. entre Ctas. Internet TRANSFERENCIA A FAVOR DE: RENDON MARTINEZ GLADYMAR PARA LA CUE"
+    },
+    {
+     "fecha": "2022-08-02",
+     "cod": "487",
+     "bs": 1635.39,
+     "compra_usd": 0,
+     "usd": "",
+     "concepto": "TELF.:000000000000 CED.:V011564874 CTA.:01150063330631034270 Abono tecnico Ascensores"
+    },
+    {
+     "fecha": "2022-08-12",
+     "cod": "487",
+     "bs": 122.4,
+     "compra_usd": 1,
+     "usd": "20.0",
+     "concepto": "TELF.:000000000000 CED.:V013126033 CTA.:01340384813843092980 compra de 20"
+    }
+   ],
+   "taurus_entro": 2589.21,
+   "otros_entro": 61.0,
+   "saldo_banco": 1297.38,
+   "usd_comprado": 200.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 480.8,
+   "gladys_usd": 80.0,
+   "gladys_ops": 1,
+   "usd_acumulado": 200.0,
+   "tasa_bcv": 0.0,
+   "tasa_paralela": 0.0,
+   "tasa_impl_media": 6.03,
+   "n_compras_mes": 3
+  },
   {
    "ym": "2022-09",
    "recibo_total": 1849.81,
@@ -145,7 +552,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V005970777 CTA.:01050032050032272324 instrucciones de Esther"
     }
-   ]
+   ],
+   "taurus_entro": 779.85,
+   "otros_entro": 82.3,
+   "saldo_banco": 916.79,
+   "usd_comprado": 110.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 310.0,
+   "tasa_bcv": 8.2,
+   "tasa_paralela": 8.32,
+   "tasa_impl_media": 8.26,
+   "n_compras_mes": 1
   },
   {
    "ym": "2022-10",
@@ -295,7 +715,20 @@
      "usd": "30.0",
      "concepto": "TELF.:000000000000 CED.:V005970777 CTA.:01050032050032272324 Instrucciones ET 30"
     }
-   ]
+   ],
+   "taurus_entro": 1602.82,
+   "otros_entro": 261.53,
+   "saldo_banco": 890.03,
+   "usd_comprado": 90.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 400.0,
+   "tasa_bcv": 8.59,
+   "tasa_paralela": 9.03,
+   "tasa_impl_media": 9.01,
+   "n_compras_mes": 2
   },
   {
    "ym": "2022-11",
@@ -445,7 +878,20 @@
      "usd": "20.0",
      "concepto": "TELF.:000000000000 CED.:V005970777 CTA.:01050032050032272324 compra de 20"
     }
-   ]
+   ],
+   "taurus_entro": 2384.43,
+   "otros_entro": 0.0,
+   "saldo_banco": 16.27,
+   "usd_comprado": 280.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 680.0,
+   "tasa_bcv": 11.07,
+   "tasa_paralela": 13.25,
+   "tasa_impl_media": 10.83,
+   "n_compras_mes": 3
   },
   {
    "ym": "2022-12",
@@ -565,7 +1011,20 @@
      "sec": "GASTOS NO COMUNES"
     }
    ],
-   "sin_respaldo": []
+   "sin_respaldo": [],
+   "taurus_entro": 2805.86,
+   "otros_entro": 0.0,
+   "saldo_banco": 2822.08,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 680.0,
+   "tasa_bcv": 17.48,
+   "tasa_paralela": 18.6,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2023-01",
@@ -720,7 +1179,20 @@
      "usd": "50.0",
      "concepto": "TELF.:000000000000 CED.:V010346654 CTA.:01340586715861042938 compra de 50"
     }
-   ]
+   ],
+   "taurus_entro": 4364.68,
+   "otros_entro": 0.0,
+   "saldo_banco": 2490.84,
+   "usd_comprado": 190.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 2199.0,
+   "gladys_usd": 100.0,
+   "gladys_ops": 1,
+   "usd_acumulado": 870.0,
+   "tasa_bcv": 21.9512,
+   "tasa_paralela": 23.11,
+   "tasa_impl_media": 22.4,
+   "n_compras_mes": 4
   },
   {
    "ym": "2023-02",
@@ -822,7 +1294,20 @@
      "sec": "GASTOS NO COMUNES"
     }
    ],
-   "sin_respaldo": []
+   "sin_respaldo": [],
+   "taurus_entro": 7486.6,
+   "otros_entro": 0.0,
+   "saldo_banco": 9977.39,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 870.0,
+   "tasa_bcv": 24.3635,
+   "tasa_paralela": 24.75,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2023-03",
@@ -981,7 +1466,20 @@
      "usd": "90.0",
      "concepto": "TELF.:000000000000 CED.:V010864226 CTA.:01340350383502129693 compra de 90"
     }
-   ]
+   ],
+   "taurus_entro": 6671.13,
+   "otros_entro": 0.0,
+   "saldo_banco": 348.03,
+   "usd_comprado": 640.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 1510.0,
+   "tasa_bcv": 24.4968,
+   "tasa_paralela": 24.72,
+   "tasa_impl_media": 25.39,
+   "n_compras_mes": 7
   },
   {
    "ym": "2023-04",
@@ -1137,7 +1635,20 @@
      "usd": "80.0",
      "concepto": "TELF.:000000000000 CED.:E001017621 CTA.:01020125010100035471 instrucciones Esther T compra"
     }
-   ]
+   ],
+   "taurus_entro": 6827.77,
+   "otros_entro": 0.0,
+   "saldo_banco": 394.55,
+   "usd_comprado": 270.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 497.4,
+   "gladys_usd": 20.0,
+   "gladys_ops": 1,
+   "usd_acumulado": 1780.0,
+   "tasa_bcv": 24.7304,
+   "tasa_paralela": 25.63,
+   "tasa_impl_media": 25.06,
+   "n_compras_mes": 6
   },
   {
    "ym": "2023-05",
@@ -1275,7 +1786,20 @@
      "usd": "20.0",
      "concepto": "TELF.:000000000000 CED.:E001017621 CTA.:01020125010100035471 compra 20"
     }
-   ]
+   ],
+   "taurus_entro": 1876.93,
+   "otros_entro": 259.1,
+   "saldo_banco": 39.6,
+   "usd_comprado": 50.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 1830.0,
+   "tasa_bcv": 26.1639,
+   "tasa_paralela": 27.67,
+   "tasa_impl_media": 27.5,
+   "n_compras_mes": 3
   },
   {
    "ym": "2023-06",
@@ -1431,7 +1955,20 @@
      "usd": "75.0",
      "concepto": "TELF.:000000000000 CED.:V023643620 CTA.:01050614080614282284 Cambio 75 Inst E.T"
     }
-   ]
+   ],
+   "taurus_entro": 3043.66,
+   "otros_entro": 278.2,
+   "saldo_banco": 120.52,
+   "usd_comprado": 95.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 1925.0,
+   "tasa_bcv": 27.8546,
+   "tasa_paralela": 29.04,
+   "tasa_impl_media": 28.6,
+   "n_compras_mes": 3
   },
   {
    "ym": "2023-07",
@@ -1597,7 +2134,20 @@
      "usd": "40.0",
      "concepto": "TRANSFERENCIA A FAVOR DE: RENDON MARTINEZ GLADYMAR PARA LA CUENTA NRO. 0191001204101201279"
     }
-   ]
+   ],
+   "taurus_entro": 15252.06,
+   "otros_entro": 294.6,
+   "saldo_banco": 3869.32,
+   "usd_comprado": 380.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 1260.0,
+   "gladys_usd": 40.0,
+   "gladys_ops": 1,
+   "usd_acumulado": 2305.0,
+   "tasa_bcv": 29.512,
+   "tasa_paralela": 31.58,
+   "tasa_impl_media": 30.87,
+   "n_compras_mes": 3
   },
   {
    "ym": "2023-08",
@@ -1753,7 +2303,20 @@
      "usd": "149.0",
      "concepto": "TELF.:000000000000 CED.:V010864226 CTA.:01020104770000017721 COMPRA DE 149 90"
     }
-   ]
+   ],
+   "taurus_entro": 10701.77,
+   "otros_entro": 330.0,
+   "saldo_banco": 0.56,
+   "usd_comprado": 399.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 4205.6,
+   "gladys_usd": 130.0,
+   "gladys_ops": 2,
+   "usd_acumulado": 2704.0,
+   "tasa_bcv": 32.5079,
+   "tasa_paralela": 34.17,
+   "tasa_impl_media": 32.88,
+   "n_compras_mes": 5
   },
   {
    "ym": "2023-09",
@@ -1891,7 +2454,20 @@
      "usd": "10.0",
      "concepto": "TELF.:000000000000 CED.:V023643620 CTA.:01050614080614282284 compra de 10"
     }
-   ]
+   ],
+   "taurus_entro": 3373.74,
+   "otros_entro": 0.0,
+   "saldo_banco": 201.98,
+   "usd_comprado": 90.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 692.0,
+   "gladys_usd": 20.0,
+   "gladys_ops": 1,
+   "usd_acumulado": 2794.0,
+   "tasa_bcv": 34.3009,
+   "tasa_paralela": 36.39,
+   "tasa_impl_media": 34.6,
+   "n_compras_mes": 1
   },
   {
    "ym": "2023-10",
@@ -2047,7 +2623,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 Materiales para el reflector"
     }
-   ]
+   ],
+   "taurus_entro": 3908.34,
+   "otros_entro": 366.3,
+   "saldo_banco": 258.74,
+   "usd_comprado": 90.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 2884.0,
+   "tasa_bcv": 35.1276,
+   "tasa_paralela": 36.92,
+   "tasa_impl_media": 37.24,
+   "n_compras_mes": 1
   },
   {
    "ym": "2023-11",
@@ -2294,7 +2883,20 @@
      "usd": "60.0",
      "concepto": "TRANSFERENCIA A FAVOR DE: RENDON MARTINEZ GLADYMAR PARA LA CUENTA NRO. 0191001204101201279"
     }
-   ]
+   ],
+   "taurus_entro": 26152.96,
+   "otros_entro": 0.0,
+   "saldo_banco": 2989.82,
+   "usd_comprado": 615.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 2959.2,
+   "gladys_usd": 80.0,
+   "gladys_ops": 2,
+   "usd_acumulado": 3499.0,
+   "tasa_bcv": 35.4939,
+   "tasa_paralela": 37.07,
+   "tasa_impl_media": 33.94,
+   "n_compras_mes": 13
   },
   {
    "ym": "2023-12",
@@ -2528,7 +3130,20 @@
      "usd": "50.0",
      "concepto": "TELF.:000000000000 CED.:E001017621 CTA.:01020125010100035471 cincuenta"
     }
-   ]
+   ],
+   "taurus_entro": 21828.61,
+   "otros_entro": 0.0,
+   "saldo_banco": 111.86,
+   "usd_comprado": 385.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 1913.0,
+   "gladys_usd": 50.0,
+   "gladys_ops": 1,
+   "usd_acumulado": 3884.0,
+   "tasa_bcv": 35.9305,
+   "tasa_paralela": 39.57,
+   "tasa_impl_media": 37.96,
+   "n_compras_mes": 8
   },
   {
    "ym": "2024-01",
@@ -2746,7 +3361,20 @@
      "usd": "50.0",
      "concepto": "TELF.:000000000000 CED.:E001017621 CTA.:01020125010100035471 cambio 50 jose"
     }
-   ]
+   ],
+   "taurus_entro": 20533.31,
+   "otros_entro": 0.0,
+   "saldo_banco": 1005.47,
+   "usd_comprado": 410.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 1145.5,
+   "gladys_usd": 30.0,
+   "gladys_ops": 2,
+   "usd_acumulado": 4294.0,
+   "tasa_bcv": 36.2032,
+   "tasa_paralela": 38.39,
+   "tasa_impl_media": 38.1,
+   "n_compras_mes": 6
   },
   {
    "ym": "2024-02",
@@ -2890,7 +3518,20 @@
      "usd": "50.0",
      "concepto": "TELF.:000000000000 CED.:E001017621 CTA.:01020125010100035471 cincuenta"
     }
-   ]
+   ],
+   "taurus_entro": 15376.0,
+   "otros_entro": 0.0,
+   "saldo_banco": 10899.02,
+   "usd_comprado": 125.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 4419.0,
+   "tasa_bcv": 36.1304,
+   "tasa_paralela": 38.33,
+   "tasa_impl_media": 38.21,
+   "n_compras_mes": 3
   },
   {
    "ym": "2024-03",
@@ -3032,7 +3673,20 @@
      "usd": "20.0",
      "concepto": "TELF.:000000000000 CED.:V023643620 CTA.:01050614080614282284 compra de 20"
     }
-   ]
+   ],
+   "taurus_entro": 4197.17,
+   "otros_entro": 0.0,
+   "saldo_banco": 70.16,
+   "usd_comprado": 390.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 8366.6,
+   "gladys_usd": 220.0,
+   "gladys_ops": 2,
+   "usd_acumulado": 4809.0,
+   "tasa_bcv": 36.334,
+   "tasa_paralela": 38.47,
+   "tasa_impl_media": 38.06,
+   "n_compras_mes": 3
   },
   {
    "ym": "2024-04",
@@ -3270,7 +3924,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 Colaboracion seores aseo"
     }
-   ]
+   ],
+   "taurus_entro": 77938.5,
+   "otros_entro": 0.0,
+   "saldo_banco": 23959.37,
+   "usd_comprado": 1315.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 8584.2,
+   "gladys_usd": 220.0,
+   "gladys_ops": 4,
+   "usd_acumulado": 6124.0,
+   "tasa_bcv": 36.4262,
+   "tasa_paralela": 39.4,
+   "tasa_impl_media": 39.14,
+   "n_compras_mes": 10
   },
   {
    "ym": "2024-05",
@@ -3445,7 +4112,20 @@
      "usd": "150.0",
      "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 diferencia compra de 150"
     }
-   ]
+   ],
+   "taurus_entro": 13263.52,
+   "otros_entro": 0.0,
+   "saldo_banco": 9480.57,
+   "usd_comprado": 550.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 13760.0,
+   "gladys_usd": 300.0,
+   "gladys_ops": 2,
+   "usd_acumulado": 6674.0,
+   "tasa_bcv": 36.5372,
+   "tasa_paralela": 40.36,
+   "tasa_impl_media": 39.48,
+   "n_compras_mes": 4
   },
   {
    "ym": "2024-06",
@@ -3592,7 +4272,20 @@
      "usd": "70.0",
      "concepto": "TELF.:000000000000 CED.:E001017621 CTA.:01020125010100035471 setenta"
     }
-   ]
+   ],
+   "taurus_entro": 5360.33,
+   "otros_entro": 0.0,
+   "saldo_banco": 1759.47,
+   "usd_comprado": 323.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 6997.0,
+   "tasa_bcv": 36.4085,
+   "tasa_paralela": 40.23,
+   "tasa_impl_media": 40.38,
+   "n_compras_mes": 4
   },
   {
    "ym": "2024-07",
@@ -3700,7 +4393,20 @@
      "sec": "GASTOS NO COMUNES"
     }
    ],
-   "sin_respaldo": []
+   "sin_respaldo": [],
+   "taurus_entro": 2591.18,
+   "otros_entro": 0.0,
+   "saldo_banco": 4350.15,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 6997.0,
+   "tasa_bcv": 36.6128,
+   "tasa_paralela": 42.24,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2024-08",
@@ -3855,7 +4561,20 @@
      "usd": "80.0",
      "concepto": "TELF.:000000000000 CED.:E001017621 CTA.:01020125010100035471 compra 80"
     }
-   ]
+   ],
+   "taurus_entro": 15375.86,
+   "otros_entro": 366.5,
+   "saldo_banco": 422.93,
+   "usd_comprado": 230.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 2023.5,
+   "gladys_usd": 40.0,
+   "gladys_ops": 2,
+   "usd_acumulado": 7227.0,
+   "tasa_bcv": 36.6259,
+   "tasa_paralela": 42.5,
+   "tasa_impl_media": 42.4,
+   "n_compras_mes": 4
   },
   {
    "ym": "2024-09",
@@ -4008,7 +4727,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 COMPRA DE pRODUCTOS"
     }
-   ]
+   ],
+   "taurus_entro": 14151.9,
+   "otros_entro": 0.0,
+   "saldo_banco": 1281.9,
+   "usd_comprado": 280.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 7507.0,
+   "tasa_bcv": 36.9086,
+   "tasa_paralela": 43.09,
+   "tasa_impl_media": 44.19,
+   "n_compras_mes": 3
   },
   {
    "ym": "2024-10",
@@ -4149,7 +4881,20 @@
      "usd": "68.0",
      "concepto": "TELF.:000000000000 CED.:E001017621 CTA.:01020125010100035471 Sesenta y Ocho"
     }
-   ]
+   ],
+   "taurus_entro": 42052.34,
+   "otros_entro": 0.0,
+   "saldo_banco": 40092.04,
+   "usd_comprado": 68.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 7575.0,
+   "tasa_bcv": 42.5622,
+   "tasa_paralela": 52.43,
+   "tasa_impl_media": 47.53,
+   "n_compras_mes": 1
   },
   {
    "ym": "2024-11",
@@ -4314,7 +5059,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 compras personal del aseo"
     }
-   ]
+   ],
+   "taurus_entro": 33668.97,
+   "otros_entro": 0.0,
+   "saldo_banco": 24208.38,
+   "usd_comprado": 850.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 8425.0,
+   "tasa_bcv": 47.3138,
+   "tasa_paralela": 56.2,
+   "tasa_impl_media": 56.97,
+   "n_compras_mes": 3
   },
   {
    "ym": "2024-12",
@@ -4489,7 +5247,20 @@
      "usd": "100.0",
      "concepto": "TRANSFERENCIA A FAVOR DE: RENDON MARTINEZ GLADYMAR PARA LA CUENTA NRO. 0191001204101201279"
     }
-   ]
+   ],
+   "taurus_entro": 41692.78,
+   "otros_entro": 0.0,
+   "saldo_banco": 21267.92,
+   "usd_comprado": 715.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 6913.0,
+   "gladys_usd": 100.0,
+   "gladys_ops": 1,
+   "usd_acumulado": 9140.0,
+   "tasa_bcv": 51.9345,
+   "tasa_paralela": 66.25,
+   "tasa_impl_media": 59.25,
+   "n_compras_mes": 5
   },
   {
    "ym": "2025-01",
@@ -4621,7 +5392,20 @@
      "usd": "170.0",
      "concepto": "TELF.:000000000000 CED.:E001017621 CTA.:01020125010100035471 ciento setenta"
     }
-   ]
+   ],
+   "taurus_entro": 11943.35,
+   "otros_entro": 0.0,
+   "saldo_banco": 10239.94,
+   "usd_comprado": 300.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9440.0,
+   "tasa_bcv": 57.9666,
+   "tasa_paralela": 68.43,
+   "tasa_impl_media": 69.54,
+   "n_compras_mes": 2
   },
   {
    "ym": "2025-02",
@@ -4761,7 +5545,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:J407543601 CTA.:01150063391004460181 Reparacion ascensor de carga"
     }
-   ]
+   ],
+   "taurus_entro": 3622.07,
+   "otros_entro": 0.0,
+   "saldo_banco": 958.62,
+   "usd_comprado": 120.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9560.0,
+   "tasa_bcv": 64.2464,
+   "tasa_paralela": 79.35,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2025-03",
@@ -4893,7 +5690,20 @@
      "usd": "200.0",
      "concepto": "TELF.:000000000000 CED.:E001017621 CTA.:01020125010100035471 doscientos"
     }
-   ]
+   ],
+   "taurus_entro": 29396.42,
+   "otros_entro": 0.0,
+   "saldo_banco": 11465.6,
+   "usd_comprado": 200.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9760.0,
+   "tasa_bcv": 69.5664,
+   "tasa_paralela": 99.0,
+   "tasa_impl_media": 87.09,
+   "n_compras_mes": 1
   },
   {
    "ym": "2025-04",
@@ -5015,7 +5825,20 @@
      "usd": "20.0",
      "concepto": "TRANSFERENCIA A FAVOR DE: ORTIZ COLMENARES CRUZ MARLENY PARA LA CUENTA NRO. 01910001431101"
     }
-   ]
+   ],
+   "taurus_entro": 4508.47,
+   "otros_entro": 0.0,
+   "saldo_banco": 7602.7,
+   "usd_comprado": 20.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9780.0,
+   "tasa_bcv": 86.8465,
+   "tasa_paralela": 108.9,
+   "tasa_impl_media": 97.4,
+   "n_compras_mes": 1
   },
   {
    "ym": "2025-05",
@@ -5164,7 +5987,20 @@
      "sec": "GASTOS NO COMUNES"
     }
    ],
-   "sin_respaldo": []
+   "sin_respaldo": [],
+   "taurus_entro": 16097.63,
+   "otros_entro": 0.0,
+   "saldo_banco": 5481.31,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9780.0,
+   "tasa_bcv": 96.8577,
+   "tasa_paralela": 135.25,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2025-06",
@@ -5265,7 +6101,20 @@
      "sec": "GASTOS NO COMUNES"
     }
    ],
-   "sin_respaldo": []
+   "sin_respaldo": [],
+   "taurus_entro": 56200.98,
+   "otros_entro": 2700.0,
+   "saldo_banco": 62404.75,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 2700.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 2,
+   "usd_acumulado": 9780.0,
+   "tasa_bcv": 107.6245,
+   "tasa_paralela": 140.23,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2025-07",
@@ -5411,7 +6260,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 Productos de Lim y colaboraci"
     }
-   ]
+   ],
+   "taurus_entro": 12387.14,
+   "otros_entro": 0.0,
+   "saldo_banco": 62475.55,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9780.0,
+   "tasa_bcv": 124.5102,
+   "tasa_paralela": 164.83,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2025-08",
@@ -5545,7 +6407,20 @@
      "usd": "",
      "concepto": "TRANSFERENCIA A FAVOR DE: RENDON MARTINEZ GLADYMAR PARA LA CUENTA NRO. 0191001204101201279"
     }
-   ]
+   ],
+   "taurus_entro": 38933.64,
+   "otros_entro": 0.0,
+   "saldo_banco": 25222.61,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 17060.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9780.0,
+   "tasa_bcv": 147.0825,
+   "tasa_paralela": 207.33,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2025-09",
@@ -5658,7 +6533,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 Pago Esther"
     }
-   ]
+   ],
+   "taurus_entro": 42194.22,
+   "otros_entro": 0.0,
+   "saldo_banco": 11829.07,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9780.0,
+   "tasa_bcv": 177.6143,
+   "tasa_paralela": 288.5,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2025-10",
@@ -5834,7 +6722,20 @@
      "usd": "",
      "concepto": "TRANSFERENCIA A FAVOR DE: RENDON MARTINEZ GLADYMAR PARA LA CUENTA NRO. 0191001204101201279"
     }
-   ]
+   ],
+   "taurus_entro": 14984.58,
+   "otros_entro": 0.0,
+   "saldo_banco": 9810.07,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 1062.4,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9780.0,
+   "tasa_bcv": 223.6459,
+   "tasa_paralela": 308.1,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2025-11",
@@ -5972,7 +6873,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:E001017621 CTA.:01020125010100035471 Pago Proveedor"
     }
-   ]
+   ],
+   "taurus_entro": 92232.72,
+   "otros_entro": 0.0,
+   "saldo_banco": 26592.15,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9780.0,
+   "tasa_bcv": 245.6697,
+   "tasa_paralela": 382.5,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2025-12",
@@ -6150,7 +7064,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V003875108 CTA.:01020388110000233424 Compra de materiales"
     }
-   ]
+   ],
+   "taurus_entro": 163802.38,
+   "otros_entro": 10845.29,
+   "saldo_banco": 14805.3,
+   "usd_comprado": 0.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 73957.5,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9780.0,
+   "tasa_bcv": 298.1431,
+   "tasa_paralela": 587.0,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2026-01",
@@ -6304,7 +7231,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V014679232 CTA.:01040008220080315597 COMPRA DE MATERIALES"
     }
-   ]
+   ],
+   "taurus_entro": 35906.25,
+   "otros_entro": 0.0,
+   "saldo_banco": 1029.52,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9780.0,
+   "tasa_bcv": 367.3069,
+   "tasa_paralela": 520.0,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2026-02",
@@ -6420,7 +7360,20 @@
      "usd": "150.0",
      "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 Compra 150 BN"
     }
-   ]
+   ],
+   "taurus_entro": 226357.79,
+   "otros_entro": 0.0,
+   "saldo_banco": 118750.8,
+   "usd_comprado": 150.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9930.0,
+   "tasa_bcv": 417.3579,
+   "tasa_paralela": 609.9,
+   "tasa_impl_media": 612.4,
+   "n_compras_mes": 1
   },
   {
    "ym": "2026-03",
@@ -6612,7 +7565,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V015801180 CTA.:01020501810000117757 Compra de cemento"
     }
-   ]
+   ],
+   "taurus_entro": 140324.26,
+   "otros_entro": 0.0,
+   "saldo_banco": 95250.9,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9930.0,
+   "tasa_bcv": 473.8702,
+   "tasa_paralela": 657.99,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2026-04",
@@ -6790,7 +7756,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 Esther"
     }
-   ]
+   ],
+   "taurus_entro": 173813.73,
+   "otros_entro": 0.0,
+   "saldo_banco": 76210.88,
+   "usd_comprado": 20.0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 31851.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9950.0,
+   "tasa_bcv": 487.1192,
+   "tasa_paralela": 634.57,
+   "tasa_impl_media": 637.58,
+   "n_compras_mes": 1
   },
   {
    "ym": "2026-05",
@@ -6910,7 +7889,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V020756360 CTA.:01340370893701034981 Compra de repuesto"
     }
-   ]
+   ],
+   "taurus_entro": 60681.43,
+   "otros_entro": 0.0,
+   "saldo_banco": 55251.28,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9950.0,
+   "tasa_bcv": 549.3716,
+   "tasa_paralela": 742.58,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2026-06",
@@ -7052,7 +8044,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 Compra Bolsas de Escombros"
     }
-   ]
+   ],
+   "taurus_entro": 121108.21,
+   "otros_entro": 0.0,
+   "saldo_banco": 120145.21,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9950.0,
+   "tasa_bcv": 623.0223,
+   "tasa_paralela": 745.31,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2026-07",
@@ -7266,7 +8271,20 @@
      "usd": "",
      "concepto": "TELF.:000000000000 CED.:J002552794 CTA.:01040039200390034881 Reembolso"
     }
-   ]
+   ],
+   "taurus_entro": 689232.53,
+   "otros_entro": 0.0,
+   "saldo_banco": 562105.42,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9950.0,
+   "tasa_bcv": 746.6297,
+   "tasa_paralela": 852.07,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   },
   {
    "ym": "2026-08",
@@ -7506,7 +8524,115 @@
      "usd": "",
      "concepto": "TRANSFERENCIA A FAVOR DE: TECNICA FUEGOPE C.A PARA LA CUENTA NRO. 01910383812100005533 Ser"
     }
-   ]
+   ],
+   "taurus_entro": 492391.66,
+   "otros_entro": 0.0,
+   "saldo_banco": 353506.19,
+   "usd_comprado": 0,
+   "usd_pagado": 0.0,
+   "gladys_bs": 86118.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9950.0,
+   "tasa_bcv": 794.9917,
+   "tasa_paralela": 933.06,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
+  },
+  {
+   "ym": "2026-09",
+   "recibo_total": 0.0,
+   "banco_salio": 393645.05,
+   "banco_entro": 183751.48,
+   "comisiones": 8724.6,
+   "fondo_0010": 0.0,
+   "n_coinciden": 0,
+   "n_sin_pago": 0,
+   "n_sin_respaldo": 8,
+   "bs_coinciden": 0.0,
+   "bs_sin_pago": 0.0,
+   "bs_sin_respaldo": 393645.05,
+   "coinciden": [],
+   "sin_pago": [],
+   "sin_respaldo": [
+    {
+     "fecha": "2026-09-05",
+     "cod": "487",
+     "bs": 284805.5,
+     "compra_usd": 0,
+     "usd": "",
+     "concepto": "TELF.:000000000000 CED.:V015801180 CTA.:01020501810000117757 Pago Fumigacin edificio"
+    },
+    {
+     "fecha": "2026-09-05",
+     "cod": "487",
+     "bs": 854.42,
+     "compra_usd": 0,
+     "usd": "",
+     "concepto": "TELF.:000000000000 CED.:V015801180 CTA.:01020501810000117757 Comisin por transf pago fumig"
+    },
+    {
+     "fecha": "2026-09-12",
+     "cod": "487",
+     "bs": 10138.08,
+     "compra_usd": 0,
+     "usd": "",
+     "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 Compra de Prod y art limpieza"
+    },
+    {
+     "fecha": "2026-09-17",
+     "cod": "487",
+     "bs": 48251.6,
+     "compra_usd": 0,
+     "usd": "",
+     "concepto": "TELF.:000000000000 CED.:V015801180 CTA.:01020501810000117757 Pago tcnico DIF de 60 por ins"
+    },
+    {
+     "fecha": "2026-09-23",
+     "cod": "487",
+     "bs": 25633.8,
+     "compra_usd": 0,
+     "usd": "",
+     "concepto": "TELF.:000000000000 CED.:V014679232 CTA.:01040008220080315597 Tcnico Cerco Elctrico"
+    },
+    {
+     "fecha": "2026-09-25",
+     "cod": "487",
+     "bs": 12816.9,
+     "compra_usd": 0,
+     "usd": "",
+     "concepto": "TELF.:000000000000 CED.:V006562544 CTA.:01020140340105995147 Cerrajero socamara"
+    },
+    {
+     "fecha": "2026-09-25",
+     "cod": "487",
+     "bs": 144.75,
+     "compra_usd": 0,
+     "usd": "",
+     "concepto": "TELF.:000000000000 CED.:V015801180 CTA.:01020501810000117757 Comisin pago tcnico de ascens"
+    },
+    {
+     "fecha": "2026-09-26",
+     "cod": "487",
+     "bs": 11000.0,
+     "compra_usd": 0,
+     "usd": "",
+     "concepto": "TELF.:000000000000 CED.:V015801180 CTA.:01020501810000117757 Compra sello Junta de adminis"
+    }
+   ],
+   "taurus_entro": 183751.48,
+   "otros_entro": 413.61,
+   "saldo_banco": 135301.63,
+   "usd_comprado": 0,
+   "usd_pagado": 60.0,
+   "gladys_bs": 0.0,
+   "gladys_usd": 0.0,
+   "gladys_ops": 0,
+   "usd_acumulado": 9890.0,
+   "tasa_bcv": 0.0,
+   "tasa_paralela": 0.0,
+   "tasa_impl_media": 0,
+   "n_compras_mes": 0
   }
  ]
 }

@@ -75,11 +75,16 @@ type ConcMes = {
   ym: string; recibo_total: number; banco_salio: number; banco_entro: number; comisiones: number; fondo_0010: number;
   n_coinciden: number; n_sin_pago: number; n_sin_respaldo: number;
   bs_coinciden: number; bs_sin_pago: number; bs_sin_respaldo: number;
+  taurus_entro: number; otros_entro: number; saldo_banco: number;
+  usd_comprado: number; usd_pagado: number; usd_acumulado: number;
+  gladys_bs: number; gladys_usd: number; gladys_ops: number;
+  tasa_bcv: number; tasa_paralela: number; tasa_impl_media: number; n_compras_mes: number;
   coinciden: ConcCoincide[]; sin_pago: ConcSinPago[]; sin_respaldo: ConcSinRespaldo[];
 };
 const CONC = conciliacionJson as {
   meta: { reglas: { tolerancia_aprox_pct: number; monto_min_aprox: number; nota: string } };
   totales: Record<string, number>;
+  tasas_mes: { ym: string; bcv: number; paralela: number; impl_media: number; n_compras: number }[];
   meses: ConcMes[];
 };
 const MESES_CORTOS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -298,7 +303,7 @@ export default function Contenido() {
 
   /* ---------- conciliación recibo ↔ cuenta ---------- */
   const serieConc = useMemo(
-    () => CONC.meses.map((m) => ({ ym: m.ym, mes: etiquetaMes(m.ym), entro: m.banco_entro, salio: m.banco_salio, declarado: m.recibo_total })),
+    () => CONC.meses.map((m) => ({ ym: m.ym, mes: etiquetaMes(m.ym), entro: m.banco_entro, salio: m.banco_salio, declarado: m.recibo_total, saldo: m.saldo_banco })),
     []
   );
   const totConc = useMemo(
@@ -317,7 +322,28 @@ export default function Contenido() {
     entro: { label: "Entró a la cuenta", color: V.positive },
     salio: { label: "Salió de la cuenta", color: V.negative },
     declarado: { label: "Declarado en el recibo", color: V.primary },
+    saldo: { label: "Saldo de la cuenta", color: V.neutral },
+    usdComprado: { label: "US$ comprados", color: V.primary },
+    usdAcumulado: { label: "US$ en efectivo (acumulado)", color: V.negative },
+    gladys: { label: "A Gladys Rendón (Bs)", color: V.negative },
+    impl: { label: "Tasa implícita de las compras", color: V.primary },
+    bcv: { label: "Tasa BCV del mes", color: V.positive },
+    paralela: { label: "Tasa paralela del mes", color: V.warning },
   } satisfies ChartConfig;
+
+  /* series de las tarjetas de la rueda */
+  const serieUsd = useMemo(
+    () => CONC.meses.map((m) => ({ mes: etiquetaMes(m.ym), comprado: m.usd_comprado, acumulado: m.usd_acumulado })),
+    []
+  );
+  const serieGladys = useMemo(
+    () => CONC.meses.map((m) => ({ mes: etiquetaMes(m.ym), gladys: m.gladys_bs })),
+    []
+  );
+  const serieTasas = useMemo(
+    () => CONC.tasas_mes.map((t) => ({ mes: etiquetaMes(t.ym), impl: t.impl_media || null, bcv: t.bcv, paralela: t.paralela })),
+    []
+  );
   const POR_PAG = 100;
 
   const fAdmin = D.fondos["FONDO DE RESERVA (administradora)"];
@@ -1257,6 +1283,7 @@ export default function Contenido() {
                   <Bar dataKey="entro" name="Entró a la cuenta" fill={V.positive} radius={[3, 3, 0, 0]} />
                   <Bar dataKey="salio" name="Salió de la cuenta" fill={V.negative} radius={[3, 3, 0, 0]} />
                   <Line type="monotone" dataKey="declarado" name="Declarado en el recibo" stroke={V.primary} strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="saldo" name="Saldo de la cuenta" stroke={V.neutral} strokeWidth={2} dot={false} strokeDasharray="5 3" />
                 </ComposedChart>
               </ChartContainer>
               <LeyendaChips items={[
@@ -1295,10 +1322,12 @@ export default function Contenido() {
                   <span className="text-lg font-bold">{etiquetaMes(mesC.ym)}</span>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
                     <span>Declarado: <b className="tabular-nums">Bs {fmt(mesC.recibo_total)}</b></span>
-                    <span>Entró: <b className="tabular-nums" style={{ color: V.positive }}>Bs {fmt(mesC.banco_entro)}</b></span>
+                    <span>Entró: <b className="tabular-nums" style={{ color: V.positive }}>Bs {fmt(mesC.banco_entro)}</b> <span className="text-muted-foreground">(de Taurus: Bs {fmt(mesC.taurus_entro)})</span></span>
                     <span>Salió: <b className="tabular-nums" style={{ color: V.negative }}>Bs {fmt(mesC.banco_salio)}</b></span>
                     <span>Comisiones: <b className="tabular-nums">Bs {fmt(mesC.comisiones)}</b></span>
                     <span>Fondo enviado: <b className="tabular-nums">Bs {fmt(mesC.fondo_0010)}</b></span>
+                    <span>US$ comprados: <b className="tabular-nums">{fmt(mesC.usd_comprado)}</b></span>
+                    <span>US$ acumulados: <b className="tabular-nums">{fmt(mesC.usd_acumulado)}</b></span>
                   </div>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -1420,6 +1449,106 @@ export default function Contenido() {
                   </div>
                 )}
               </div>
+            </CardContent>
+          </DashboardCard>
+
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>La rueda de dólares</CardTitle>
+              <CardDescription>
+                Cada mes se compraron dólares para pagar a proveedores y técnicos. Lo comprado, menos lo pagado
+                denominado en dólares, es el efectivo en dólares que la Junta debía tener acumulado: si un mes se
+                sacaron 300 y al siguiente se gastaron 250, deben quedar 50.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-3 flex flex-wrap gap-2">
+                <Badge variant="outline" style={{ color: V.primary, borderColor: V.primary }}>
+                  Comprados: US$ {fmt0(CONC.totales.usd_comprado)}
+                </Badge>
+                <Badge variant="outline" style={{ color: V.negative, borderColor: V.negative }}>
+                  Pagados en US$: US$ {fmt0(CONC.totales.usd_pagado)}
+                </Badge>
+                <Badge variant="outline" style={{ color: V.positive, borderColor: V.positive }}>
+                  Deben existir en efectivo: US$ {fmt0(CONC.meses[CONC.meses.length - 1].usd_acumulado)}
+                </Badge>
+              </div>
+              <ChartContainer config={concConfig} className="aspect-auto w-full" style={{ height: movil ? 280 : 320 }}>
+                <ComposedChart data={serieUsd} margin={{ top: 8, right: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                  <XAxis dataKey="mes" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 7 : 2} axisLine={false} tickLine={false} />
+                  <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => "$" + fmt0(v)} width={movil ? 56 : 70} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="comprado" name="US$ comprados" fill={V.primary} radius={[3, 3, 0, 0]} />
+                  <Line type="monotone" dataKey="acumulado" name="US$ en efectivo (acumulado)" stroke={V.negative} strokeWidth={2} dot={false} />
+                </ComposedChart>
+              </ChartContainer>
+              <LeyendaChips items={[
+                { color: V.primary, label: "US$ comprados en el mes", extra: "US$ " + fmt0(CONC.totales.usd_comprado) },
+                { color: V.negative, label: "Efectivo US$ acumulado", extra: "US$ " + fmt0(CONC.meses[CONC.meses.length - 1].usd_acumulado) },
+              ]} />
+            </CardContent>
+          </DashboardCard>
+
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>Gladys Rendón · la casa de cambio</CardTitle>
+              <CardDescription>
+                Todos los movimientos con Rendón Martinez Gladymar, la principal vendedora de dólares de la Junta:
+                transferencias en bolívares hacia ella y los dólares declarados en cada operación.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-3 flex flex-wrap gap-2">
+                <Badge variant="outline" style={{ color: V.negative, borderColor: V.negative }}>
+                  Enviado: Bs {fmt0(CONC.totales.gladys_bs)}
+                </Badge>
+                <Badge variant="outline" style={{ color: V.primary, borderColor: V.primary }}>
+                  US$ declarados en sus operaciones: US$ {fmt0(CONC.totales.gladys_usd)}
+                </Badge>
+              </div>
+              <ChartContainer config={concConfig} className="aspect-auto w-full" style={{ height: movil ? 260 : 300 }}>
+                <BarChart data={serieGladys} margin={{ top: 8, right: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                  <XAxis dataKey="mes" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 7 : 2} axisLine={false} tickLine={false} />
+                  <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => "Bs " + fmt0(v)} width={movil ? 64 : 84} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="gladys" name="A Gladys Rendón (Bs)" fill={V.negative} radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ChartContainer>
+              <LeyendaChips items={[
+                { color: V.negative, label: "Bolívares enviados a Gladys Rendón", extra: "Bs " + fmt0(CONC.totales.gladys_bs) },
+              ]} />
+            </CardContent>
+          </DashboardCard>
+
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>¿A cuánto compraron los dólares? · implícita vs BCV vs paralelo</CardTitle>
+              <CardDescription>
+                La tasa implícita es lo pagado en bolívares dividido entre los dólares declarados en cada compra.
+                Contra la tasa BCV del recibo y la paralela registrada del mes: a inicios de 2022 compraban a tasa
+                oficial; desde 2023 la implícita corre por encima del BCV y se pega al paralelo.
+                Reporte completo de las 112 compras: <code className="rounded bg-muted px-1">reporte_tasas_compras.csv</code>.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={concConfig} className="aspect-auto w-full" style={{ height: movil ? 300 : 360 }}>
+                <ComposedChart data={serieTasas} margin={{ top: 8, right: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                  <XAxis dataKey="mes" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 7 : 2} axisLine={false} tickLine={false} />
+                  <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => "Bs " + fmt0(v)} width={movil ? 64 : 84} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Line type="monotone" dataKey="impl" name="Tasa implícita de las compras" stroke={V.primary} strokeWidth={2.5} dot={false} />
+                  <Line type="monotone" dataKey="bcv" name="Tasa BCV del mes" stroke={V.positive} strokeWidth={2} dot={false} strokeDasharray="5 3" />
+                  <Line type="monotone" dataKey="paralela" name="Tasa paralela del mes" stroke={V.warning} strokeWidth={2} dot={false} strokeDasharray="2 3" />
+                </ComposedChart>
+              </ChartContainer>
+              <LeyendaChips items={[
+                { color: V.primary, label: "Implícita (Bs pagados ÷ US$ declarados)" },
+                { color: V.positive, label: "BCV del mes" },
+                { color: V.warning, label: "Paralelo del mes" },
+              ]} />
             </CardContent>
           </DashboardCard>
 
