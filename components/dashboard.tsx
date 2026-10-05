@@ -22,6 +22,9 @@ import {
   ArrowDownRight,
   ArrowUp,
   ArrowUpDown,
+  ArrowLeftRight,
+  CheckCheck,
+  CircleAlert,
   Database,
   PiggyBank,
   Receipt,
@@ -62,6 +65,25 @@ import { useIsMobile } from "@/lib/use-is-mobile";
 import { useTasa } from "@/components/tasa-context";
 import { useSeccion } from "@/components/seccion-context";
 import datos from "@/data/gastos.json";
+import conciliacionJson from "@/data/conciliacion.json";
+
+/* ---------- tipos conciliación ---------- */
+type ConcCoincide = { cod: string; desc: string; bs: number; tipo: string; dif_pct: number; banco_fecha: string; banco_cod: string; banco_concepto: string };
+type ConcSinPago = { cod: string; desc: string; bs: number; sec: string };
+type ConcSinRespaldo = { fecha: string; cod: string; bs: number; compra_usd: number; usd: string | number; concepto: string };
+type ConcMes = {
+  ym: string; recibo_total: number; banco_salio: number; banco_entro: number; comisiones: number; fondo_0010: number;
+  n_coinciden: number; n_sin_pago: number; n_sin_respaldo: number;
+  bs_coinciden: number; bs_sin_pago: number; bs_sin_respaldo: number;
+  coinciden: ConcCoincide[]; sin_pago: ConcSinPago[]; sin_respaldo: ConcSinRespaldo[];
+};
+const CONC = conciliacionJson as {
+  meta: { reglas: { tolerancia_aprox_pct: number; monto_min_aprox: number; nota: string } };
+  totales: Record<string, number>;
+  meses: ConcMes[];
+};
+const MESES_CORTOS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const etiquetaMes = (ym: string) => MESES_CORTOS[Number(ym.slice(5, 7)) - 1] + "-" + ym.slice(2, 4);
 
 /* ---------- tipos ---------- */
 type Concepto = {
@@ -272,6 +294,30 @@ export default function Contenido() {
   const [fAnio, setFAnio] = useState("todos");
   const [fSeccion, setFSeccion] = useState("todas");
   const [pagina, setPagina] = useState(0);
+  const [mesConc, setMesConc] = useState("2026-08");
+
+  /* ---------- conciliación recibo ↔ cuenta ---------- */
+  const serieConc = useMemo(
+    () => CONC.meses.map((m) => ({ ym: m.ym, mes: etiquetaMes(m.ym), entro: m.banco_entro, salio: m.banco_salio, declarado: m.recibo_total })),
+    []
+  );
+  const totConc = useMemo(
+    () => ({
+      n_coinciden: CONC.meses.reduce((a, m) => a + m.n_coinciden, 0),
+      n_sin_pago: CONC.meses.reduce((a, m) => a + m.n_sin_pago, 0),
+      n_sin_respaldo: CONC.meses.reduce((a, m) => a + m.n_sin_respaldo, 0),
+    }),
+    []
+  );
+  const mesC = CONC.meses.find((m) => m.ym === mesConc) ?? CONC.meses[CONC.meses.length - 1];
+  const riesgoMes = (m: ConcMes) =>
+    m.banco_salio <= 0 ? "gris" : m.bs_sin_respaldo / m.banco_salio < 0.1 ? "verde" : m.bs_sin_respaldo / m.banco_salio < 0.5 ? "amarillo" : "rojo";
+  const colorRiesgo: Record<string, string> = { verde: V.positive, amarillo: V.warning, rojo: V.negative, gris: V.neutral };
+  const concConfig = {
+    entro: { label: "Entró a la cuenta", color: V.positive },
+    salio: { label: "Salió de la cuenta", color: V.negative },
+    declarado: { label: "Declarado en el recibo", color: V.primary },
+  } satisfies ChartConfig;
   const POR_PAG = 100;
 
   const fAdmin = D.fondos["FONDO DE RESERVA (administradora)"];
@@ -1173,6 +1219,233 @@ export default function Contenido() {
                 resultante es lo que debe existir hoy en la cuenta del fondo.
               </CardDescription>
             </CardHeader>
+          </DashboardCard>
+        </section>
+      )}
+
+      {/* ---------------- CONCILIACIÓN ---------------- */}
+      {seccion === "conciliacion" && (
+        <section id="conciliacion" className="space-y-4 scroll-mt-20">
+          <EncabezadoSeccion titulo="Conciliación recibo ↔ cuenta" descripcion="Lo que declara el recibo de la administradora contra lo que realmente se movió en la cuenta Banesco del condominio, mes por mes: qué coincide por monto, qué se declaró y no salió por la cuenta, y qué salió de la cuenta sin respaldo en el recibo." />
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <Kpi icono={<CheckCheck className="size-4" />} tinte={V.positive} titulo="Coincide con el banco"
+              valor={"Bs " + fmt0(CONC.totales.bs_coinciden)} sub={`${totConc.n_coinciden} partidas cruzadas por monto exacto o ±${CONC.meta.reglas.tolerancia_aprox_pct}%`} />
+            <Kpi icono={<CircleAlert className="size-4" />} tinte={V.warning} titulo="Declarado sin salida de la cuenta"
+              valor={"Bs " + fmt0(CONC.totales.bs_sin_pago)} sub={`${totConc.n_sin_pago} partidas — servicios y nómina que paga la administradora fuera de la cuenta, o sin pagar`} />
+            <Kpi icono={<ArrowLeftRight className="size-4" />} tinte={V.negative} titulo="Salidas sin respaldo"
+              valor={"Bs " + fmt0(CONC.totales.bs_sin_respaldo)} sub={`${totConc.n_sin_respaldo} pagos de la cuenta sin partida que los respalde`} />
+            <Kpi icono={<TrendingUp className="size-4" />} tinte={V.primary} titulo="Cuenta: entró vs salió"
+              valor={"Bs " + fmt0(CONC.totales.banco_entro)} sub={`salió Bs ${fmt0(CONC.totales.banco_salio)} · ${CONC.meses.length} meses`} />
+          </div>
+
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>Mes a mes: declarado vs movimientos reales</CardTitle>
+              <CardDescription>
+                Barras: dinero que entró y salió de la cuenta. Línea: total declarado en el recibo del mes
+                (sin honorarios, IVA ni fondo de reserva, que no pasan por esta cuenta).
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={concConfig} className="aspect-auto w-full" style={{ height: movil ? 300 : 360 }}>
+                <ComposedChart data={serieConc} margin={{ top: 8, right: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                  <XAxis dataKey="mes" tick={{ ...TICK, fontSize: 10 }} interval={movil ? 7 : 2} axisLine={false} tickLine={false} />
+                  <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={(v) => "Bs " + fmt0(v)} width={movil ? 64 : 84} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="entro" name="Entró a la cuenta" fill={V.positive} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="salio" name="Salió de la cuenta" fill={V.negative} radius={[3, 3, 0, 0]} />
+                  <Line type="monotone" dataKey="declarado" name="Declarado en el recibo" stroke={V.primary} strokeWidth={2} dot={false} />
+                </ComposedChart>
+              </ChartContainer>
+              <LeyendaChips items={[
+                { color: V.positive, label: "Entró a la cuenta", extra: "Bs " + fmt0(CONC.totales.banco_entro) },
+                { color: V.negative, label: "Salió de la cuenta", extra: "Bs " + fmt0(CONC.totales.banco_salio) },
+                { color: V.primary, label: "Declarado en el recibo", extra: "Bs " + fmt0(CONC.totales.recibo_total) },
+              ]} />
+            </CardContent>
+          </DashboardCard>
+
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>Detalle mes por mes</CardTitle>
+              <CardDescription>
+                Semáforo según cuánto de lo que salió de la cuenta tiene respaldo en el recibo:
+                verde &lt;10% sin respaldo · amarillo &lt;50% · rojo ≥50%. Toca un mes para ver el cruce completo.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="flex flex-wrap gap-1.5">
+                {CONC.meses.map((m) => {
+                  const r = riesgoMes(m);
+                  const activo = m.ym === mesC.ym;
+                  return (
+                    <button key={m.ym} onClick={() => setMesConc(m.ym)}
+                      className={"rounded-md border px-2 py-1 text-xs transition-colors " + (activo ? "font-semibold" : "text-muted-foreground hover:bg-muted/60")}
+                      style={activo ? { borderColor: colorRiesgo[r], color: colorRiesgo[r] } : undefined}>
+                      {etiquetaMes(m.ym)}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="rounded-lg border bg-muted/30 p-4">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <span className="text-lg font-bold">{etiquetaMes(mesC.ym)}</span>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                    <span>Declarado: <b className="tabular-nums">Bs {fmt(mesC.recibo_total)}</b></span>
+                    <span>Entró: <b className="tabular-nums" style={{ color: V.positive }}>Bs {fmt(mesC.banco_entro)}</b></span>
+                    <span>Salió: <b className="tabular-nums" style={{ color: V.negative }}>Bs {fmt(mesC.banco_salio)}</b></span>
+                    <span>Comisiones: <b className="tabular-nums">Bs {fmt(mesC.comisiones)}</b></span>
+                    <span>Fondo enviado: <b className="tabular-nums">Bs {fmt(mesC.fondo_0010)}</b></span>
+                  </div>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Badge variant="outline" className="gap-1.5" style={{ color: V.positive, borderColor: V.positive }}>
+                    <CheckCheck className="size-3.5" /> Coinciden {mesC.n_coinciden} · Bs {fmt(mesC.bs_coinciden)}
+                  </Badge>
+                  <Badge variant="outline" className="gap-1.5" style={{ color: V.warning, borderColor: V.warning }}>
+                    <CircleAlert className="size-3.5" /> Sin salida de cuenta {mesC.n_sin_pago} · Bs {fmt(mesC.bs_sin_pago)}
+                  </Badge>
+                  <Badge variant="outline" className="gap-1.5" style={{ color: V.negative, borderColor: V.negative }}>
+                    <CircleAlert className="size-3.5" /> Sin respaldo {mesC.n_sin_respaldo} · Bs {fmt(mesC.bs_sin_respaldo)}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <h4 className="flex items-center gap-2 text-sm font-semibold">
+                  <CheckCheck className="size-4" style={{ color: V.positive }} /> Coinciden entre el pago y el gasto ({mesC.n_coinciden})
+                </h4>
+                {mesC.coinciden.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Ninguna partida del recibo coincidió por monto con un pago de la cuenta este mes.</p>
+                ) : (
+                  <div className="overflow-x-auto rounded-lg border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/50">
+                          <TableHead>Partida del recibo</TableHead>
+                          <TableHead className="text-right">Bs recibo</TableHead>
+                          <TableHead>Cruce</TableHead>
+                          <TableHead>Movimiento en la cuenta</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {mesC.coinciden.map((c, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="max-w-[280px]"><span className="text-muted-foreground">{c.cod}</span> {c.desc}</TableCell>
+                            <TableCell className="text-right tabular-nums">{fmt(c.bs)}</TableCell>
+                            <TableCell>
+                              <Badge variant="secondary">{c.tipo}{c.tipo === "aprox" ? " ±" + c.dif_pct + "%" : ""}</Badge>
+                            </TableCell>
+                            <TableCell className="max-w-[320px]">
+                              <span className="tabular-nums text-muted-foreground">{c.banco_fecha.slice(8)}/{c.banco_fecha.slice(5, 7)}</span>{" "}
+                              {c.banco_concepto}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <h4 className="flex items-center gap-2 text-sm font-semibold">
+                  <CircleAlert className="size-4" style={{ color: V.warning }} /> Declarado en el recibo y no salió por la cuenta ({mesC.n_sin_pago})
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  Lo paga la administradora fuera de esta cuenta (servicios, nómina, honorarios) o quedó declarado sin pago real. Es la lista a pedir soporte.
+                </p>
+                {mesC.sin_pago.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Sin partidas en esta situación.</p>
+                ) : (
+                  <div className="max-h-96 overflow-y-auto rounded-lg border">
+                    <Table>
+                      <TableHeader className="sticky top-0 bg-background">
+                        <TableRow className="bg-muted/50">
+                          <TableHead>Código</TableHead>
+                          <TableHead>Partida</TableHead>
+                          <TableHead className="text-right">Bs</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {mesC.sin_pago.map((p, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="text-muted-foreground">{p.cod}</TableCell>
+                            <TableCell className="max-w-[420px]">{p.desc}</TableCell>
+                            <TableCell className="text-right tabular-nums">{fmt(p.bs)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <h4 className="flex items-center gap-2 text-sm font-semibold">
+                  <CircleAlert className="size-4" style={{ color: V.negative }} /> Salió de la cuenta sin respaldo en el recibo ({mesC.n_sin_respaldo})
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  Pagos reales de la cuenta que no corresponden por monto a ninguna partida del recibo del mes (incluye las compras de dólares).
+                </p>
+                {mesC.sin_respaldo.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Todo lo que salió este mes tiene respaldo. ✓</p>
+                ) : (
+                  <div className="overflow-x-auto rounded-lg border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/50">
+                          <TableHead>Fecha</TableHead>
+                          <TableHead>Movimiento</TableHead>
+                          <TableHead className="text-right">Bs</TableHead>
+                          <TableHead />
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {mesC.sin_respaldo.map((s, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="whitespace-nowrap tabular-nums">{s.fecha.slice(8)}/{s.fecha.slice(5, 7)}</TableCell>
+                            <TableCell className="max-w-[380px]">{s.concepto}</TableCell>
+                            <TableCell className="text-right tabular-nums">{fmt(s.bs)}</TableCell>
+                            <TableCell>
+                              {s.compra_usd ? <Badge variant="secondary">US$ {s.usd}</Badge> : null}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </DashboardCard>
+
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>Cómo se cruza (reglas fijas)</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm leading-relaxed text-muted-foreground">
+              <p>
+                Se cruzan por <b className="text-foreground">monto dentro del mismo mes</b>, uno a uno, en dos niveles:
+                exacto (&lt;0,01 Bs) y aproximado (hasta ±{CONC.meta.reglas.tolerancia_aprox_pct}% para partidas de
+                {" ≥ Bs " + fmt0(CONC.meta.reglas.monto_min_aprox)}). La asignación es global y determinista: primero los pares exactos,
+                luego los aproximados por menor diferencia; cada partida y cada movimiento se usan una sola vez.
+              </p>
+              <p>
+                No participan del cruce: honorarios de administración (99995), IVA (99996), actualizaciones (0900) y fondo de
+                reserva (0001/0010), que no pasan por esta cuenta; ni comisiones bancarias e intereses (751/750/721), que son
+                costo de la cuenta. El fondo de reserva enviado se muestra aparte en cada mes.
+              </p>
+              <p>
+                Limitación documentada: una partida pagada en varios abonos (p. ej. una reparación grande) no se empareja
+                automáticamente — aparece en ambas listas sin cruzar. Datos:{" "}
+                <code className="rounded bg-muted px-1">data/conciliacion.json</code>, generado por{" "}
+                <code className="rounded bg-muted px-1">conciliar.py</code>.
+              </p>
+            </CardContent>
           </DashboardCard>
         </section>
       )}
