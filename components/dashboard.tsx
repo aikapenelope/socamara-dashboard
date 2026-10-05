@@ -139,7 +139,8 @@ type FondoMes = {
   ym: string; fondo_bs: number; fondo_n: number; prest_bs: number; trabajo_bs: number;
   c_mes_bs: number; c_mes_usd: number; c_mes_n: number;
   c_sig_bs: number; c_sig_usd: number;
-  usd_equiv: number | null; veredicto: string | null;
+  eg_mes_bs: number;
+  usd_equiv: number | null; usd_tasa: string | null; veredicto: string | null;
   detalle: { f: string; concepto: string; bs: number }[];
 };
 const FONDO = fondoJson as {
@@ -147,7 +148,8 @@ const FONDO = fondoJson as {
     alcance: string; regla: string; tolerancia_pct: number;
     n_meses: number; n_meses_con_fondo: number;
     fondo_total_bs: number; fondo_total_usd_equiv: number;
-    n_ese_mes: number; n_siguiente: number; n_parcial: number; n_no: number;
+    fondo_sacado_bs: number; fondo_sacado_usd: number; n_sacado: number;
+    n_ese_mes: number; n_siguiente: number; n_sin_monto: number; n_parcial: number; n_no: number;
     prest_total_bs: number; trabajo_total_bs: number;
   };
   salvedad: {
@@ -415,19 +417,21 @@ export default function Contenido() {
 
   /* ---------- conciliación: fondo de reserva → US$ ---------- */
   const serieConcFondo = useMemo(
-    () => FONDO.meses.map((m) => ({ mes: etiquetaMes(m.ym), fondo: m.fondo_bs, compras: m.c_mes_bs })),
+    () => FONDO.meses.map((m) => ({ mes: etiquetaMes(m.ym), fondo: m.fondo_bs, compras: m.c_mes_bs, eg: m.eg_mes_bs })),
     []
   );
   const mesesConFondo = useMemo(() => FONDO.meses.filter((m) => m.fondo_bs > 0), []);
   const VEREDICTO: Record<string, { label: string; color: string }> = {
     ese_mes: { label: "Se sacó ese mes", color: V.positive },
     siguiente: { label: "Se sacó el siguiente", color: V.primary },
-    parcial: { label: "Parcial", color: V.warning },
+    sin_monto: { label: "Se sacó sin monto declarado", color: V.warning },
+    parcial: { label: "Parcial", color: V.neutral },
     no: { label: "No se sacó", color: V.negative },
   };
   const fondoConfig = {
     fondo: { label: "Fondo de reserva entrado (Bs)", color: V.positive },
     compras: { label: "Salió en compras de US$ (Bs)", color: V.primary },
+    eg: { label: "Salió a Esther/Gladymar sin monto (Bs)", color: V.warning },
   } satisfies ChartConfig;
   const POR_PAG = 100;
 
@@ -1789,10 +1793,10 @@ export default function Contenido() {
           />
 
           <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-            <Kpi icono={<PiggyBank className="size-4" />} tinte={V.positive} titulo="Fondo recibido" valor={`Bs ${fmt0(FONDO.meta.fondo_total_bs)}`} sub={`${FONDO.meta.n_meses_con_fondo} meses con fondo · ≈ US$ ${fmt0(FONDO.meta.fondo_total_usd_equiv)} a la tasa de compra`} />
-            <Kpi icono={<CheckCheck className="size-4" />} tinte={V.primary} titulo="Se sacó ese mes" valor={fmt0(FONDO.meta.n_ese_mes)} sub={`+ ${FONDO.meta.n_siguiente} meses se sacaron al siguiente`} />
-            <Kpi icono={<CircleAlert className="size-4" />} tinte={V.warning} titulo="Parcial" valor={fmt0(FONDO.meta.n_parcial)} sub="se convirtió solo una parte" />
-            <Kpi icono={<CircleAlert className="size-4" />} tinte={V.negative} titulo="No se sacó" valor={fmt0(FONDO.meta.n_no)} sub="según el CSV — ver la salvedad de abajo" />
+            <Kpi icono={<PiggyBank className="size-4" />} tinte={V.positive} titulo="Fondo recibido" valor={`Bs ${fmt0(FONDO.meta.fondo_total_bs)}`} sub={`${FONDO.meta.n_meses_con_fondo} meses · Bs ${fmt0(FONDO.meta.fondo_sacado_bs)} salieron en dólares (≈ US$ ${fmt0(FONDO.meta.fondo_sacado_usd)})`} />
+            <Kpi icono={<CheckCheck className="size-4" />} tinte={V.primary} titulo="Sacado con monto declarado" valor={fmt0(FONDO.meta.n_ese_mes + FONDO.meta.n_siguiente)} sub={`${FONDO.meta.n_ese_mes} ese mes + ${FONDO.meta.n_siguiente} al siguiente`} />
+            <Kpi icono={<CircleAlert className="size-4" />} tinte={V.warning} titulo="Sacado sin monto declarado" valor={fmt0(FONDO.meta.n_sin_monto)} sub="Esther/Gladymar cubrieron el fondo — ver salvedad" />
+            <Kpi icono={<CircleAlert className="size-4" />} tinte={V.negative} titulo="No se sacó o parcial" valor={fmt0(FONDO.meta.n_no + FONDO.meta.n_parcial)} sub={`${FONDO.meta.n_no} sin salida · ${FONDO.meta.n_parcial} parciales`} />
           </div>
 
           <DashboardCard>
@@ -1811,11 +1815,13 @@ export default function Contenido() {
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar dataKey="fondo" name="Fondo de reserva entrado (Bs)" fill={V.positive} radius={[3, 3, 0, 0]} />
                   <Bar dataKey="compras" name="Salió en compras de US$ (Bs)" fill={V.primary} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="eg" name="Salió a Esther/Gladymar sin monto (Bs)" fill={V.warning} radius={[3, 3, 0, 0]} />
                 </ComposedChart>
               </ChartContainer>
               <LeyendaChips items={[
                 { color: V.positive, label: "Fondo de reserva entrado (Taurus)", extra: "Bs " + fmt0(FONDO.meta.fondo_total_bs) },
                 { color: V.primary, label: "Compras de US$ del mes", extra: "Bs " + fmt0(FONDO.meses.reduce((a, m) => a + m.c_mes_bs, 0)) },
+                { color: V.warning, label: "Esther/Gladymar sin monto", extra: "Bs " + fmt0(FONDO.meses.reduce((a, m) => a + m.eg_mes_bs, 0)) },
               ]} />
             </CardContent>
           </DashboardCard>
@@ -1834,9 +1840,10 @@ export default function Contenido() {
                     <TableRow className="hover:bg-transparent">
                       <TableHead>Mes</TableHead>
                       <TableHead className="text-right">Fondo entró (Bs)</TableHead>
-                      <TableHead className="text-right">≈ US$ a tasa de compra</TableHead>
+                      <TableHead className="text-right">≈ US$ del fondo</TableHead>
                       <TableHead className="text-right">Compras del mes</TableHead>
                       <TableHead className="text-right">Compras del mes sig.</TableHead>
+                      <TableHead className="text-right">Sin monto (Bs)</TableHead>
                       <TableHead>Veredicto</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -1847,9 +1854,12 @@ export default function Contenido() {
                         <TableRow key={m.ym}>
                           <TableCell className="whitespace-nowrap font-medium">{etiquetaMes(m.ym)}</TableCell>
                           <TableCell className="text-right tabular-nums" style={{ color: V.positive }}>{fmt(m.fondo_bs)}</TableCell>
-                          <TableCell className="text-right tabular-nums text-muted-foreground">{m.usd_equiv ? "US$ " + fmt0(m.usd_equiv) : "—"}</TableCell>
+                          <TableCell className="whitespace-nowrap text-right tabular-nums text-muted-foreground">
+                            {m.usd_equiv ? <>US$ {fmt0(m.usd_equiv)}{m.usd_tasa === "paralelo" && <span className="text-muted-foreground/70"> (paralelo)</span>}</> : "—"}
+                          </TableCell>
                           <TableCell className="whitespace-nowrap text-right tabular-nums">{m.c_mes_bs > 0 ? <>{fmt(m.c_mes_bs)} <span className="text-muted-foreground">· {m.c_mes_usd > 0 ? "US$ " + fmt0(m.c_mes_usd) : "US$ sin declarar"}</span></> : "—"}</TableCell>
                           <TableCell className="whitespace-nowrap text-right tabular-nums">{m.c_sig_bs > 0 ? <>{fmt(m.c_sig_bs)} <span className="text-muted-foreground">· {m.c_sig_usd > 0 ? "US$ " + fmt0(m.c_sig_usd) : "US$ sin declarar"}</span></> : "—"}</TableCell>
+                          <TableCell className="text-right tabular-nums" style={{ color: m.eg_mes_bs > 0 ? V.warning : undefined }}>{m.eg_mes_bs > 0 ? fmt(m.eg_mes_bs) : "—"}</TableCell>
                           <TableCell>{v && <Badge variant="outline" style={{ color: v.color, borderColor: v.color }}>{v.label}</Badge>}</TableCell>
                         </TableRow>
                       );
@@ -1923,10 +1933,11 @@ export default function Contenido() {
             </CardHeader>
             <CardContent className="space-y-3 pt-6 text-sm leading-relaxed">
               <p className="text-muted-foreground">
-                {FONDO.meta.regla}. La equivalencia en dólares usa la tasa implícita de las compras del propio mes
-                (Bs pagados ÷ US$ declarados en las razones de las transferencias). Es una regla simple: las compras
-                de un mes pueden estar cubriendo el fondo de dos — por eso el veredicto se lee junto con los números
-                de al lado, no solo con el color.
+                {FONDO.meta.regla}. La equivalencia en dólares del fondo usa la tasa implícita de las compras del propio
+                mes (Bs pagados ÷ US$ declarados en las razones de las transferencias); cuando el mes no tuvo compras
+                con monto, se usa la tasa paralela de cierre de mes y se marca «(paralelo)». Es una regla simple: las
+                salidas de un mes pueden estar cubriendo el fondo de dos — por eso el veredicto se lee junto con los
+                números de al lado, no solo con el color.
               </p>
               <div className="flex flex-wrap gap-2">
                 {Object.values(VEREDICTO).map((v) => (
