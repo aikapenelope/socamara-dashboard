@@ -13,6 +13,7 @@ export type SeccionId =
   | "recurrentes"
   | "metodologia"
   | "estacionamientos"
+  | "estados"
   | "conciliacion";
 
 type SeccionContextValue = {

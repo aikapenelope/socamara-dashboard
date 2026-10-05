@@ -6,6 +6,7 @@ import {
 	CarIcon,
 	CircleDollarSignIcon,
 	ExternalLinkIcon,
+	FolderDownIcon,
 	LayoutGridIcon,
 	ListIcon,
 	PiggyBankIcon,
@@ -39,6 +40,7 @@ export const navGroups: SidebarNavGroup[] = [
 	{
 		label: "Dinero del edificio",
 		items: [
+			{ title: "Estados de cuenta", id: "estados", path: "#estados", icon: <FolderDownIcon /> },
 			{ title: "Conciliación", id: "conciliacion", path: "#conciliacion", icon: <ArrowLeftRightIcon /> },
 			{ title: "Fondos", id: "fondos", path: "#fondos", icon: <PiggyBankIcon /> },
 			{ title: "Dólar paralelo", id: "paralelo", path: "#paralelo", icon: <CircleDollarSignIcon /> },
@@ -71,6 +73,7 @@ export const TITULOS_SECCION: Record<string, string> = {
 	fondos: "Fondos",
 	paralelo: "Dólar paralelo",
 	estacionamientos: "Estacionamientos",
+	estados: "Estados de cuenta",
 	devoluciones: "Devoluciones",
 	facturas: "Facturación",
 	recurrentes: "Recurrentes",
