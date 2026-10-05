@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -28,7 +28,9 @@ import {
   ChevronRight,
   Database,
   DollarSign,
+  Eye,
   FileDown,
+  Loader2,
   PiggyBank,
   Receipt,
   Repeat,
@@ -156,8 +158,120 @@ const FONDO = fondoJson as {
     desde: string; nota: string; n: number; bs: number;
     detalle: { fecha: string; razon: string; bs: number; destino: string; archivos: string[] }[];
   };
+  recibo_vs_banco: {
+    regla: string; n_recibo: number; n_coinciden: number; n_aproximado: number;
+    n_no: number; n_sin_entrada: number;
+    meses: { ym: string; recibo_bs: number; banco_bs: number; dif_bs: number; estado: string }[];
+  };
   meses: FondoMes[];
 };
+const ESTADO_RECIBO: Record<string, { label: string; color: string }> = {
+  coincide: { label: "Coincide", color: "var(--c-positive)" },
+  aproximado: { label: "Aproximado", color: "var(--c-warning)" },
+  no_coincide: { label: "No coincide", color: "var(--c-negative)" },
+  sin_entrada_banco: { label: "Sin entrada en el banco", color: "var(--c-warning)" },
+  anterior_al_recibo: { label: "Antes del primer recibo", color: "var(--c-neutral)" },
+};
+
+/* ---------- visor de estados de cuenta ---------- */
+type VisorTarget = { nombre: string; ruta: string } | null;
+type VisorHoja = { nombre: string; filas: string[][] };
+
+function VisorHojaCarga({ ruta }: { ruta: string }) {
+  const [hojaIdx, setHojaIdx] = useState(0);
+  const [hojas, setHojas] = useState<VisorHoja[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancel = false;
+    (async () => {
+      try {
+        const XLSX = await import("xlsx");
+        const res = await fetch(encodeURI(ruta));
+        if (!res.ok) throw new Error(String(res.status));
+        const wb = XLSX.read(await res.arrayBuffer(), { type: "array" });
+        const parsed = wb.SheetNames.map((n) => ({
+          nombre: n,
+          filas: XLSX.utils.sheet_to_json<string[]>(wb.Sheets[n], { header: 1, defval: "", raw: false }) as string[][],
+        }));
+        if (!cancel) setHojas(parsed);
+      } catch {
+        if (!cancel) setError("No se pudo leer el archivo en el navegador — descárgalo para verlo.");
+      }
+    })();
+    return () => { cancel = true; };
+  }, [ruta]);
+
+  if (error) return <p className="p-6 text-sm" style={{ color: V.negative }}>{error}</p>;
+  if (!hojas) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center gap-2 text-sm text-muted-foreground">
+        <Loader2 className="size-4 animate-spin" />Leyendo el archivo…
+      </div>
+    );
+  }
+  const hoja = hojas[hojaIdx];
+  return (
+    <>
+      {hojas.length > 1 && (
+        <div className="flex flex-wrap gap-1.5 border-b px-3 py-2">
+          {hojas.map((h, i) => (
+            <button key={h.nombre + i} onClick={() => setHojaIdx(i)}
+              className={"rounded-md border px-2 py-1 text-xs " + (i === hojaIdx ? "bg-primary text-primary-foreground" : "hover:bg-muted")}>
+              {h.nombre}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="max-h-[70vh] overflow-auto">
+        <Table>
+          <TableBody>
+            {hoja.filas.map((fila, i) => (
+              <TableRow key={i} className={i === 0 ? "bg-muted/60 font-medium" : ""}>
+                {fila.map((celda, j) => (
+                  <TableCell key={j} className="max-w-[320px] truncate whitespace-nowrap text-xs" title={String(celda)}>
+                    {String(celda)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
+  );
+}
+
+function VisorArchivo({ archivo, onClose }: { archivo: VisorTarget; onClose: () => void }) {
+  if (!archivo) return null;
+  const esPdf = archivo.ruta.toLowerCase().endsWith(".pdf");
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-2 sm:p-6" onClick={onClose}>
+      <div className="flex max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-xl border bg-background shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between gap-3 border-b px-4 py-3">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold">{archivo.nombre}</p>
+            <p className="text-xs text-muted-foreground">Archivo original tal cual emitido por el banco</p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <a href={encodeURI(archivo.ruta)} download
+              className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium hover:bg-muted">
+              <FileDown className="size-3.5" />Descargar
+            </a>
+            <Button variant="outline" size="sm" onClick={onClose}>Cerrar</Button>
+          </div>
+        </div>
+        <div className="min-h-[50vh] flex-1 overflow-auto bg-muted/20">
+          {esPdf ? (
+            <iframe src={encodeURI(archivo.ruta)} title={archivo.nombre} className="h-[75vh] w-full" />
+          ) : (
+            <VisorHojaCarga key={archivo.ruta} ruta={archivo.ruta} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 const MESES_CORTOS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 const etiquetaMes = (ym: string) => MESES_CORTOS[Number(ym.slice(5, 7)) - 1] + "-" + ym.slice(2, 4);
 
@@ -371,6 +485,7 @@ export default function Contenido() {
   const [fSeccion, setFSeccion] = useState("todas");
   const [pagina, setPagina] = useState(0);
   const [anioEst, setAnioEst] = useState("todos");
+  const [visor, setVisor] = useState<VisorTarget>(null);
   const archivosEst = useMemo(
     () => (anioEst === "todos" ? EST.archivos : EST.archivos.filter((a) => a.anio === anioEst)),
     [anioEst]
@@ -1394,17 +1509,25 @@ export default function Contenido() {
                     {archivosEst.map((a) => (
                       <TableRow key={a.ruta}>
                         <TableCell className="max-w-[340px]">
-                          <a
-                            href={encodeURI(a.ruta)}
-                            download
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 font-medium underline-offset-2 hover:underline"
-                            style={{ color: V.primary }}
-                          >
-                            <FileDown className="size-3.5 shrink-0" />
-                            <span className="truncate" title={a.nombre}>{a.nombre}</span>
-                          </a>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setVisor({ nombre: a.nombre, ruta: a.ruta })}
+                              className="inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium hover:bg-muted"
+                              style={{ color: V.primary }}
+                            >
+                              <Eye className="size-3.5" />Ver
+                            </button>
+                            <a
+                              href={encodeURI(a.ruta)}
+                              download
+                              className="inline-flex items-center gap-1.5 font-medium underline-offset-2 hover:underline"
+                              style={{ color: V.primary }}
+                              title="Descargar archivo original"
+                            >
+                              <FileDown className="size-3.5 shrink-0" />
+                              <span className="truncate">{a.nombre}</span>
+                            </a>
+                          </div>
                         </TableCell>
                         <TableCell className="whitespace-nowrap text-muted-foreground">{a.meses.map(etiquetaMes).join(", ")}</TableCell>
                         <TableCell className="text-right tabular-nums">{a.n_movs}</TableCell>
@@ -1521,17 +1644,24 @@ export default function Contenido() {
                         <TableCell className="max-w-[520px]">
                           <div className="flex flex-wrap gap-1.5">
                             {s.archivos.map((a) => (
-                              <a
-                                key={a}
-                                href={encodeURI("/estados-cuenta/" + a)}
-                                download
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-muted"
-                              >
-                                <FileDown className="size-3 shrink-0" style={{ color: V.primary }} />
-                                <span className="truncate" title={a.split("/")[1]}>{a.split("/")[1]}</span>
-                              </a>
+                              <span key={a} className="inline-flex items-center overflow-hidden rounded-md border text-xs">
+                                <button
+                                  onClick={() => setVisor({ nombre: a.split("/")[1], ruta: "/estados-cuenta/" + a })}
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 hover:bg-muted"
+                                  style={{ color: V.primary }}
+                                >
+                                  <Eye className="size-3 shrink-0" />Ver
+                                </button>
+                                <a
+                                  href={encodeURI("/estados-cuenta/" + a)}
+                                  download
+                                  title={"Descargar " + a.split("/")[1]}
+                                  className="inline-flex items-center gap-1 border-l px-1.5 py-0.5 hover:bg-muted"
+                                >
+                                  <FileDown className="size-3 shrink-0" style={{ color: V.primary }} />
+                                  <span className="truncate">{a.split("/")[1]}</span>
+                                </a>
+                              </span>
                             ))}
                           </div>
                         </TableCell>
@@ -1690,11 +1820,17 @@ export default function Contenido() {
                                   <div className="flex flex-wrap items-center gap-1.5 pt-1">
                                     <span className="text-xs text-muted-foreground">Respaldo descargable:</span>
                                     {m.archivos.map((a) => (
-                                      <a key={a} href={encodeURI("/estados-cuenta/" + a)} download target="_blank" rel="noreferrer"
-                                        className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-muted">
-                                        <FileDown className="size-3 shrink-0" style={{ color: V.primary }} />
-                                        <span className="truncate" title={a.split("/")[1]}>{a.split("/")[1]}</span>
-                                      </a>
+                                      <span key={a} className="inline-flex items-center overflow-hidden rounded-md border text-xs">
+                                        <button onClick={() => setVisor({ nombre: a.split("/")[1], ruta: "/estados-cuenta/" + a })}
+                                          className="inline-flex items-center gap-1 px-1.5 py-0.5 hover:bg-muted" style={{ color: V.primary }}>
+                                          <Eye className="size-3 shrink-0" />Ver
+                                        </button>
+                                        <a href={encodeURI("/estados-cuenta/" + a)} download title={"Descargar " + a.split("/")[1]}
+                                          className="inline-flex items-center gap-1 border-l px-1.5 py-0.5 hover:bg-muted">
+                                          <FileDown className="size-3 shrink-0" style={{ color: V.primary }} />
+                                          <span className="truncate">{a.split("/")[1]}</span>
+                                        </a>
+                                        </span>
                                     ))}
                                   </div>
                                 </div>
@@ -1762,10 +1898,17 @@ export default function Contenido() {
                         <TableCell className="text-right tabular-nums">{fmt(p.bs)}</TableCell>
                         <TableCell>
                           {p.archivos.map((a) => (
-                            <a key={a} href={encodeURI("/estados-cuenta/" + a)} download target="_blank" rel="noreferrer"
-                              className="mr-2 inline-flex items-center gap-1 text-xs underline-offset-2 hover:underline" style={{ color: V.primary }}>
-                              <FileDown className="size-3" />{a.split("/")[1]}
-                            </a>
+                            <span key={a} className="mr-2 inline-flex items-center overflow-hidden rounded-md border text-xs">
+                              <button onClick={() => setVisor({ nombre: a.split("/")[1], ruta: "/estados-cuenta/" + a })}
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 hover:bg-muted" style={{ color: V.primary }}>
+                                <Eye className="size-3" />Ver
+                              </button>
+                              <a href={encodeURI("/estados-cuenta/" + a)} download title={"Descargar " + a.split("/")[1]}
+                                className="inline-flex items-center gap-1 border-l px-1.5 py-0.5 hover:bg-muted">
+                                <FileDown className="size-3" style={{ color: V.primary }} />
+                                <span className="truncate">{a.split("/")[1]}</span>
+                              </a>
+                              </span>
                           ))}
                         </TableCell>
                       </TableRow>
@@ -1872,6 +2015,53 @@ export default function Contenido() {
 
           <DashboardCard>
             <CardHeader>
+              <CardTitle>El recibo de la administradora vs. el banco · coincide al céntimo</CardTitle>
+              <CardDescription>
+                El fondo que el recibo declara (código 0010, «Fondo de reserva por enviar a Junta») contra lo que realmente
+                entró a la cuenta: {FONDO.recibo_vs_banco.n_coinciden} de {FONDO.recibo_vs_banco.n_recibo} meses coinciden exactos.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-6">
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" style={{ color: V.positive, borderColor: V.positive }}>
+                  <CheckCheck className="mr-1 size-3.5" /> {FONDO.recibo_vs_banco.n_coinciden}/{FONDO.recibo_vs_banco.n_recibo} meses coinciden
+                </Badge>
+                <Badge variant="outline">0 aproximados · 0 no coinciden · 0 sin entrada</Badge>
+                <Badge variant="outline">+2 meses de fondo antes del primer recibo (jul–ago 2022)</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">{FONDO.recibo_vs_banco.regla}.</p>
+              <div className="max-h-[420px] overflow-auto rounded-lg border">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-background">
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Mes del fondo</TableHead>
+                      <TableHead className="text-right">Recibo declara (Bs)</TableHead>
+                      <TableHead className="text-right">Entró al banco (Bs)</TableHead>
+                      <TableHead className="text-right">Diferencia</TableHead>
+                      <TableHead>Estado</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {FONDO.recibo_vs_banco.meses.map((m) => {
+                      const e = ESTADO_RECIBO[m.estado];
+                      return (
+                        <TableRow key={m.ym}>
+                          <TableCell className="whitespace-nowrap font-medium">{etiquetaMes(m.ym)}</TableCell>
+                          <TableCell className="text-right tabular-nums">{m.recibo_bs > 0 ? fmt(m.recibo_bs) : "—"}</TableCell>
+                          <TableCell className="text-right tabular-nums" style={{ color: m.banco_bs > 0 ? V.positive : undefined }}>{m.banco_bs > 0 ? fmt(m.banco_bs) : "—"}</TableCell>
+                          <TableCell className="text-right tabular-nums text-muted-foreground">{m.recibo_bs > 0 && m.banco_bs > 0 ? fmt(m.dif_bs) : "—"}</TableCell>
+                          <TableCell>{e && <Badge variant="outline" style={{ color: e.color, borderColor: e.color }}>{e.label}</Badge>}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </DashboardCard>
+
+          <DashboardCard>
+            <CardHeader>
               <CardTitle>Salvedad · Esther y Gladymar sin monto declarado</CardTitle>
               <CardDescription>
                 Las {FONDO.salvedad.n} transferencias desde {FONDO.salvedad.desde} cuya razón es solo el nombre del receptor, sin el monto en US$ escrito.
@@ -1912,10 +2102,17 @@ export default function Contenido() {
                         <TableCell className="text-right tabular-nums">{fmt(s.bs)}</TableCell>
                         <TableCell>
                           {s.archivos.map((a) => (
-                            <a key={a} href={encodeURI("/estados-cuenta/" + a)} download target="_blank" rel="noreferrer"
-                              className="mr-2 inline-flex items-center gap-1 text-xs underline-offset-2 hover:underline" style={{ color: V.primary }}>
-                              <FileDown className="size-3" />{a.split("/")[1]}
-                            </a>
+                            <span key={a} className="mr-2 inline-flex items-center overflow-hidden rounded-md border text-xs">
+                              <button onClick={() => setVisor({ nombre: a.split("/")[1], ruta: "/estados-cuenta/" + a })}
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 hover:bg-muted" style={{ color: V.primary }}>
+                                <Eye className="size-3" />Ver
+                              </button>
+                              <a href={encodeURI("/estados-cuenta/" + a)} download title={"Descargar " + a.split("/")[1]}
+                                className="inline-flex items-center gap-1 border-l px-1.5 py-0.5 hover:bg-muted">
+                                <FileDown className="size-3" style={{ color: V.primary }} />
+                                <span className="truncate">{a.split("/")[1]}</span>
+                              </a>
+                              </span>
                           ))}
                         </TableCell>
                       </TableRow>
@@ -2016,6 +2213,7 @@ export default function Contenido() {
         </DashboardCard>
       </section>
 )}
+      <VisorArchivo archivo={visor} onClose={() => setVisor(null)} />
     </div>
   );
 }
