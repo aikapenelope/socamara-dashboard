@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generado_iso": "2026-10-05T17:57:49+00:00",
+  "generado_iso": "2026-10-05T22:16:32+00:00",
   "csv_consolidado": "movimientos_bancarios_2022_2026.csv",
   "csv_sha256": "958f785ad5e8f4306906972bc2f7434eef8d1a497249787300f1de5834049598",
   "n_movs": 699,
@@ -47,7 +47,226 @@
      "2025/Agosto a Diciembre 2025 Socamara.xls"
     ]
    }
-  ]
+  ],
+  "salvedad": {
+   "desde": "2025-01",
+   "nota": "transferencias desde ene-2025 cuya razón es solo el nombre del receptor (Esther, Gladymar, «pago» u otros), sin monto en US$ declarado ni descripción del gasto — varias fueron compras de dólares, así que el total real comprado es mayor que el registrado",
+   "n": 23,
+   "bs": 1096112.77,
+   "detalle": [
+    {
+     "fecha": "2025-08-12",
+     "razon": "RENDON MARTINEZ GLADYMAR Gladymar",
+     "bs": 3740.0,
+     "destino": "Gladymar",
+     "archivos": [
+      "2025/Agosto a Diciembre 2025 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2025-08-22",
+     "razon": "RENDON MARTINEZ GLADYMAR Gladymar",
+     "bs": 13320.0,
+     "destino": "Gladymar",
+     "archivos": [
+      "2025/Agosto a Diciembre 2025 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2025-09-23",
+     "razon": "Pago jose caires",
+     "bs": 27041.0,
+     "destino": "Otros",
+     "archivos": [
+      "2025/Agosto a Diciembre 2025 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2025-09-24",
+     "razon": "Pago Esther",
+     "bs": 28380.0,
+     "destino": "Esther",
+     "archivos": [
+      "2025/Agosto a Diciembre 2025 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2025-10-24",
+     "razon": "RENDON MARTINEZ GLADYMAR Delivery",
+     "bs": 1062.4,
+     "destino": "Gladymar",
+     "archivos": [
+      "2025/Agosto a Diciembre 2025 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2025-11-08",
+     "razon": "Esther",
+     "bs": 2524.32,
+     "destino": "Esther",
+     "archivos": [
+      "2025/Agosto a Diciembre 2025 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2025-11-13",
+     "razon": "Pago Proveedor",
+     "bs": 65646.75,
+     "destino": "Otros",
+     "archivos": [
+      "2025/Agosto a Diciembre 2025 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2025-12-02",
+     "razon": "Compras y Pagos",
+     "bs": 73957.5,
+     "destino": "Esther",
+     "archivos": [
+      "2025/Agosto a Diciembre 2025 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2025-12-18",
+     "razon": "pago",
+     "bs": 6985.2,
+     "destino": "Esther",
+     "archivos": [
+      "2025/Agosto a Diciembre 2025 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2026-03-04",
+     "razon": "Esther",
+     "bs": 63460.0,
+     "destino": "Esther",
+     "archivos": [
+      "2026/Marzo 2026 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2026-03-04",
+     "razon": "Gladymar",
+     "bs": 12692.0,
+     "destino": "Gladymar",
+     "archivos": [
+      "2026/Marzo 2026 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2026-03-23",
+     "razon": "Pago",
+     "bs": 45000.0,
+     "destino": "Otros",
+     "archivos": [
+      "2026/Marzo 2026 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2026-03-23",
+     "razon": "Pago",
+     "bs": 1000.0,
+     "destino": "Otros",
+     "archivos": [
+      "2026/Marzo 2026 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2026-04-01",
+     "razon": "esther",
+     "bs": 26048.4,
+     "destino": "Esther",
+     "archivos": [
+      "2026/Abril 2026 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2026-04-08",
+     "razon": "RENDON MARTINEZ GLADYMAR Gladymar",
+     "bs": 31851.0,
+     "destino": "Gladymar",
+     "archivos": [
+      "2026/Abril 2026 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2026-04-17",
+     "razon": "Esther",
+     "bs": 93264.0,
+     "destino": "Esther",
+     "archivos": [
+      "2026/Abril 2026 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2026-04-23",
+     "razon": "Esther",
+     "bs": 28324.35,
+     "destino": "Esther",
+     "archivos": [
+      "2026/Abril 2026 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2026-05-04",
+     "razon": "Esther",
+     "bs": 32425.5,
+     "destino": "Esther",
+     "archivos": [
+      "2026/Mayo 2026 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2026-07-08",
+     "razon": "Reembolso",
+     "bs": 130847.65,
+     "destino": "Otros",
+     "archivos": [
+      "2026/Julio 2026 Socamara.xls"
+     ]
+    },
+    {
+     "fecha": "2026-08-01",
+     "razon": "Pago Esther",
+     "bs": 84640.0,
+     "destino": "Esther",
+     "archivos": [
+      "2026/Agosto 2026 Socamara.xls",
+      "2026/Agosto 2026 Socamara.xlsx"
+     ]
+    },
+    {
+     "fecha": "2026-08-01",
+     "razon": "Pago Dif esther",
+     "bs": 1478.0,
+     "destino": "Esther",
+     "archivos": [
+      "2026/Agosto 2026 Socamara.xls",
+      "2026/Agosto 2026 Socamara.xlsx"
+     ]
+    },
+    {
+     "fecha": "2026-08-02",
+     "razon": "RENDON MARTINEZ GLADYMAR Gladymar",
+     "bs": 86118.0,
+     "destino": "Gladymar",
+     "archivos": [
+      "2026/Agosto 2026 Socamara.xls",
+      "2026/Agosto 2026 Socamara.xlsx"
+     ]
+    },
+    {
+     "fecha": "2026-08-10",
+     "razon": "Pago",
+     "bs": 236306.7,
+     "destino": "Esther",
+     "archivos": [
+      "2026/Agosto 2026 Socamara.xls",
+      "2026/Agosto 2026 Socamara.xlsx"
+     ]
+    }
+   ]
+  }
  },
  "meses": [
   {

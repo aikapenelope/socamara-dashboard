@@ -89,7 +89,11 @@ const BANCO = bancoJson as {
     n_taurus: number; taurus_bs: number;
     n_gladys_envios: number; gladys_enviados_bs: number; n_gladys_devoluciones: number; gladys_devueltos_bs: number;
   };
-  auditoria_usd: { verificadas: number; discrepancias_tasa: number; pendientes: PendienteUsd[] };
+  auditoria_usd: {
+    verificadas: number; discrepancias_tasa: number;
+    pendientes: PendienteUsd[];
+    salvedad: { desde: string; n: number; bs: number };
+  };
   meses: { ym: string; n: number; entro: number; salio: number; saldo_fin: number; comisiones: number; n_compras: number; usd: number }[];
   movs: MovBanco[];
 };
@@ -140,11 +144,15 @@ type FondoMes = {
 };
 const FONDO = fondoJson as {
   meta: {
-    regla: string; tolerancia_pct: number;
+    alcance: string; regla: string; tolerancia_pct: number;
     n_meses: number; n_meses_con_fondo: number;
     fondo_total_bs: number; fondo_total_usd_equiv: number;
     n_ese_mes: number; n_siguiente: number; n_parcial: number; n_no: number;
     prest_total_bs: number; trabajo_total_bs: number;
+  };
+  salvedad: {
+    desde: string; nota: string; n: number; bs: number;
+    detalle: { fecha: string; razon: string; bs: number; destino: string; archivos: string[] }[];
   };
   meses: FondoMes[];
 };
@@ -1761,6 +1769,12 @@ export default function Contenido() {
                   </TableBody>
                 </Table>
               </div>
+              <p className="text-sm text-muted-foreground">
+                <b className="text-foreground" style={{ color: V.warning }}>Salvedad:</b> además, desde {BANCO.auditoria_usd.salvedad.desde} hay{" "}
+                <b className="text-foreground">{BANCO.auditoria_usd.salvedad.n} transferencias</b> (a Esther, Gladymar y otros) por{" "}
+                <b className="text-foreground">Bs {fmt0(BANCO.auditoria_usd.salvedad.bs)}</b> cuya razón no declara el monto en US$ —
+                el total real comprado es mayor que el registrado. Detalle en la sección <b className="text-foreground">Conciliación</b>.
+              </p>
             </CardContent>
           </DashboardCard>
         </section>
@@ -1771,14 +1785,14 @@ export default function Contenido() {
         <section id="conciliacion" className="space-y-4 scroll-mt-20">
           <EncabezadoSeccion
             titulo="Conciliación · el fondo que entró y los dólares que salieron"
-            descripcion="Cada mes la administradora (Taurus) envía el Fondo de Reserva a la cuenta. Aquí se verifica mes por mes si ese dinero se sacó en compras de dólares ese mismo mes o el siguiente: el monto en Bs que entró contra los Bs de las compras de US$."
+            descripcion="Cada mes la administradora (Taurus) envía el Fondo de Reserva a la cuenta. Aquí se verifica mes por mes si ese dinero se sacó en compras de dólares ese mismo mes o el siguiente. Es una conciliación únicamente del fondo contra los estados de cuenta de la cuenta bancaria — documentos proporcionados por Gladymar —; no cubre el resto del dinero de la cuenta."
           />
 
           <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
             <Kpi icono={<PiggyBank className="size-4" />} tinte={V.positive} titulo="Fondo recibido" valor={`Bs ${fmt0(FONDO.meta.fondo_total_bs)}`} sub={`${FONDO.meta.n_meses_con_fondo} meses con fondo · ≈ US$ ${fmt0(FONDO.meta.fondo_total_usd_equiv)} a la tasa de compra`} />
             <Kpi icono={<CheckCheck className="size-4" />} tinte={V.primary} titulo="Se sacó ese mes" valor={fmt0(FONDO.meta.n_ese_mes)} sub={`+ ${FONDO.meta.n_siguiente} meses se sacaron al siguiente`} />
             <Kpi icono={<CircleAlert className="size-4" />} tinte={V.warning} titulo="Parcial" valor={fmt0(FONDO.meta.n_parcial)} sub="se convirtió solo una parte" />
-            <Kpi icono={<CircleAlert className="size-4" />} tinte={V.negative} titulo="No se sacó" valor={fmt0(FONDO.meta.n_no)} sub="meses con fondo entrado y sin compras de US$" />
+            <Kpi icono={<CircleAlert className="size-4" />} tinte={V.negative} titulo="No se sacó" valor={fmt0(FONDO.meta.n_no)} sub="según el CSV — ver la salvedad de abajo" />
           </div>
 
           <DashboardCard>
@@ -1848,6 +1862,62 @@ export default function Contenido() {
 
           <DashboardCard>
             <CardHeader>
+              <CardTitle>Salvedad · Esther y Gladymar sin monto declarado</CardTitle>
+              <CardDescription>
+                Las {FONDO.salvedad.n} transferencias desde {FONDO.salvedad.desde} cuya razón es solo el nombre del receptor, sin el monto en US$ escrito.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-6">
+              <div className="rounded-lg border p-3" style={{ borderColor: V.warning }}>
+                <p className="text-sm leading-relaxed">{FONDO.salvedad.nota}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" style={{ color: V.warning, borderColor: V.warning }}>
+                  <CircleAlert className="mr-1 size-3.5" /> {FONDO.salvedad.n} transferencias
+                </Badge>
+                <Badge variant="outline" style={{ color: V.warning, borderColor: V.warning }}>
+                  Bs {fmt0(FONDO.salvedad.bs)} en bolívares sin equivalente US$ declarado
+                </Badge>
+                <Badge variant="outline">desde {FONDO.salvedad.desde}</Badge>
+              </div>
+              <div className="max-h-[420px] overflow-auto rounded-lg border">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-background">
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Fecha</TableHead>
+                      <TableHead>Razón de la transferencia</TableHead>
+                      <TableHead>Receptor</TableHead>
+                      <TableHead className="text-right">Bs</TableHead>
+                      <TableHead>Respaldo</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {FONDO.salvedad.detalle.map((s, i) => (
+                      <TableRow key={i}>
+                        <TableCell className="whitespace-nowrap tabular-nums">{s.fecha}</TableCell>
+                        <TableCell className="font-medium">«{s.razon}»</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{s.destino}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">{fmt(s.bs)}</TableCell>
+                        <TableCell>
+                          {s.archivos.map((a) => (
+                            <a key={a} href={encodeURI("/estados-cuenta/" + a)} download target="_blank" rel="noreferrer"
+                              className="mr-2 inline-flex items-center gap-1 text-xs underline-offset-2 hover:underline" style={{ color: V.primary }}>
+                              <FileDown className="size-3" />{a.split("/")[1]}
+                            </a>
+                          ))}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </DashboardCard>
+
+          <DashboardCard>
+            <CardHeader>
               <CardTitle>Cómo se lee (regla fija)</CardTitle>
               <CardDescription>Regla declarada de antemano, sin interpretaciones.</CardDescription>
             </CardHeader>
@@ -1863,6 +1933,9 @@ export default function Contenido() {
                   <Badge key={v.label} variant="outline" style={{ color: v.color, borderColor: v.color }}>{v.label}</Badge>
                 ))}
               </div>
+              <p className="text-muted-foreground">
+                <b className="text-foreground">Alcance:</b> {FONDO.meta.alcance}
+              </p>
               <p className="text-muted-foreground">
                 Solo cuenta el <b className="text-foreground">fondo de reserva</b> (conceptos FDO / FONDO RESERVA / FR).
                 Los otros dos fondos que envía Taurus quedan fuera de la conciliación y se muestran como contexto:
