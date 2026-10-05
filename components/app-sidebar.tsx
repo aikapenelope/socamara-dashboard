@@ -48,8 +48,6 @@ function NavGroup({ label, items }: SidebarNavGroup) {
 }
 
 export function AppSidebar() {
-	const { setOpenMobile } = useSidebar();
-
 	return (
 		<Sidebar
 			className={cn(
