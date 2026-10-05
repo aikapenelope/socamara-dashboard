@@ -177,6 +177,35 @@ const ESTADO_RECIBO: Record<string, { label: string; color: string }> = {
 type VisorTarget = { nombre: string; ruta: string } | null;
 type VisorHoja = { nombre: string; filas: string[][] };
 
+/* normaliza una hoja: recorta filas/columnas vacías, detecta la fila de encabezado
+   y qué columnas son numéricas — para presentarla como tabla y no como volcado crudo */
+function normalizaHoja(filas: string[][]) {
+  let grid = filas.map((f) => f.map((c) => String(c ?? "").trim()));
+  while (grid.length && grid[0].every((c) => !c)) grid.shift();
+  while (grid.length && grid[grid.length - 1].every((c) => !c)) grid.pop();
+  grid = grid.filter((f) => f.some((c) => c));
+  if (!grid.length) return null;
+  const nCols = Math.max(...grid.map((f) => f.length));
+  const keep: number[] = [];
+  for (let j = 0; j < nCols; j++) if (grid.some((f) => (f[j] ?? "") !== "")) keep.push(j);
+  const celdas = grid.map((f) => keep.map((j) => f[j] ?? ""));
+  const CLAVES = ["fecha", "saldo", "referencia", "descripc", "debe", "haber", "concepto", "transacci"];
+  let headerIdx = -1;
+  for (let i = 0; i < Math.min(celdas.length, 40); i++) {
+    const llenas = celdas[i].filter((c) => c).length;
+    if (llenas >= 3 && celdas[i].some((c) => CLAVES.some((k) => c.toLowerCase().includes(k)))) {
+      headerIdx = i;
+      break;
+    }
+  }
+  const esNum = (c: string) => /^[\d.,\-()\s%]+$/.test(c) && /\d/.test(c);
+  const numCol = keep.map((_, j) => {
+    const vals = celdas.slice(headerIdx + 1).map((f) => f[j]).filter((c) => c);
+    return vals.length > 0 && vals.every(esNum);
+  });
+  return { celdas, headerIdx, numCol };
+}
+
 function VisorHojaCarga({ ruta }: { ruta: string }) {
   const [hojaIdx, setHojaIdx] = useState(0);
   const [hojas, setHojas] = useState<VisorHoja[] | null>(null);
@@ -211,6 +240,7 @@ function VisorHojaCarga({ ruta }: { ruta: string }) {
     );
   }
   const hoja = hojas[hojaIdx];
+  const norm = normalizaHoja(hoja.filas);
   return (
     <>
       {hojas.length > 1 && (
@@ -223,21 +253,62 @@ function VisorHojaCarga({ ruta }: { ruta: string }) {
           ))}
         </div>
       )}
-      <div className="max-h-[70vh] overflow-auto">
-        <Table>
-          <TableBody>
-            {hoja.filas.map((fila, i) => (
-              <TableRow key={i} className={i === 0 ? "bg-muted/60 font-medium" : ""}>
-                {fila.map((celda, j) => (
-                  <TableCell key={j} className="max-w-[320px] truncate whitespace-nowrap text-xs" title={String(celda)}>
-                    {String(celda)}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      {!norm ? (
+        <p className="p-6 text-sm text-muted-foreground">La hoja está vacía.</p>
+      ) : (
+        <div className="max-h-[72vh] overflow-auto">
+          {norm.headerIdx > 0 && (
+            <div className="space-y-0.5 border-b bg-muted/30 px-3 py-2">
+              {norm.celdas.slice(0, norm.headerIdx).map((fila, i) => {
+                const pares = fila.map((c) => c.trim()).filter(Boolean);
+                if (!pares.length) return null;
+                return (
+                  <p key={i} className="truncate text-[11px] text-muted-foreground">
+                    {pares.map((c, j) => (
+                      <span key={j} className={j % 2 === 1 ? "font-medium text-foreground" : ""}>
+                        {c}{j < pares.length - 1 ? "  ·  " : ""}
+                      </span>
+                    ))}
+                  </p>
+                );
+              })}
+            </div>
+          )}
+          <p className="border-b px-3 py-1.5 text-[11px] text-muted-foreground">
+            {norm.celdas.length - (norm.headerIdx + 1)} filas de movimientos · {norm.numCol.length} columnas
+          </p>
+          <Table>
+            {norm.headerIdx >= 0 && (
+              <TableHeader className="sticky top-0 z-10 bg-background shadow-[0_1px_0_var(--border)]">
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-10 text-right text-muted-foreground/60">#</TableHead>
+                  {norm.celdas[norm.headerIdx].map((c, j) => (
+                    <TableHead key={j} className={"max-w-[260px] whitespace-nowrap text-xs " + (norm.numCol[j] ? "text-right" : "")}>
+                      {c ? c.replace(/\s+/g, " ") : "—"}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+            )}
+            <TableBody>
+              {norm.celdas.slice(norm.headerIdx + 1).map((fila, i) => (
+                <TableRow key={i} className="odd:bg-muted/30">
+                  <TableCell className="text-right text-[10px] tabular-nums text-muted-foreground/50">{i + 1}</TableCell>
+                  {fila.map((celda, j) => (
+                    <TableCell
+                      key={j}
+                      className={"max-w-[260px] truncate whitespace-nowrap text-xs " + (norm.numCol[j] ? "text-right tabular-nums" : "")}
+                      title={celda}
+                    >
+                      {celda}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </>
   );
 }
