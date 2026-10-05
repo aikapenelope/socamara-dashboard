@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -25,7 +25,10 @@ import {
   ArrowLeftRight,
   CheckCheck,
   CircleAlert,
+  ChevronDown,
+  ChevronRight,
   Database,
+  DollarSign,
   FileDown,
   PiggyBank,
   Receipt,
@@ -68,6 +71,44 @@ import { useSeccion } from "@/components/seccion-context";
 import datos from "@/data/gastos.json";
 import conciliacionJson from "@/data/conciliacion.json";
 import estadosJson from "@/data/estados_cuenta.json";
+import bancoJson from "@/data/banco.json";
+
+/* ---------- tipos cuenta bancaria ---------- */
+type MovBanco = {
+  f: string; ym: string; cod: string; tipo: string; concepto: string; para: string; ref: string;
+  dir: number; bs: number; saldo: number;
+  usd: number | null; tasa: number | null;
+  taurus: boolean; gladys: string | null; comision: boolean;
+  subcat: string; archivos: string[]; verbatim: string;
+};
+type PendienteUsd = { fila_csv: number; fecha: string; concepto: string; verbatim: string; bs: number; ref: string; archivos: string[] };
+const BANCO = bancoJson as {
+  meta: {
+    n_movs: number; n_meses: number; desde: string; hasta: string;
+    total_entro_bs: number; total_salio_bs: number; saldo_final_bs: number;
+    n_compras_usd: number; n_compras_verificadas: number; usd_comprados: number;
+    n_taurus: number; taurus_bs: number;
+    n_gladys_envios: number; gladys_enviados_bs: number; n_gladys_devoluciones: number; gladys_devueltos_bs: number;
+  };
+  auditoria_usd: { verificadas: number; discrepancias_tasa: number; pendientes: PendienteUsd[] };
+  meses: { ym: string; n: number; entro: number; salio: number; saldo_fin: number; comisiones: number; n_compras: number; usd: number }[];
+  movs: MovBanco[];
+};
+const SUBCAT_BANCO: Record<string, string> = {
+  cuota_condominio: "Cuota de condominio",
+  estacionamiento: "Estacionamiento",
+  ingreso_credito_inmediato: "Ingreso · crédito inmediato",
+  reintegro: "Reintegro / devolución",
+  compra_usd: "Compra de dólares",
+  pago_credito_inmediato: "Pago · crédito inmediato",
+  comision_credito_inmediato: "Comisión de crédito inmediato",
+  comision_mantenimiento: "Comisión de mantenimiento",
+  servicio_tecnico: "Servicio técnico",
+  transferencia: "Transferencia recibida",
+  interes: "Intereses",
+  islr: "ISLR",
+  otro: "Otro",
+};
 
 /* ---------- tipos estados de cuenta ---------- */
 type EstadoArchivo = {
@@ -324,6 +365,44 @@ export default function Contenido() {
     [anioEst]
   );
   const aniosEst = useMemo(() => Array.from(new Set(EST.archivos.map((a) => a.anio))).sort(), []);
+
+  /* ---------- cuenta bancaria: filtros ---------- */
+  const [anioB, setAnioB] = useState("todos");
+  const [mesB, setMesB] = useState("todos");
+  const [vistaB, setVistaB] = useState("todos");
+  const [buscaB, setBuscaB] = useState("");
+  const [paginaB, setPaginaB] = useState(0);
+  const [abiertoB, setAbiertoB] = useState<number | null>(null);
+  const nComisionesB = useMemo(() => BANCO.movs.filter((m) => m.comision).length, []);
+  const movsFiltrados = useMemo(() => {
+    const q = buscaB.trim().toLowerCase();
+    return BANCO.movs.filter((m) => {
+      if (anioB !== "todos" && m.f.slice(0, 4) !== anioB) return false;
+      if (mesB !== "todos" && m.f.slice(5, 7) !== mesB) return false;
+      if (vistaB === "entradas" && m.dir !== 1) return false;
+      if (vistaB === "salidas" && m.dir !== -1) return false;
+      if (vistaB === "compras" && m.subcat !== "compra_usd") return false;
+      if (vistaB === "taurus" && !m.taurus) return false;
+      if (vistaB === "gladys" && !m.gladys) return false;
+      if (vistaB === "comisiones" && !m.comision) return false;
+      if (q) {
+        const blob = (m.concepto + " " + m.verbatim + " " + m.para + " " + m.ref).toLowerCase();
+        if (!blob.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [anioB, mesB, vistaB, buscaB]);
+  const totB = useMemo(() => ({
+    n: movsFiltrados.length,
+    entro: movsFiltrados.filter((m) => m.dir === 1).reduce((a, m) => a + m.bs, 0),
+    salio: movsFiltrados.filter((m) => m.dir === -1).reduce((a, m) => a + m.bs, 0),
+    usd: movsFiltrados.reduce((a, m) => a + (m.usd ?? 0), 0),
+  }), [movsFiltrados]);
+  const POR_PAG_BANCO = 100;
+  const paginasB = Math.max(1, Math.ceil(movsFiltrados.length / POR_PAG_BANCO));
+  const paginaBok = Math.min(paginaB, paginasB - 1);
+  const visiblesB = movsFiltrados.slice(paginaBok * POR_PAG_BANCO, (paginaBok + 1) * POR_PAG_BANCO);
+  const mesUnicoB = anioB !== "todos" && mesB !== "todos" ? BANCO.meses.find((x) => x.ym === `${anioB}-${mesB}`) : undefined;
 
   /* ---------- conciliación recibo ↔ cuenta ---------- */
   const serieConc = useMemo(
@@ -1450,6 +1529,238 @@ export default function Contenido() {
                           </div>
                         </TableCell>
                         <TableCell className="text-right tabular-nums">{s.n}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </DashboardCard>
+        </section>
+      )}
+
+      {/* ---------------- CUENTA BANCARIA ---------------- */}
+      {seccion === "banco" && (
+        <section id="banco" className="space-y-4 scroll-mt-20">
+          <EncabezadoSeccion
+            titulo="Cuenta bancaria · todos los movimientos"
+            descripcion={`Los ${BANCO.meta.n_movs} movimientos de la cuenta de la Junta (${BANCO.meta.desde} → ${BANCO.meta.hasta}), en orden de fecha. Cada fila se abre para ver el concepto original tal cual lo escribió el banco y descargar el estado de cuenta exacto de donde salió.`}
+          />
+
+          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+            <Kpi icono={<Receipt className="size-4" />} tinte={V.primary} titulo="Movimientos" valor={fmt0(BANCO.meta.n_movs)} sub={`${BANCO.meta.n_meses} meses · en orden de fecha`} />
+            <Kpi icono={<DollarSign className="size-4" />} tinte={V.warning} titulo="US$ comprados" valor={`US$ ${fmt0(BANCO.meta.usd_comprados)}`} sub={`${BANCO.meta.n_compras_usd} compras marcadas en la razón`} />
+            <Kpi icono={<Wallet className="size-4" />} tinte={V.positive} titulo="Entró de Taurus" valor={`Bs ${fmt0(BANCO.meta.taurus_bs)}`} sub={`${BANCO.meta.n_taurus} entradas de la administradora`} />
+            <Kpi icono={<PiggyBank className="size-4" />} tinte={V.negative} titulo="Enviado a Gladymar" valor={`Bs ${fmt0(BANCO.meta.gladys_enviados_bs)}`} sub={`${BANCO.meta.n_gladys_envios} envíos · ${BANCO.meta.n_gladys_devoluciones} devoluciones Bs ${fmt0(BANCO.meta.gladys_devueltos_bs)}`} />
+          </div>
+
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>Explorador de movimientos</CardTitle>
+              <CardDescription>
+                Busca por concepto, beneficiario o referencia. Los filtros combinan: año + mes + vista + búsqueda.
+                Al lado de cada concepto: <Badge variant="outline" className="mx-0.5 px-1 py-0" style={{ color: V.warning, borderColor: V.warning }}>US$ monto @ tasa</Badge> cuando se compraron dólares.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-6">
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={anioB}
+                  onChange={(e) => { setAnioB(e.target.value); setPaginaB(0); }}
+                  className="h-9 rounded-md border bg-transparent px-3 text-sm shadow-xs"
+                >
+                  <option value="todos">Todos los años</option>
+                  {["2022", "2023", "2024", "2025", "2026"].map((a) => (
+                    <option key={a} value={a}>{a}</option>
+                  ))}
+                </select>
+                <select
+                  value={mesB}
+                  onChange={(e) => { setMesB(e.target.value); setPaginaB(0); }}
+                  className="h-9 rounded-md border bg-transparent px-3 text-sm shadow-xs"
+                >
+                  <option value="todos">Todos los meses</option>
+                  {MESES_CORTOS.map((nombre, i) => (
+                    <option key={nombre} value={String(i + 1).padStart(2, "0")}>{nombre}</option>
+                  ))}
+                </select>
+                <select
+                  value={vistaB}
+                  onChange={(e) => { setVistaB(e.target.value); setPaginaB(0); }}
+                  className="h-9 rounded-md border bg-transparent px-3 text-sm shadow-xs"
+                >
+                  <option value="todos">Todo</option>
+                  <option value="entradas">Solo entradas</option>
+                  <option value="salidas">Solo salidas</option>
+                  <option value="compras">Compras de dólares ({BANCO.meta.n_compras_usd})</option>
+                  <option value="taurus">Entradas de Taurus ({BANCO.meta.n_taurus})</option>
+                  <option value="gladys">Movimientos de Gladymar ({BANCO.meta.n_gladys_envios + BANCO.meta.n_gladys_devoluciones})</option>
+                  <option value="comisiones">Comisiones bancarias ({nComisionesB})</option>
+                </select>
+                <div className="relative min-w-[200px] flex-1">
+                  <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+                  <Input placeholder="Buscar concepto, beneficiario, referencia…" className="pl-8"
+                    value={buscaB} onChange={(e) => { setBuscaB(e.target.value); setPaginaB(0); }} />
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                <span className="text-muted-foreground">{fmt0(totB.n)} movimientos</span>
+                <span>Entró: <b className="tabular-nums" style={{ color: V.positive }}>Bs {fmt(totB.entro)}</b></span>
+                <span>Salió: <b className="tabular-nums" style={{ color: V.negative }}>Bs {fmt(totB.salio)}</b></span>
+                {totB.usd > 0 && <span>US$ comprados: <b className="tabular-nums">US$ {fmt(totB.usd)}</b></span>}
+                {mesUnicoB && <span className="text-muted-foreground">Saldo al cierre: <b className="tabular-nums text-foreground">Bs {fmt(mesUnicoB.saldo_fin)}</b> · comisiones Bs {fmt(mesUnicoB.comisiones)}</span>}
+              </div>
+
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>Página {paginaBok + 1} de {paginasB}</span>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" disabled={paginaBok === 0}
+                    onClick={() => setPaginaB(paginaBok - 1)}>← Anterior</Button>
+                  <Button variant="outline" size="sm" disabled={paginaBok >= paginasB - 1}
+                    onClick={() => setPaginaB(paginaBok + 1)}>Siguiente →</Button>
+                </div>
+              </div>
+
+              <div className="max-h-[560px] overflow-auto rounded-lg border">
+                <Table>
+                  <TableHeader className="sticky top-0 z-10 bg-background shadow-[0_1px_0_var(--border)]">
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="w-[92px]">Fecha</TableHead>
+                      <TableHead>Concepto</TableHead>
+                      <TableHead className="text-right">Monto (Bs)</TableHead>
+                      <TableHead className="text-right">Saldo (Bs)</TableHead>
+                      <TableHead className="w-10" />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {visiblesB.map((m, i) => {
+                      const idxAbs = paginaBok * POR_PAG_BANCO + i;
+                      const abierto = abiertoB === idxAbs;
+                      return (
+                        <Fragment key={idxAbs}>
+                          <TableRow className="cursor-pointer" onClick={() => setAbiertoB(abierto ? null : idxAbs)}>
+                            <TableCell className="whitespace-nowrap tabular-nums text-muted-foreground">{m.f.slice(8)}/{m.f.slice(5, 7)}/{m.f.slice(2, 4)}</TableCell>
+                            <TableCell className="max-w-[440px]">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="truncate" title={m.concepto}>{m.concepto}</span>
+                                {m.usd ? (
+                                  <Badge variant="outline" className="gap-0.5 px-1.5 py-0" style={{ color: V.warning, borderColor: V.warning }}>
+                                    <DollarSign className="size-2.5" />US$ {fmt0(m.usd)} @ {m.tasa}
+                                  </Badge>
+                                ) : m.subcat === "compra_usd" ? (
+                                  <Badge variant="outline" className="gap-0.5 px-1.5 py-0" style={{ color: V.warning, borderColor: V.warning }}>
+                                    <CircleAlert className="size-2.5" />compra US$ · monto por confirmar
+                                  </Badge>
+                                ) : null}
+                                {m.taurus && <Badge variant="secondary" className="px-1.5 py-0">Taurus</Badge>}
+                                {m.gladys === "envio" && <Badge variant="outline" className="px-1.5 py-0" style={{ color: V.primary, borderColor: V.primary }}>Gladymar</Badge>}
+                                {m.gladys === "devolucion" && <Badge variant="outline" className="px-1.5 py-0" style={{ color: V.positive, borderColor: V.positive }}>Devolución Gladymar</Badge>}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right tabular-nums font-medium" style={{ color: m.dir === 1 ? V.positive : V.negative }}>
+                              {m.dir === 1 ? "+" : "−"}{fmt(m.bs)}
+                            </TableCell>
+                            <TableCell className="text-right tabular-nums text-muted-foreground">{fmt(m.saldo)}</TableCell>
+                            <TableCell>{abierto ? <ChevronDown className="size-4 text-muted-foreground" /> : <ChevronRight className="size-4 text-muted-foreground" />}</TableCell>
+                          </TableRow>
+                          {abierto && (
+                            <TableRow className="bg-muted/30 hover:bg-muted/30">
+                              <TableCell colSpan={5} className="p-3">
+                                <div className="space-y-2 text-sm">
+                                  <p className="break-words text-muted-foreground">
+                                    <span className="font-medium text-foreground">Concepto original del banco: </span>{m.verbatim}
+                                  </p>
+                                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                    <span>Fecha: <b className="tabular-nums text-foreground">{m.f}</b></span>
+                                    <span>Referencia: <b className="tabular-nums text-foreground">{m.ref}</b></span>
+                                    <span>Código: <b className="text-foreground">{m.cod}</b></span>
+                                    <span>Tipo: <b className="text-foreground">{m.tipo}</b></span>
+                                    <span>Categoría: <b className="text-foreground">{SUBCAT_BANCO[m.subcat] ?? m.subcat}</b></span>
+                                    {m.para && <span>Beneficiario: <b className="text-foreground">{m.para}</b></span>}
+                                    {m.usd && <span>Compra: <b className="text-foreground">US$ {fmt0(m.usd)} @ {m.tasa} (tasa implícita Bs ÷ US$)</b></span>}
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                                    <span className="text-xs text-muted-foreground">Respaldo descargable:</span>
+                                    {m.archivos.map((a) => (
+                                      <a key={a} href={encodeURI("/estados-cuenta/" + a)} download target="_blank" rel="noreferrer"
+                                        className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-muted">
+                                        <FileDown className="size-3 shrink-0" style={{ color: V.primary }} />
+                                        <span className="truncate" title={a.split("/")[1]}>{a.split("/")[1]}</span>
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </Fragment>
+                      );
+                    })}
+                    {visiblesB.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
+                          Ningún movimiento coincide con esos filtros.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </DashboardCard>
+
+          <DashboardCard>
+            <CardHeader>
+              <CardTitle>Auditoría de las marcas de dólares</CardTitle>
+              <CardDescription>
+                Las compras de dólares se marcaron una por una según el monto declarado en la razón de cada
+                transferencia («compra 100», «cambio 40»…). Verificación aritmética de cada marca.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-6">
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" style={{ color: V.positive, borderColor: V.positive }}>
+                  <CheckCheck className="mr-1 size-3.5" /> {BANCO.auditoria_usd.verificadas} compras verificadas
+                </Badge>
+                <Badge variant="outline" style={{ color: V.positive, borderColor: V.positive }}>
+                  {BANCO.auditoria_usd.discrepancias_tasa} discrepancias de tasa
+                </Badge>
+                <Badge variant="outline" style={{ color: V.warning, borderColor: V.warning }}>
+                  US$ {fmt0(BANCO.meta.usd_comprados)} declarados en las razones
+                </Badge>
+                <Badge variant="outline" style={{ color: V.negative, borderColor: V.negative }}>
+                  <CircleAlert className="mr-1 size-3.5" /> {BANCO.auditoria_usd.pendientes.length} por confirmar
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Cada compra verificada cumple exactamente <code className="rounded bg-muted px-1">tasa implícita = Bs pagados ÷ US$ declarados</code>.
+                Quedan {BANCO.auditoria_usd.pendientes.length} transferencias marcadas como compra de dólares cuyo monto en US$ no está escrito en la razón:
+              </p>
+              <div className="overflow-x-auto rounded-lg border">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Fecha</TableHead>
+                      <TableHead>Concepto</TableHead>
+                      <TableHead className="text-right">Bs pagados</TableHead>
+                      <TableHead>Respaldo</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {BANCO.auditoria_usd.pendientes.map((p) => (
+                      <TableRow key={p.fecha + p.ref}>
+                        <TableCell className="whitespace-nowrap tabular-nums">{p.fecha}</TableCell>
+                        <TableCell className="max-w-[420px]">{p.concepto}</TableCell>
+                        <TableCell className="text-right tabular-nums">{fmt(p.bs)}</TableCell>
+                        <TableCell>
+                          {p.archivos.map((a) => (
+                            <a key={a} href={encodeURI("/estados-cuenta/" + a)} download target="_blank" rel="noreferrer"
+                              className="mr-2 inline-flex items-center gap-1 text-xs underline-offset-2 hover:underline" style={{ color: V.primary }}>
+                              <FileDown className="size-3" />{a.split("/")[1]}
+                            </a>
+                          ))}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
