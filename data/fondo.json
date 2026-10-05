@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generado_iso": "2026-10-05T22:30:38+00:00",
+  "generado_iso": "2026-10-05T22:50:25+00:00",
   "csv_consolidado": "movimientos_bancarios_2022_2026.csv",
   "csv_sha256": "958f785ad5e8f4306906972bc2f7434eef8d1a497249787300f1de5834049598",
   "alcance": "Conciliación únicamente del Fondo de Reserva que envía la administradora (Taurus) contra los estados de cuenta de la cuenta bancaria (documentos proporcionados por Gladymar). No cubre el resto del dinero de la cuenta.",
@@ -237,6 +237,366 @@
      "2026/Agosto 2026 Socamara.xls",
      "2026/Agosto 2026 Socamara.xlsx"
     ]
+   }
+  ]
+ },
+ "recibo_vs_banco": {
+  "regla": "el fondo del recibo es el código 0010 (FONDO DE RESERVA POR ENVIAR A JUNTA); el del banco son las entradas de Taurus rotuladas FDO/FONDO/RESERVA (incluye las que llegaron como «FONDO TRABAJO», una vez sin mes asignada por monto exacto)",
+  "n_recibo": 48,
+  "n_coinciden": 48,
+  "n_aproximado": 0,
+  "n_no": 0,
+  "n_sin_entrada": 0,
+  "meses": [
+   {
+    "ym": "2022-07",
+    "recibo_bs": 0.0,
+    "banco_bs": 371.74,
+    "dif_bs": 371.74,
+    "estado": "anterior_al_recibo"
+   },
+   {
+    "ym": "2022-08",
+    "recibo_bs": 0.0,
+    "banco_bs": 319.52,
+    "dif_bs": 319.52,
+    "estado": "anterior_al_recibo"
+   },
+   {
+    "ym": "2022-09",
+    "recibo_bs": 468.49,
+    "banco_bs": 468.49,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2022-10",
+    "recibo_bs": 659.73,
+    "banco_bs": 659.73,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2022-11",
+    "recibo_bs": 710.62,
+    "banco_bs": 710.62,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2022-12",
+    "recibo_bs": 1138.15,
+    "banco_bs": 1138.15,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-01",
+    "recibo_bs": 1682.03,
+    "banco_bs": 1682.03,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-02",
+    "recibo_bs": 1637.13,
+    "banco_bs": 1637.13,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-03",
+    "recibo_bs": 1738.63,
+    "banco_bs": 1738.63,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-04",
+    "recibo_bs": 928.4,
+    "banco_bs": 928.4,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-05",
+    "recibo_bs": 1564.93,
+    "banco_bs": 1564.93,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-06",
+    "recibo_bs": 3786.73,
+    "banco_bs": 3786.73,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-07",
+    "recibo_bs": 2982.32,
+    "banco_bs": 2982.32,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-08",
+    "recibo_bs": 1938.51,
+    "banco_bs": 1938.51,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-09",
+    "recibo_bs": 3843.72,
+    "banco_bs": 3843.72,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-10",
+    "recibo_bs": 6266.23,
+    "banco_bs": 6266.23,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-11",
+    "recibo_bs": 5744.73,
+    "banco_bs": 5744.73,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2023-12",
+    "recibo_bs": 6814.56,
+    "banco_bs": 6814.56,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-01",
+    "recibo_bs": 4464.12,
+    "banco_bs": 4464.12,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-02",
+    "recibo_bs": 3893.84,
+    "banco_bs": 3893.84,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-03",
+    "recibo_bs": 3788.35,
+    "banco_bs": 3788.35,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-04",
+    "recibo_bs": 6107.69,
+    "banco_bs": 6107.69,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-05",
+    "recibo_bs": 3328.5,
+    "banco_bs": 3328.5,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-06",
+    "recibo_bs": 2287.85,
+    "banco_bs": 2287.85,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-07",
+    "recibo_bs": 4113.53,
+    "banco_bs": 4113.53,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-08",
+    "recibo_bs": 3758.01,
+    "banco_bs": 3758.01,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-09",
+    "recibo_bs": 2278.25,
+    "banco_bs": 2278.25,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-10",
+    "recibo_bs": 9832.18,
+    "banco_bs": 9832.18,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-11",
+    "recibo_bs": 6842.65,
+    "banco_bs": 6842.65,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2024-12",
+    "recibo_bs": 9248.93,
+    "banco_bs": 9248.93,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-01",
+    "recibo_bs": 3318.74,
+    "banco_bs": 3318.74,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-02",
+    "recibo_bs": 7041.65,
+    "banco_bs": 7041.65,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-03",
+    "recibo_bs": 4205.14,
+    "banco_bs": 4205.14,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-04",
+    "recibo_bs": 6189.57,
+    "banco_bs": 6189.57,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-05",
+    "recibo_bs": 13794.23,
+    "banco_bs": 13794.23,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-06",
+    "recibo_bs": 6624.25,
+    "banco_bs": 6624.25,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-07",
+    "recibo_bs": 12832.39,
+    "banco_bs": 12832.39,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-08",
+    "recibo_bs": 13229.8,
+    "banco_bs": 13229.8,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-09",
+    "recibo_bs": 9581.85,
+    "banco_bs": 9581.85,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-10",
+    "recibo_bs": 25082.22,
+    "banco_bs": 25082.22,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-11",
+    "recibo_bs": 28619.41,
+    "banco_bs": 28619.41,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2025-12",
+    "recibo_bs": 35602.92,
+    "banco_bs": 35602.92,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2026-01",
+    "recibo_bs": 49243.14,
+    "banco_bs": 49243.14,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2026-02",
+    "recibo_bs": 43414.78,
+    "banco_bs": 43414.78,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2026-03",
+    "recibo_bs": 38164.98,
+    "banco_bs": 38164.98,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2026-04",
+    "recibo_bs": 39567.14,
+    "banco_bs": 39567.14,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2026-05",
+    "recibo_bs": 34129.92,
+    "banco_bs": 34129.92,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2026-06",
+    "recibo_bs": 77354.83,
+    "banco_bs": 77354.83,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2026-07",
+    "recibo_bs": 158407.57,
+    "banco_bs": 158407.57,
+    "dif_bs": 0.0,
+    "estado": "coincide"
+   },
+   {
+    "ym": "2026-08",
+    "recibo_bs": 183448.15,
+    "banco_bs": 183448.15,
+    "dif_bs": 0.0,
+    "estado": "coincide"
    }
   ]
  },
