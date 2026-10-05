@@ -1,0 +1,1046 @@
+{
+ "meta": {
+  "generado_iso": "2026-10-05T21:50:09+00:00",
+  "csv_consolidado": "movimientos_bancarios_2022_2026.csv",
+  "csv_sha256": "958f785ad5e8f4306906972bc2f7434eef8d1a497249787300f1de5834049598",
+  "regla": "el fondo del mes se considera sacado si las compras de dólares del mes (o del mes + el siguiente) cubren ≥ 90% del monto en Bs entrado",
+  "tolerancia_pct": 90,
+  "n_meses": 50,
+  "n_meses_con_fondo": 45,
+  "fondo_total_bs": 739703.73,
+  "fondo_total_usd_equiv": 3086.25,
+  "n_ese_mes": 29,
+  "n_siguiente": 5,
+  "n_parcial": 3,
+  "n_no": 8,
+  "prest_total_bs": 15166.5,
+  "trabajo_total_bs": 151051.89
+ },
+ "meses": [
+  {
+   "ym": "2022-08",
+   "fondo_bs": 371.74,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 1205.2,
+   "c_mes_usd": 200.0,
+   "c_mes_n": 3,
+   "c_sig_bs": 908.6,
+   "c_sig_usd": 110.0,
+   "usd_equiv": 61.65,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2022-08-17",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO 0722",
+     "bs": 371.74
+    }
+   ]
+  },
+  {
+   "ym": "2022-09",
+   "fondo_bs": 319.52,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 908.6,
+   "c_mes_usd": 110.0,
+   "c_mes_n": 1,
+   "c_sig_bs": 810.9,
+   "c_sig_usd": 90.0,
+   "usd_equiv": 38.68,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2022-09-08",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO 0822",
+     "bs": 319.52
+    }
+   ]
+  },
+  {
+   "ym": "2022-10",
+   "fondo_bs": 468.49,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 810.9,
+   "c_mes_usd": 90.0,
+   "c_mes_n": 3,
+   "c_sig_bs": 3031.6,
+   "c_sig_usd": 280.0,
+   "usd_equiv": 52.0,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2022-10-11",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO 0922",
+     "bs": 468.49
+    }
+   ]
+  },
+  {
+   "ym": "2022-11",
+   "fondo_bs": 659.73,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 3031.6,
+   "c_mes_usd": 280.0,
+   "c_mes_n": 3,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": 60.92,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2022-11-08",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO 1022",
+     "bs": 659.73
+    }
+   ]
+  },
+  {
+   "ym": "2022-12",
+   "fondo_bs": 710.62,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 4256.4,
+   "c_sig_usd": 190.0,
+   "usd_equiv": 31.72,
+   "veredicto": "siguiente",
+   "detalle": [
+    {
+     "f": "2022-12-15",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO MES 1122",
+     "bs": 710.62
+    }
+   ]
+  },
+  {
+   "ym": "2023-01",
+   "fondo_bs": 1138.15,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 4256.4,
+   "c_mes_usd": 190.0,
+   "c_mes_n": 4,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": 50.81,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2023-01-06",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO 1222",
+     "bs": 1138.15
+    }
+   ]
+  },
+  {
+   "ym": "2023-02",
+   "fondo_bs": 1682.03,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 16251.7,
+   "c_sig_usd": 640.0,
+   "usd_equiv": 66.25,
+   "veredicto": "siguiente",
+   "detalle": [
+    {
+     "f": "2023-02-17",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO 0123",
+     "bs": 1682.03
+    }
+   ]
+  },
+  {
+   "ym": "2023-03",
+   "fondo_bs": 0.0,
+   "fondo_n": 0,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 16251.7,
+   "c_mes_usd": 640.0,
+   "c_mes_n": 7,
+   "c_sig_bs": 6762.4,
+   "c_sig_usd": 270.0,
+   "usd_equiv": 0.0,
+   "veredicto": null,
+   "detalle": []
+  },
+  {
+   "ym": "2023-04",
+   "fondo_bs": 1738.63,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 6762.4,
+   "c_mes_usd": 270.0,
+   "c_mes_n": 7,
+   "c_sig_bs": 2479.6,
+   "c_sig_usd": 50.0,
+   "usd_equiv": 69.41,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2023-04-17",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO 0323",
+     "bs": 1738.63
+    }
+   ]
+  },
+  {
+   "ym": "2023-05",
+   "fondo_bs": 928.4,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 2479.6,
+   "c_mes_usd": 50.0,
+   "c_mes_n": 4,
+   "c_sig_bs": 2716.8,
+   "c_sig_usd": 95.0,
+   "usd_equiv": 18.72,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2023-05-15",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO 0423",
+     "bs": 928.4
+    }
+   ]
+  },
+  {
+   "ym": "2023-06",
+   "fondo_bs": 1564.93,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 2716.8,
+   "c_mes_usd": 95.0,
+   "c_mes_n": 3,
+   "c_sig_bs": 11767.6,
+   "c_sig_usd": 380.0,
+   "usd_equiv": 54.72,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2023-06-16",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO 0523",
+     "bs": 1564.93
+    }
+   ]
+  },
+  {
+   "ym": "2023-07",
+   "fondo_bs": 3786.73,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 11767.6,
+   "c_mes_usd": 380.0,
+   "c_mes_n": 5,
+   "c_sig_bs": 13118.84,
+   "c_sig_usd": 399.0,
+   "usd_equiv": 122.27,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2023-07-17",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO 0623",
+     "bs": 3786.73
+    }
+   ]
+  },
+  {
+   "ym": "2023-08",
+   "fondo_bs": 2982.32,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 13118.84,
+   "c_mes_usd": 399.0,
+   "c_mes_n": 5,
+   "c_sig_bs": 3164.4,
+   "c_sig_usd": 90.0,
+   "usd_equiv": 90.7,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2023-08-14",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO 0723",
+     "bs": 2982.32
+    }
+   ]
+  },
+  {
+   "ym": "2023-09",
+   "fondo_bs": 1938.51,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 3164.4,
+   "c_mes_usd": 90.0,
+   "c_mes_n": 3,
+   "c_sig_bs": 3351.6,
+   "c_sig_usd": 90.0,
+   "usd_equiv": 55.13,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2023-09-18",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVAS MES 082023 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 1938.51
+    }
+   ]
+  },
+  {
+   "ym": "2023-10",
+   "fondo_bs": 0.0,
+   "fondo_n": 0,
+   "prest_bs": 0.0,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 3351.6,
+   "c_mes_usd": 90.0,
+   "c_mes_n": 1,
+   "c_sig_bs": 20871.75,
+   "c_sig_usd": 615.0,
+   "usd_equiv": 0.0,
+   "veredicto": null,
+   "detalle": []
+  },
+  {
+   "ym": "2023-11",
+   "fondo_bs": 6266.23,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 20871.75,
+   "c_mes_usd": 615.0,
+   "c_mes_n": 13,
+   "c_sig_bs": 14613.1,
+   "c_sig_usd": 385.0,
+   "usd_equiv": 184.63,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2023-11-07",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FR X ENVIAR JTA MES 1023 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 6266.23
+    }
+   ]
+  },
+  {
+   "ym": "2023-12",
+   "fondo_bs": 9588.45,
+   "fondo_n": 2,
+   "prest_bs": 606.66,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 14613.1,
+   "c_mes_usd": 385.0,
+   "c_mes_n": 8,
+   "c_sig_bs": 15621.8,
+   "c_sig_usd": 410.0,
+   "usd_equiv": 252.59,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2023-12-12",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 0923 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 3843.72
+    },
+    {
+     "f": "2023-12-12",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 1123 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 5744.73
+    }
+   ]
+  },
+  {
+   "ym": "2024-01",
+   "fondo_bs": 6814.56,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 15621.8,
+   "c_mes_usd": 410.0,
+   "c_mes_n": 6,
+   "c_sig_bs": 4776.25,
+   "c_sig_usd": 125.0,
+   "usd_equiv": 178.86,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2024-01-08",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 1223 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 6814.56
+    }
+   ]
+  },
+  {
+   "ym": "2024-02",
+   "fondo_bs": 4464.12,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 4776.25,
+   "c_mes_usd": 125.0,
+   "c_mes_n": 3,
+   "c_sig_bs": 14843.6,
+   "c_sig_usd": 390.0,
+   "usd_equiv": 116.83,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2024-02-05",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVAS MES 0124 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 4464.12
+    }
+   ]
+  },
+  {
+   "ym": "2024-03",
+   "fondo_bs": 3893.84,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 14843.6,
+   "c_mes_usd": 390.0,
+   "c_mes_n": 4,
+   "c_sig_bs": 51454.25,
+   "c_sig_usd": 1315.0,
+   "usd_equiv": 102.31,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2024-03-14",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO RESERVA MES 0224 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 3893.84
+    }
+   ]
+  },
+  {
+   "ym": "2024-04",
+   "fondo_bs": 3788.35,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 51454.25,
+   "c_mes_usd": 1315.0,
+   "c_mes_n": 11,
+   "c_sig_bs": 21716.0,
+   "c_sig_usd": 550.0,
+   "usd_equiv": 96.81,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2024-04-09",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVAS MES 0324 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 3788.35
+    }
+   ]
+  },
+  {
+   "ym": "2024-05",
+   "fondo_bs": 6107.69,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 21716.0,
+   "c_mes_usd": 550.0,
+   "c_mes_n": 4,
+   "c_sig_bs": 13041.8,
+   "c_sig_usd": 323.0,
+   "usd_equiv": 154.7,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2024-05-15",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVAS MES 0424 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 6107.69
+    }
+   ]
+  },
+  {
+   "ym": "2024-06",
+   "fondo_bs": 3328.5,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 13041.8,
+   "c_mes_usd": 323.0,
+   "c_mes_n": 4,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": 82.43,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2024-06-19",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVAS MES 0524 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 3328.5
+    }
+   ]
+  },
+  {
+   "ym": "2024-07",
+   "fondo_bs": 2287.85,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 9752.1,
+   "c_sig_usd": 230.0,
+   "usd_equiv": 53.96,
+   "veredicto": "siguiente",
+   "detalle": [
+    {
+     "f": "2024-07-17",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO RESERVAS MES 0624 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 2287.85
+    }
+   ]
+  },
+  {
+   "ym": "2024-08",
+   "fondo_bs": 4113.53,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 9752.1,
+   "c_mes_usd": 230.0,
+   "c_mes_n": 4,
+   "c_sig_bs": 12373.2,
+   "c_sig_usd": 280.0,
+   "usd_equiv": 97.02,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2024-08-15",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVAS MES 0724 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 4113.53
+    }
+   ]
+  },
+  {
+   "ym": "2024-09",
+   "fondo_bs": 3758.01,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 12373.2,
+   "c_mes_usd": 280.0,
+   "c_mes_n": 3,
+   "c_sig_bs": 3232.0,
+   "c_sig_usd": 68.0,
+   "usd_equiv": 85.04,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2024-09-16",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVAS MES 0824 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 3758.01
+    }
+   ]
+  },
+  {
+   "ym": "2024-10",
+   "fondo_bs": 2278.25,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 3232.0,
+   "c_mes_usd": 68.0,
+   "c_mes_n": 1,
+   "c_sig_bs": 48424.5,
+   "c_sig_usd": 850.0,
+   "usd_equiv": 47.93,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2024-10-16",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 0924 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 2278.25
+    }
+   ]
+  },
+  {
+   "ym": "2024-11",
+   "fondo_bs": 9832.18,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 48424.5,
+   "c_mes_usd": 850.0,
+   "c_mes_n": 3,
+   "c_sig_bs": 42364.25,
+   "c_sig_usd": 715.0,
+   "usd_equiv": 172.59,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2024-11-19",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 1024 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 9832.18
+    }
+   ]
+  },
+  {
+   "ym": "2024-12",
+   "fondo_bs": 6842.65,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 42364.25,
+   "c_mes_usd": 715.0,
+   "c_mes_n": 5,
+   "c_sig_bs": 20862.0,
+   "c_sig_usd": 300.0,
+   "usd_equiv": 115.49,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2024-12-16",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 1124 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 6842.65
+    }
+   ]
+  },
+  {
+   "ym": "2025-01",
+   "fondo_bs": 9248.93,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 20862.0,
+   "c_mes_usd": 300.0,
+   "c_mes_n": 2,
+   "c_sig_bs": 8200.8,
+   "c_sig_usd": 120.0,
+   "usd_equiv": 133.0,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2025-01-17",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 1224 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 9248.93
+    }
+   ]
+  },
+  {
+   "ym": "2025-02",
+   "fondo_bs": 3318.74,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 8200.8,
+   "c_mes_usd": 120.0,
+   "c_mes_n": 1,
+   "c_sig_bs": 17418.0,
+   "c_sig_usd": 200.0,
+   "usd_equiv": 48.56,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2025-02-17",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 0125 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 3318.74
+    }
+   ]
+  },
+  {
+   "ym": "2025-03",
+   "fondo_bs": 7041.65,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 17418.0,
+   "c_mes_usd": 200.0,
+   "c_mes_n": 1,
+   "c_sig_bs": 1948.0,
+   "c_sig_usd": 20.0,
+   "usd_equiv": 80.85,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2025-03-18",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1101 FONDO RESERVA MES 0225 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 7041.65
+    }
+   ]
+  },
+  {
+   "ym": "2025-04",
+   "fondo_bs": 4205.14,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 1948.0,
+   "c_mes_usd": 20.0,
+   "c_mes_n": 1,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": 43.17,
+   "veredicto": "parcial",
+   "detalle": [
+    {
+     "f": "2025-04-15",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 0325 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 4205.14
+    }
+   ]
+  },
+  {
+   "ym": "2025-05",
+   "fondo_bs": 6189.57,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": "no",
+   "detalle": [
+    {
+     "f": "2025-05-16",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 0425 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 6189.57
+    }
+   ]
+  },
+  {
+   "ym": "2025-06",
+   "fondo_bs": 13794.23,
+   "fondo_n": 1,
+   "prest_bs": 0.0,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": "no",
+   "detalle": [
+    {
+     "f": "2025-06-18",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 0525 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 13794.23
+    }
+   ]
+  },
+  {
+   "ym": "2025-07",
+   "fondo_bs": 6624.25,
+   "fondo_n": 1,
+   "prest_bs": 606.66,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": "no",
+   "detalle": [
+    {
+     "f": "2025-07-18",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 0625 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 6624.25
+    }
+   ]
+  },
+  {
+   "ym": "2025-08",
+   "fondo_bs": 12832.39,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": "no",
+   "detalle": [
+    {
+     "f": "2025-08-15",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 0725 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 12832.39
+    }
+   ]
+  },
+  {
+   "ym": "2025-09",
+   "fondo_bs": 13229.8,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": "no",
+   "detalle": [
+    {
+     "f": "2025-09-17",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO DE RESERVA 0825 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 13229.8
+    }
+   ]
+  },
+  {
+   "ym": "2025-10",
+   "fondo_bs": 9581.85,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": "no",
+   "detalle": [
+    {
+     "f": "2025-10-15",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 0925 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 9581.85
+    }
+   ]
+  },
+  {
+   "ym": "2025-11",
+   "fondo_bs": 25082.22,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 73957.5,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": "siguiente",
+   "detalle": [
+    {
+     "f": "2025-11-18",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO RESERVA MES 1025 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 25082.22
+    }
+   ]
+  },
+  {
+   "ym": "2025-12",
+   "fondo_bs": 28619.41,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 73957.5,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 1,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2025-12-16",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 1125 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 28619.41
+    }
+   ]
+  },
+  {
+   "ym": "2026-01",
+   "fondo_bs": 35602.92,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 91860.0,
+   "c_sig_usd": 150.0,
+   "usd_equiv": 58.14,
+   "veredicto": "siguiente",
+   "detalle": [
+    {
+     "f": "2026-01-19",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO RESERVA MES 1225 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 35602.92
+    }
+   ]
+  },
+  {
+   "ym": "2026-02",
+   "fondo_bs": 49243.14,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 91860.0,
+   "c_mes_usd": 150.0,
+   "c_mes_n": 1,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": 80.41,
+   "veredicto": "ese_mes",
+   "detalle": [
+    {
+     "f": "2026-02-19",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO DE RESERVA POR ENVIAR A JUNTA EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 49243.14
+    }
+   ]
+  },
+  {
+   "ym": "2026-03",
+   "fondo_bs": 43414.78,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 12751.6,
+   "c_sig_usd": 20.0,
+   "usd_equiv": 68.09,
+   "veredicto": "parcial",
+   "detalle": [
+    {
+     "f": "2026-03-22",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1096 FDO RESERVA 0226 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 43414.78
+    }
+   ]
+  },
+  {
+   "ym": "2026-04",
+   "fondo_bs": 38164.98,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 12751.6,
+   "c_mes_usd": 20.0,
+   "c_mes_n": 1,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": 59.86,
+   "veredicto": "parcial",
+   "detalle": [
+    {
+     "f": "2026-04-17",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO DE RESERVA 0326 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 38164.98
+    }
+   ]
+  },
+  {
+   "ym": "2026-05",
+   "fondo_bs": 0.0,
+   "fondo_n": 0,
+   "prest_bs": 303.33,
+   "trabajo_bs": 39567.14,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": null,
+   "detalle": []
+  },
+  {
+   "ym": "2026-06",
+   "fondo_bs": 0.0,
+   "fondo_n": 0,
+   "prest_bs": 303.33,
+   "trabajo_bs": 34129.92,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": null,
+   "detalle": []
+  },
+  {
+   "ym": "2026-07",
+   "fondo_bs": 0.0,
+   "fondo_n": 0,
+   "prest_bs": 303.33,
+   "trabajo_bs": 77354.83,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": null,
+   "detalle": []
+  },
+  {
+   "ym": "2026-08",
+   "fondo_bs": 158407.57,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": "no",
+   "detalle": [
+    {
+     "f": "2026-08-14",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FONDO DE RESERVA 0726 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 158407.57
+    }
+   ]
+  },
+  {
+   "ym": "2026-09",
+   "fondo_bs": 183448.15,
+   "fondo_n": 1,
+   "prest_bs": 303.33,
+   "trabajo_bs": 0.0,
+   "c_mes_bs": 0.0,
+   "c_mes_usd": 0.0,
+   "c_mes_n": 0,
+   "c_sig_bs": 0.0,
+   "c_sig_usd": 0.0,
+   "usd_equiv": null,
+   "veredicto": "no",
+   "detalle": [
+    {
+     "f": "2026-09-22",
+     "concepto": "TELF.:000000000000 CTA.: 01040039200390034881 BANCO:0104 1104 FDO RESERVA 0826 EMISOR : ADMINISTRADORA TAURUS S R L",
+     "bs": 183448.15
+    }
+   ]
+  }
+ ]
+}
