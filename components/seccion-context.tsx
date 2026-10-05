@@ -14,6 +14,7 @@ export type SeccionId =
   | "metodologia"
   | "estacionamientos"
   | "estados"
+  | "banco"
   | "conciliacion";
 
 type SeccionContextValue = {
